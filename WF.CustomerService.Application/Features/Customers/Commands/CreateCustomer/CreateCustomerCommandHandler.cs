@@ -33,7 +33,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                     $"Unable to generate a unique customer number after {MaxRetryAttempts} attempts. This may indicate that the system is approaching capacity.");
             }
 
-            var customer = new Customer(request.FirstName, request.LastName, request.Email, customerNumber);
+            var customer = new Customer(request.FirstName, request.LastName, request.Email, customerNumber, request.PhoneNumber);
             await _customerRepository.AddCustomerAsync(customer);
             return customer.Id;
         }
