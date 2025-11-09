@@ -8,5 +8,6 @@ namespace WF.CustomerService.Domain.Repositories
         Task AddCustomerAsync(Customer customer);
         Task DeleteCustomerAsync(Guid customerId);
         Task UpdateCustomerAsync(Customer customer);
+        Task<bool> IsCustomerNumberUniqueAsync(string customerNumber, CancellationToken cancellationToken);
     }
 }

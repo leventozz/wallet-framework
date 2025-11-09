@@ -44,5 +44,12 @@ namespace WF.CustomerService.Infrastructure.Repositories
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> IsCustomerNumberUniqueAsync(string customerNumber, CancellationToken cancellationToken)
+        {
+            return !await _context.Customers
+                .AsNoTracking()
+                .AnyAsync(c => c.CustomerNumber == customerNumber, cancellationToken);
+        }
     }
 }

@@ -10,5 +10,19 @@ namespace WF.CustomerService.Infrastructure.Data
         {
             
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasQueryFilter(c => c.IsActive && !c.IsDeleted);
+
+                entity.HasIndex(c => c.CustomerNumber)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Customers_CustomerNumber");
+            });
+        }
     }
 }
