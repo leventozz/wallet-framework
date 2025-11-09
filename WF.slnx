@@ -4,6 +4,10 @@
   <Folder Name="/shared/">
     <Project Path="Shared.Contracts/WF.Shared.Contracts.csproj" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="prometheus.yml" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Infrastructure/" />
   <Folder Name="/src/Services/" />

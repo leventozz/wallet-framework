@@ -1,0 +1,188 @@
+# Use version 3.8 for broad compatibility
+version: "3.8"
+
+# Define a network for services to communicate
+networks:
+  microservice-network:
+    driver: bridge
+
+# Define persistent volumes
+volumes:
+  postgres_data:
+  pgadmin_data:
+  rabbitmq_data:
+  redis_data:
+  vault_data:
+  prometheus_data:
+  grafana_data:
+
+services:
+  # 1. PostgreSQL (Write Model)
+  # Using the exact credentials you provided
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: myStrongPassword123!
+      POSTGRES_DB: WF_CustomerDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d WF_CustomerDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. PgAdmin (PostgreSQL GUI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_gui
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - microservice-network
+    depends_on:
+      - postgres
+
+  # 3. RabbitMQ (Message Broker)
+  # Includes the management plugin
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rabbitmq_broker
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservice-network
+
+  # 4. Redis (Read/Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - microservice-network
+
+  # 5. Keycloak (Identity Management)
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak_idm
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    networks:
+      - microservice-network
+
+  # 6. HashiCorp Vault (Secrets Management)
+  # Starts in development mode with a known root token
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault_secrets
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "my-root-token"
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    cap_add:
+      - IPC_LOCK
+    command: server -dev
+    networks:
+      - microservice-network
+
+  # --- OBSERVABILITY STACK ---
+
+  # 7. Prometheus (Metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_metrics
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - microservice-network
+
+  # 8. Grafana (Dashboard)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - microservice-network
+    depends_on:
+      - prometheus
+
+  # 9. Jaeger (Tracing)
+  # OpenTelemetry compatible
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger_tracing
+    ports:
+      - "6831:6831/udp" # Agent
+      - "16686:16686"   # UI
+      - "14268:14268"   # Collector
+      - "4317:4317"     # OTLP gRPC
+      - "4318:4318"     # OTLP HTTP
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - microservice-network
+
+  # --- APPLICATION PLACEHOLDER ---
+
+  # 10. .NET 8 Application (Example)
+  # This is a placeholder for your .NET app.
+  # You will need to create a Dockerfile for your project.
+  # backend-app:
+  #   container_name: backend_app
+  #   build:
+  #     context: . # Assumes Dockerfile is in the same directory
+  #     dockerfile: YourApp/Dockerfile
+  #   ports:
+  #     - "8001:8080" # Example: Map host 8001 to container 8080
+  #   environment:
+  #     # IMPORTANT: Use the service name 'postgres', not 'localhost'
+  #     ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_CustomerDb;Username=postgres;Password=myStrongPassword123!"
+  #     RabbitMq__Host: "rabbitmq"
+  #     Redis__Host: "redis"
+  #     Keycloak__Authority: "http://keycloak:8080/realms/your-realm"
+  #     Vault__Address: "http://vault:8200"
+  #     Otel__ExporterEndpoint: "http://jaeger:4317" # OTLP gRPC endpoint
+  #   networks:
+  #     - microservice-network
+  #   depends_on:
+  #     - postgres
+  #     - rabbitmq
+  #     - redis
+  #     - keycloak
+  #     - vault
+  #     - jaeger
