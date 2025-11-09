@@ -1,4 +1,6 @@
-﻿using WF.CustomerService.Domain.Enums;
+﻿using Mapster;
+using WF.CustomerService.Domain.Entities;
+using WF.CustomerService.Domain.Enums;
 
 namespace WF.CustomerService.Application.Dtos
 {
@@ -11,5 +13,13 @@ namespace WF.CustomerService.Application.Dtos
         public string PhoneNumber { get; set; } = string.Empty;
         public KycStatus KycStatus { get; set; }
         public DateTime CreatedAtUtc { get; set; }
+    }
+
+    public class CustomerMappingConfig : IRegister
+    {
+        public void Register(TypeAdapterConfig config)
+        {
+            config.NewConfig<Customer, CustomerDto>();
+        }
     }
 }

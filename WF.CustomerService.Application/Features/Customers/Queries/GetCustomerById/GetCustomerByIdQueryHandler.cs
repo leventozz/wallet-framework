@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MapsterMapper;
+using MediatR;
 using WF.CustomerService.Application.Dtos;
 using WF.CustomerService.Domain.Entities;
 using WF.CustomerService.Domain.Repositories;
@@ -9,10 +10,12 @@ namespace WF.CustomerService.Application.Features.Customers.Queries.GetCustomerB
     public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IMapper _mapper;
 
-        public GetCustomerByIdQueryHandler(ICustomerRepository customerRepository)
+        public GetCustomerByIdQueryHandler(ICustomerRepository customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
+            _mapper = mapper;
         }
 
         public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
@@ -24,16 +27,7 @@ namespace WF.CustomerService.Application.Features.Customers.Queries.GetCustomerB
                 throw new NotFoundException(nameof(Customer), request.Id);
             }
 
-            return new CustomerDto
-            {
-                CustomerNumber = customer.CustomerNumber,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                KycStatus = customer.KycStatus,
-                CreatedAtUtc = customer.CreatedAtUtc
-            };
+            return _mapper.Map<CustomerDto>(customer);
         }
     }
 }
