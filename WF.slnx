@@ -1,1 +1,16 @@
-<Solution />
+<Solution>
+  <Folder Name="/building/" />
+  <Folder Name="/docs/" />
+  <Folder Name="/shared/">
+    <Project Path="Shared.Contracts/WF.Shared.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Infrastructure/" />
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/CustomerService/">
+    <Project Path="WF.CustomerService.Application/WF.CustomerService.Application.csproj" />
+    <Project Path="WF.CustomerService.Domain/WF.CustomerService.Domain.csproj" />
+    <Project Path="WF.CustomerService.Infrastructure/WF.CustomerService.Infrastructure.csproj" />
+    <Project Path="WF.CustomerService/WF.CustomerService.Api.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+@WF.CustomerService_HostAddress = http://localhost:5116
+
+GET {{WF.CustomerService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
