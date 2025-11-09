@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WF.CustomerService.Domain\WF.CustomerService.Domain.csproj" />
+    <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

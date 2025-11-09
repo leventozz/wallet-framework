@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace WF.Shared.Infrastructure
+namespace WF.Shared.Infrastructure.Middleware
 {
     public static class ExceptionHandlerDIExtensions
     {

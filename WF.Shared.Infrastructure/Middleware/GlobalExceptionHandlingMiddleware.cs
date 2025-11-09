@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
-using ValidationException = FluentValidation.ValidationException;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using WF.Shared.Abstractions.Exceptions;
+using ValidationException = FluentValidation.ValidationException;
 
-namespace WF.Shared.Infrastructure
+namespace WF.Shared.Infrastructure.Middleware
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
@@ -25,6 +26,10 @@ namespace WF.Shared.Infrastructure
                 ValidationException validationException => await HandleValidationExceptionAsync(
                     httpContext,
                     validationException,
+                    cancellationToken),
+                NotFoundException notFoundException => await HandleNotFoundExceptionAsync(
+                    httpContext,
+                    notFoundException,
                     cancellationToken),
                 _ => await HandleGenericExceptionAsync(
                     httpContext,
@@ -76,6 +81,25 @@ namespace WF.Shared.Infrastructure
             {
                 statusCode = httpContext.Response.StatusCode,
                 message = "Sistemde beklenmeyen bir hata oluştu."
+            };
+
+            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+
+            return true;
+        }
+
+        private async Task<bool> HandleNotFoundExceptionAsync(
+            HttpContext httpContext,
+            NotFoundException exception,
+            CancellationToken cancellationToken)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            httpContext.Response.ContentType = "application/json";
+
+            var response = new
+            {
+                statusCode = httpContext.Response.StatusCode,
+                message = exception.Message
             };
 
             await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);

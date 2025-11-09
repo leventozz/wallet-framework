@@ -6,7 +6,7 @@ using Serilog.Core;
 using Serilog.Events;
 using System.Diagnostics;
 
-namespace WF.Shared.Infrastructure
+namespace WF.Shared.Infrastructure.Logging
 {
     public static class LoggingDIExtensions
     {
