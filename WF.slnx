@@ -3,6 +3,7 @@
   <Folder Name="/docs/" />
   <Folder Name="/shared/">
     <Project Path="Shared.Contracts/WF.Shared.Contracts.csproj" />
+    <Project Path="WF.Shared.Infrastructure/WF.Shared.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="docker-compose.yml" />

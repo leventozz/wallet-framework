@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WF.CustomerService.Application\WF.CustomerService.Application.csproj" />
     <ProjectReference Include="..\WF.CustomerService.Infrastructure\WF.CustomerService.Infrastructure.csproj" />
+    <ProjectReference Include="..\WF.Shared.Infrastructure\WF.Shared.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
