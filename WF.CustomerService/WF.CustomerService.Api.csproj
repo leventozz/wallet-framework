@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WF.CustomerService.Application\WF.CustomerService.Application.csproj" />
     <ProjectReference Include="..\WF.CustomerService.Infrastructure\WF.CustomerService.Infrastructure.csproj" />
   </ItemGroup>
