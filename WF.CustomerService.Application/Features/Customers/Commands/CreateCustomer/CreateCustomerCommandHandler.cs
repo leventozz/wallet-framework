@@ -42,7 +42,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
             var customer = new Customer(request.FirstName, request.LastName, request.Email, customerNumber, request.PhoneNumber);
             await _customerRepository.AddCustomerAsync(customer);
             await _integrationEventPublisher.PublishAsync(new CustomerCreatedEvent() { CustomerId = customer.Id },cancellationToken);
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return customer.Id;
         }
     }
