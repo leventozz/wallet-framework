@@ -10,12 +10,14 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IIntegrationEventPublisher _integrationEventPublisher;
+        private readonly IUnitOfWork _unitOfWork;
         private const int MaxRetryAttempts = 5;
 
-        public CreateCustomerCommandHandler(ICustomerRepository customerRepository, IIntegrationEventPublisher integrationEventPublisher)
+        public CreateCustomerCommandHandler(ICustomerRepository customerRepository, IIntegrationEventPublisher integrationEventPublisher, IUnitOfWork unitOfWork)
         {
             _customerRepository = customerRepository;
             _integrationEventPublisher = integrationEventPublisher;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
@@ -40,6 +42,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
             var customer = new Customer(request.FirstName, request.LastName, request.Email, customerNumber, request.PhoneNumber);
             await _customerRepository.AddCustomerAsync(customer);
             await _integrationEventPublisher.PublishAsync(new CustomerCreatedEvent() { CustomerId = customer.Id },cancellationToken);
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
             return customer.Id;
         }
     }

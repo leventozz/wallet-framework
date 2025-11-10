@@ -17,7 +17,6 @@ namespace WF.CustomerService.Infrastructure.Repositories
         public async Task AddCustomerAsync(Customer customer)
         {
             await _context.Customers.AddAsync(customer);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteCustomerAsync(Guid customerId)
@@ -28,7 +27,6 @@ namespace WF.CustomerService.Infrastructure.Repositories
             if (customer is not null)
             {
                 _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -42,7 +40,6 @@ namespace WF.CustomerService.Infrastructure.Repositories
         public async Task UpdateCustomerAsync(Customer customer)
         {
             _context.Customers.Update(customer);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> IsCustomerNumberUniqueAsync(string customerNumber, CancellationToken cancellationToken)
