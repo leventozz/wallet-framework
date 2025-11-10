@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using WF.CustomerService.Domain.Entities;
 
 namespace WF.CustomerService.Infrastructure.Data
@@ -14,6 +15,10 @@ namespace WF.CustomerService.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddOutboxMessageEntity();
+            modelBuilder.AddOutboxStateEntity();
+            modelBuilder.AddInboxStateEntity(); //kind of idempotency
 
             modelBuilder.Entity<Customer>(entity =>
             {

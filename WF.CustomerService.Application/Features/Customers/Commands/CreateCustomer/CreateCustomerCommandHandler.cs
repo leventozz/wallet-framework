@@ -1,17 +1,21 @@
 ﻿using MediatR;
+using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Entities;
 using WF.CustomerService.Domain.Repositories;
+using WF.Shared.Contracts.IntegrationEvents;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer
 {
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Guid>
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IIntegrationEventPublisher _integrationEventPublisher;
         private const int MaxRetryAttempts = 5;
 
-        public CreateCustomerCommandHandler(ICustomerRepository customerRepository)
+        public CreateCustomerCommandHandler(ICustomerRepository customerRepository, IIntegrationEventPublisher integrationEventPublisher)
         {
             _customerRepository = customerRepository;
+            _integrationEventPublisher = integrationEventPublisher;
         }
 
         public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
@@ -35,6 +39,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
 
             var customer = new Customer(request.FirstName, request.LastName, request.Email, customerNumber, request.PhoneNumber);
             await _customerRepository.AddCustomerAsync(customer);
+            await _integrationEventPublisher.PublishAsync(new CustomerCreatedEvent() { CustomerId = customer.Id },cancellationToken);
             return customer.Id;
         }
     }
