@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Repositories;
 using WF.CustomerService.Infrastructure.Data;
+using WF.CustomerService.Infrastructure.QueryServices;
 using WF.CustomerService.Infrastructure.Repositories;
 
 namespace WF.CustomerService.Infrastructure
@@ -19,6 +21,7 @@ namespace WF.CustomerService.Infrastructure
                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICustomerQueryService, CustomerQueryService>();
 
             return services;
         }
