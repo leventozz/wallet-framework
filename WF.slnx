@@ -11,7 +11,6 @@
     <File Path="prometheus.yml" />
   </Folder>
   <Folder Name="/src/" />
-  <Folder Name="/src/Infrastructure/" />
   <Folder Name="/src/Services/" />
   <Folder Name="/src/Services/CustomerService/">
     <Project Path="WF.CustomerService.Application/WF.CustomerService.Application.csproj" />

@@ -1,0 +1,59 @@
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using WF.Shared.Infrastructure.Configuration;
+using WF.WalletService.Application.Abstractions;
+using WF.WalletService.Domain.Repositories;
+using WF.WalletService.Infrastructure.Consumers;
+using WF.WalletService.Infrastructure.Data;
+using WF.WalletService.Infrastructure.Repositories;
+
+namespace WF.WalletService.Infrastructure
+{
+    public static class DependencyInjectionExtensions
+    {
+        public static IServiceCollection AddInfrastructure(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddDbContext<WalletDbContext>(options =>
+                options.UseNpgsql(
+                    configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+
+            services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+
+            services.AddMassTransit(mtConfig =>
+            {
+                mtConfig.AddEntityFrameworkOutbox<WalletDbContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
+                });
+
+                mtConfig.AddConsumer<CustomerCreatedConsumer>();
+
+                mtConfig.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    
+                    cfg.Host(rabbitMqOptions.Host, (ushort)rabbitMqOptions.Port, rabbitMqOptions.VirtualHost, h =>
+                    {
+                        h.Username(rabbitMqOptions.Username);
+                        h.Password(rabbitMqOptions.Password);
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            services.AddScoped<IWalletRepository, WalletRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            return services;
+        }
+    }
+}
+
