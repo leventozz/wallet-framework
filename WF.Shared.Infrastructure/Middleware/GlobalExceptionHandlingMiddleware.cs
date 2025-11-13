@@ -73,7 +73,7 @@ namespace WF.Shared.Infrastructure.Middleware
             var response = new
             {
                 statusCode = httpContext.Response.StatusCode,
-                message = "Sistemde beklenmeyen bir hata oluştu."
+                message = "An unhandled exception occurred."
             };
 
             await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);

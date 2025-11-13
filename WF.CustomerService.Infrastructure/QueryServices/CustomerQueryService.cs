@@ -44,11 +44,12 @@ namespace WF.CustomerService.Infrastructure.QueryServices
             const string sql = """
                 SELECT "CustomerNumber", "FirstName", "LastName", "Email", "PhoneNumber", "KycStatus", "CreatedAtUtc"
                 FROM "Customers"
-                WHERE "Id" = @id AND "IsActive" = true AND "IsDeleted" = false;
+                WHERE "CustomerNumber" = @customerNumber AND "IsActive" = true AND "IsDeleted" = false;
                 
-                SELECT "Id" AS "WalletId", "Balance", "Currency", "State"
-                FROM "WalletReadModels"
-                WHERE "CustomerId" = @id;
+                SELECT w."Id" AS "WalletId", w."Balance", w."Currency", w."State"
+                FROM "WalletReadModels" w
+                INNER JOIN "Customers" c ON w."CustomerId" = c."Id"
+                WHERE c."CustomerNumber" = @customerNumber;
                 """;
 
             using var multi = await connection.QueryMultipleAsync(
