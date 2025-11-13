@@ -8,15 +8,8 @@ namespace WF.CustomerService.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomersController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public CustomersController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [HttpPost]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromBody] CreateCustomerCommand command)

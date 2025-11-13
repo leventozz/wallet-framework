@@ -5,15 +5,8 @@ using WF.WalletService.Infrastructure.Data;
 
 namespace WF.WalletService.Infrastructure.Repositories
 {
-    public class WalletRepository : IWalletRepository
+    public class WalletRepository(WalletDbContext _context) : IWalletRepository
     {
-        private readonly WalletDbContext _context;
-
-        public WalletRepository(WalletDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task AddWalletAsync(Wallet wallet, CancellationToken cancellationToken = default)
         {
             await _context.Wallets.AddAsync(wallet, cancellationToken);

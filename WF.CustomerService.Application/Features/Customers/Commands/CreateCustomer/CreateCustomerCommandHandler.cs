@@ -6,19 +6,13 @@ using WF.Shared.Contracts.IntegrationEvents;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer
 {
-    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Guid>
+    public class CreateCustomerCommandHandler(
+        ICustomerRepository _customerRepository, 
+        IIntegrationEventPublisher _integrationEventPublisher, 
+        IUnitOfWork _unitOfWork) 
+        : IRequestHandler<CreateCustomerCommand, Guid>
     {
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IIntegrationEventPublisher _integrationEventPublisher;
-        private readonly IUnitOfWork _unitOfWork;
         private const int MaxRetryAttempts = 5;
-
-        public CreateCustomerCommandHandler(ICustomerRepository customerRepository, IIntegrationEventPublisher integrationEventPublisher, IUnitOfWork unitOfWork)
-        {
-            _customerRepository = customerRepository;
-            _integrationEventPublisher = integrationEventPublisher;
-            _unitOfWork = unitOfWork;
-        }
 
         public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {

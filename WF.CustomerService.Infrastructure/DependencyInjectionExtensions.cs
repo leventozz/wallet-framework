@@ -19,10 +19,13 @@ namespace WF.CustomerService.Infrastructure
         this IServiceCollection services,
         IConfiguration configuration)
         {
+            var connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             services.AddDbContext<CustomerDbContext>(options =>
-                options.UseNpgsql(
-                    configuration.GetConnectionString("DefaultConnection")
-                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+                options.UseNpgsql(connectionString));
+
+            services.AddNpgsqlDataSource(connectionString);
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
 

@@ -6,17 +6,8 @@ using WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCust
 
 namespace WF.WalletService.Infrastructure.Consumers
 {
-    public class CustomerCreatedConsumer : IConsumer<CustomerCreatedEvent>
+    public class CustomerCreatedConsumer(IMediator _mediator, ILogger<CustomerCreatedConsumer> _logger) : IConsumer<CustomerCreatedEvent>
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<CustomerCreatedConsumer> _logger;
-
-        public CustomerCreatedConsumer(IMediator mediator, ILogger<CustomerCreatedConsumer> logger)
-        {
-            _mediator = mediator;
-            _logger = logger;
-        }
-
         public async Task Consume(ConsumeContext<CustomerCreatedEvent> context)
         {
             var customerId = context.Message.CustomerId;

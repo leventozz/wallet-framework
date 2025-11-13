@@ -15,6 +15,7 @@ namespace WF.CustomerService.Application.Dtos
         public DateTime CreatedAtUtc { get; set; }
     }
 
+    [Obsolete]
     public class CustomerMappingConfig : IRegister
     {
         public void Register(TypeAdapterConfig config)

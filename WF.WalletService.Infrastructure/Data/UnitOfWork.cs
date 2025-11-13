@@ -3,15 +3,9 @@ using WF.WalletService.Application.Abstractions;
 
 namespace WF.WalletService.Infrastructure.Data
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(WalletDbContext _context) : IUnitOfWork
     {
-        private readonly WalletDbContext _context;
         private IDbContextTransaction? _transaction;
-
-        public UnitOfWork(WalletDbContext context)
-        {
-            _context = context;
-        }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

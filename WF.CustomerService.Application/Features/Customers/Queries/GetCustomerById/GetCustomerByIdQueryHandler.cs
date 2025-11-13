@@ -6,15 +6,8 @@ using WF.Shared.Abstractions.Exceptions;
 
 namespace WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById
 {
-    public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
+    public class GetCustomerByIdQueryHandler(ICustomerQueryService _customerQueryService) : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
     {
-        private readonly ICustomerQueryService _customerQueryService;
-
-        public GetCustomerByIdQueryHandler(ICustomerQueryService customerQueryService)
-        {
-            _customerQueryService = customerQueryService;
-        }
-
         public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
         {
             var customer = await _customerQueryService.GetCustomerDtoByIdAsync(request.Id, cancellationToken);

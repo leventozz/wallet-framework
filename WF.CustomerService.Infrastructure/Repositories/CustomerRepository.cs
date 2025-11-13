@@ -5,15 +5,8 @@ using WF.CustomerService.Infrastructure.Data;
 
 namespace WF.CustomerService.Infrastructure.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository(CustomerDbContext _context) : ICustomerRepository
     {
-        private readonly CustomerDbContext _context;
-
-        public CustomerRepository(CustomerDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task AddCustomerAsync(Customer customer)
         {
             await _context.Customers.AddAsync(customer);

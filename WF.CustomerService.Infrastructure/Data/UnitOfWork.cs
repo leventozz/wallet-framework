@@ -3,15 +3,9 @@ using WF.CustomerService.Application.Abstractions;
 
 namespace WF.CustomerService.Infrastructure.Data
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(CustomerDbContext _context) : IUnitOfWork
     {
-        private readonly CustomerDbContext _context;
         private IDbContextTransaction? _transaction;
-
-        public UnitOfWork(CustomerDbContext context)
-        {
-            _context = context;
-        }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

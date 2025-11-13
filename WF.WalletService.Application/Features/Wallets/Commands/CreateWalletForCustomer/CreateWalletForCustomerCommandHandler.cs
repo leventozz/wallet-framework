@@ -6,25 +6,17 @@ using WF.WalletService.Domain.Repositories;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCustomer
 {
-    public class CreateWalletForCustomerCommandHandler : IRequestHandler<CreateWalletForCustomerCommand, Guid>
+    public class CreateWalletForCustomerCommandHandler(IWalletRepository _walletRepository, IUnitOfWork _unitOfWork) : IRequestHandler<CreateWalletForCustomerCommand, Guid>
     {
-        private readonly IWalletRepository _walletRepository;
-        private readonly IUnitOfWork _unitOfWork;
         private const int MaxRetryAttempts = 5;
-
-        public CreateWalletForCustomerCommandHandler(
-            IWalletRepository walletRepository,
-            IUnitOfWork unitOfWork)
-        {
-            _walletRepository = walletRepository;
-            _unitOfWork = unitOfWork;
-        }
 
         public async Task<Guid> Handle(CreateWalletForCustomerCommand request, CancellationToken cancellationToken)
         {
             string walletNumber = string.Empty;
             bool isUnique = false;
             int attemptCount = 0;
+
+            //for extra security, check is customer is exist 
 
             while (!isUnique && attemptCount < MaxRetryAttempts)
             {
