@@ -1,4 +1,4 @@
-﻿namespace WF.Shared.Contracts.IntegrationEvents
+﻿namespace WF.Shared.Contracts.IntegrationEvents.Customer
 {
     public record CustomerCreatedEvent
     {

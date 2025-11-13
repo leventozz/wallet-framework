@@ -3,6 +3,7 @@ using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Entities;
 using WF.CustomerService.Domain.Repositories;
 using WF.Shared.Contracts.IntegrationEvents;
+using WF.Shared.Contracts.IntegrationEvents.Customer;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer
 {

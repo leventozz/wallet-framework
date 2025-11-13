@@ -14,11 +14,25 @@ namespace WF.CustomerService.Infrastructure.QueryServices
             const string sql = """
                 SELECT "CustomerNumber", "FirstName", "LastName", "Email", "PhoneNumber", "KycStatus", "CreatedAtUtc"
                 FROM "Customers"
-                WHERE "Id" = @id AND "IsActive" = true AND "IsDeleted" = false
+                WHERE "Id" = @id AND "IsActive" = true AND "IsDeleted" = false;
+                
+                SELECT "Id" AS "WalletId", "Balance", "Currency", "State"
+                FROM "WalletReadModels"
+                WHERE "CustomerId" = @id;
                 """;
 
-            var customer = await connection.QueryFirstOrDefaultAsync<CustomerDto>(
+            using var multi = await connection.QueryMultipleAsync(
                 new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
+
+            var customer = await multi.ReadFirstOrDefaultAsync<CustomerDto>();
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var wallets = await multi.ReadAsync<WalletSummaryDto>();
+            customer.Wallets = wallets.ToList();
 
             return customer;
         }

@@ -8,6 +8,7 @@ using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Domain.Repositories;
 using WF.WalletService.Infrastructure.Consumers;
 using WF.WalletService.Infrastructure.Data;
+using WF.WalletService.Infrastructure.EventBus;
 using WF.WalletService.Infrastructure.QueryServices;
 using WF.WalletService.Infrastructure.Repositories;
 
@@ -55,6 +56,7 @@ namespace WF.WalletService.Infrastructure
 
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IWalletQueryService, WalletQueryService>();
+            services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

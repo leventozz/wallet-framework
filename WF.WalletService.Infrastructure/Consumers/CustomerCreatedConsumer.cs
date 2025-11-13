@@ -1,7 +1,7 @@
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using WF.Shared.Contracts.IntegrationEvents;
+using WF.Shared.Contracts.IntegrationEvents.Customer;
 using WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCustomer;
 
 namespace WF.WalletService.Infrastructure.Consumers

@@ -11,6 +11,7 @@ namespace WF.CustomerService.Application.Dtos
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
+        public List<WalletSummaryDto> Wallets { get; set; } = new();
         public KycStatus KycStatus { get; set; }
         public DateTime CreatedAtUtc { get; set; }
     }

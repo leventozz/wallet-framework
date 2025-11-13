@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Repositories;
+using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
 using WF.CustomerService.Infrastructure.EventBus;
 using WF.CustomerService.Infrastructure.QueryServices;
@@ -31,6 +32,8 @@ namespace WF.CustomerService.Infrastructure
 
             services.AddMassTransit(mtConfig =>
             {
+                mtConfig.AddConsumer<WalletEventsConsumer>();
+
                 mtConfig.AddEntityFrameworkOutbox<CustomerDbContext>(o =>
                 {
                     o.UsePostgres();

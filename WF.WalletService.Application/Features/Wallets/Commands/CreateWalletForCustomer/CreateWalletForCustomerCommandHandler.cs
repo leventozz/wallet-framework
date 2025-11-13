@@ -1,4 +1,5 @@
 using MediatR;
+using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Domain.Entities;
 using WF.WalletService.Domain.Enums;
@@ -6,7 +7,11 @@ using WF.WalletService.Domain.Repositories;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCustomer
 {
-    public class CreateWalletForCustomerCommandHandler(IWalletRepository _walletRepository, IUnitOfWork _unitOfWork) : IRequestHandler<CreateWalletForCustomerCommand, Guid>
+    public class CreateWalletForCustomerCommandHandler(
+        IWalletRepository _walletRepository, 
+        IUnitOfWork _unitOfWork,
+        IIntegrationEventPublisher _eventPublisher) 
+        : IRequestHandler<CreateWalletForCustomerCommand, Guid>
     {
         private const int MaxRetryAttempts = 5;
 
@@ -31,8 +36,17 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
                     $"Unable to generate a unique wallet number after {MaxRetryAttempts} attempts. This may indicate that the system is approaching capacity.");
             }
 
-            var wallet = new Wallet(request.CustomerId, walletNumber, Currency.TRY);
+            var wallet = new Wallet(request.CustomerId, walletNumber);
             await _walletRepository.AddWalletAsync(wallet, cancellationToken);
+
+            var eventToPublish = new WalletCreatedEvent(
+                wallet.Id,
+                request.CustomerId,
+                wallet.Balance,
+                Currency.TRY.ToString() //default currency
+            );
+
+            await _eventPublisher.PublishAsync(eventToPublish, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return wallet.Id;
         }
