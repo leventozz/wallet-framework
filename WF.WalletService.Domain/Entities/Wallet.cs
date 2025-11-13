@@ -14,6 +14,7 @@ namespace WF.WalletService.Domain.Entities
         public bool IsActive { get; private set; }
         public bool IsFrozen { get; private set; }
         public bool IsClosed { get; private set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime? UpdatedAtUtc { get; private set; }
         public DateTime? ClosedAtUtc { get; private set; }
@@ -33,8 +34,6 @@ namespace WF.WalletService.Domain.Entities
             Balance = 0;
             AvailableBalance = 0;
             IsActive = true;
-            IsFrozen = false;
-            IsClosed = false;
             CreatedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = null;
             ClosedAtUtc = null;
@@ -62,6 +61,90 @@ namespace WF.WalletService.Domain.Entities
                 throw new InsufficientBalanceException(Balance, amount);
 
             Balance -= amount;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void SetActive(bool isActive)
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Cannot change active status of a deleted wallet.");
+
+            if (IsClosed)
+                throw new InvalidOperationException("Cannot change active status of a closed wallet.");
+
+            IsActive = isActive;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void Freeze()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Cannot freeze a deleted wallet.");
+
+            if (IsClosed)
+                throw new InvalidOperationException("Cannot freeze a closed wallet.");
+
+            if (IsFrozen)
+                return;
+
+            IsFrozen = true;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void Unfreeze()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Cannot unfreeze a deleted wallet.");
+
+            if (IsClosed)
+                throw new InvalidOperationException("Cannot unfreeze a closed wallet.");
+
+            if (!IsFrozen)
+                return;
+
+            IsFrozen = false;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void Close()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Cannot close a deleted wallet.");
+
+            if (IsClosed)
+                return;
+
+            if (Balance != 0)
+                throw new InvalidOperationException("Cannot close a wallet with non-zero balance.");
+
+            IsClosed = true;
+            IsActive = false;
+            ClosedAtUtc = DateTime.UtcNow;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void UpdateLastTransaction(string transactionId)
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Cannot update transaction info of a deleted wallet.");
+
+            LastTransactionId = transactionId;
+            LastTransactionAtUtc = DateTime.UtcNow;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void SoftDelete()
+        {
+            if (IsDeleted)
+                return;
+
+            if (Balance != 0)
+                throw new InvalidOperationException("Cannot delete a wallet with non-zero balance.");
+
+            IsDeleted = true;
+            IsActive = false;
+            IsClosed = true;
+            ClosedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = DateTime.UtcNow;
         }
     }

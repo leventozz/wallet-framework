@@ -18,7 +18,7 @@ namespace WF.WalletService.Infrastructure.Data
 
             modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
-            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddInboxStateEntity(); //idempontecy
 
             modelBuilder.Entity<Wallet>(entity =>
             {
@@ -28,6 +28,12 @@ namespace WF.WalletService.Infrastructure.Data
 
                 entity.HasIndex(w => w.CustomerId)
                     .HasDatabaseName("IX_Wallets_CustomerId");
+
+                entity.Property(w => w.Balance)
+                    .HasPrecision(18, 2);
+
+                entity.Property(w => w.AvailableBalance)
+                    .HasPrecision(18, 2);
             });
         }
     }

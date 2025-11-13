@@ -11,8 +11,6 @@ namespace WF.CustomerService.Infrastructure.QueryServices
         {
             await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
 
-            await connection.OpenAsync(cancellationToken);
-
             const string sql = """
                 SELECT "CustomerNumber", "FirstName", "LastName", "Email", "PhoneNumber", "KycStatus", "CreatedAtUtc"
                 FROM "Customers"
