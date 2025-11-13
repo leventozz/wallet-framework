@@ -12,7 +12,7 @@ namespace WF.CustomerService.Infrastructure.Consumers
         : IConsumer<WalletBalanceUpdatedEvent>, IConsumer<WalletCreatedEvent>, IConsumer<WalletStateChangedEvent>
     {
 
-        //seperate consumers for each event can be created for better separation of concerns
+        //TODO: seperate consumers for each event
         public async Task Consume(ConsumeContext<WalletCreatedEvent> consumeContext)
         {
             var message = consumeContext.Message;
