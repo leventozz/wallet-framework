@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WF.CustomerService.Infrastructure.Data;
+using WF.WalletService.Infrastructure.Data;
 
 #nullable disable
 
-namespace WF.CustomerService.Infrastructure.Migrations
+namespace WF.WalletService.Infrastructure.Migrations
 {
-    [DbContext(typeof(CustomerDbContext))]
-    partial class CustomerDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(WalletDbContext))]
+    partial class WalletDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -190,57 +190,73 @@ namespace WF.CustomerService.Infrastructure.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("WF.CustomerService.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("WF.WalletService.Domain.Entities.Wallet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("AvailableBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("ClosedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CustomerNumber")
-                        .IsRequired()
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ExternalAccountRef")
                         .HasColumnType("text");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
+                    b.Property<string>("Iban")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("KycStatus")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsFrozen")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime?>("LastTransactionAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
+                    b.Property<string>("LastTransactionId")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("WalletNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Customers_CustomerNumber");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("IX_Wallets_CustomerId");
 
-                    b.ToTable("Customers");
+                    b.HasIndex("WalletNumber")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Wallets_WalletNumber");
+
+                    b.ToTable("Wallets");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
