@@ -5,7 +5,6 @@ using Dapper;
 
 namespace WF.CustomerService.Infrastructure.QueryServices
 {
-    //primary const
     public class CustomerQueryService(NpgsqlDataSource dataSource) : ICustomerQueryService
     {
         public async Task<CustomerDto?> GetCustomerDtoByIdAsync(Guid id, CancellationToken cancellationToken)

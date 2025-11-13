@@ -1,4 +1,5 @@
 ﻿using WF.WalletService.Domain.Enums;
+using WF.WalletService.Domain.Exceptions;
 
 namespace WF.WalletService.Domain.Entities
 {
@@ -41,6 +42,27 @@ namespace WF.WalletService.Domain.Entities
             LastTransactionAtUtc = null;
             Iban = null;
             ExternalAccountRef = null;
+        }
+
+        public void Deposit(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
+
+            Balance += amount;
+            UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        public void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
+
+            if (Balance < amount)
+                throw new InsufficientBalanceException(Balance, amount);
+
+            Balance -= amount;
+            UpdatedAtUtc = DateTime.UtcNow;
         }
     }
 }
