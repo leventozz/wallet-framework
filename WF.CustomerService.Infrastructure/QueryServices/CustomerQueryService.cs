@@ -36,5 +36,35 @@ namespace WF.CustomerService.Infrastructure.QueryServices
 
             return customer;
         }
+
+        public async Task<CustomerDto?> GetCustomerDtoByCustomerNoAsync(string customerNumber, CancellationToken cancellationToken)
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "CustomerNumber", "FirstName", "LastName", "Email", "PhoneNumber", "KycStatus", "CreatedAtUtc"
+                FROM "Customers"
+                WHERE "Id" = @id AND "IsActive" = true AND "IsDeleted" = false;
+                
+                SELECT "Id" AS "WalletId", "Balance", "Currency", "State"
+                FROM "WalletReadModels"
+                WHERE "CustomerId" = @id;
+                """;
+
+            using var multi = await connection.QueryMultipleAsync(
+                new CommandDefinition(sql, new { customerNumber }, cancellationToken: cancellationToken));
+
+            var customer = await multi.ReadFirstOrDefaultAsync<CustomerDto>();
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var wallets = await multi.ReadAsync<WalletSummaryDto>();
+            customer.Wallets = wallets.ToList();
+
+            return customer;
+        }
     }
 }
