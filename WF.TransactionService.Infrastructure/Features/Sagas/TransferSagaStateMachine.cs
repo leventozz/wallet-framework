@@ -23,6 +23,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
     public Event<WalletDebitedEvent> WalletDebitedEvent { get; private set; } = null!;
     public Event<WalletDebitFailedEvent> WalletDebitFailedEvent { get; private set; } = null!;
     public Event<WalletCreditedEvent> WalletCreditedEvent { get; private set; } = null!;
+    public Event<WalletCreditFailedEvent> WalletCreditFailedEvent { get; private set; } = null!;
 
     public TransferSagaStateMachine()
     {
@@ -86,6 +87,26 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .TransitionTo(ReceiverCreditPending),
 
             When(WalletDebitFailedEvent)
+                .Then(context =>
+                {
+                    context.Saga.FailureReason = context.Message.Reason;
+                })
+                .TransitionTo(Failed)
+                .Finalize()
+        );
+
+        During(ReceiverCreditPending,
+            When(WalletCreditedEvent)
+                .TransitionTo(Completed)
+                .Finalize(),
+
+            When(WalletCreditFailedEvent)
+                .Publish(context => new RefundSenderWalletCommand
+                {
+                    CorrelationId = context.Saga.CorrelationId,
+                    OwnerCustomerId = context.Saga.SenderCustomerId,
+                    Amount = context.Saga.Amount
+                })
                 .Then(context =>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
