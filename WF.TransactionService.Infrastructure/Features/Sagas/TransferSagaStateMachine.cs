@@ -1,5 +1,6 @@
 using MassTransit;
 using WF.Shared.Contracts.Commands.Fraud;
+using WF.Shared.Contracts.Commands.Wallet;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.TransactionService.Domain.Entities;
 
@@ -9,6 +10,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 {
     public State Pending { get; private set; } = null!;
     public State FraudCheckApproved { get; private set; } = null!;
+    public State SenderDebitPending { get; private set; } = null!;
     public State SenderDebited { get; private set; } = null!;
     public State ReceiverCredited { get; private set; } = null!;
     public State Completed { get; private set; } = null!;
@@ -43,12 +45,30 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .TransitionTo(Pending)
                 .Publish(context => new CheckFraudCommand
                 {
-                    CorrelationId = context.Saga.CorrelationId,
                     SenderCustomerId = context.Saga.SenderCustomerId,
                     ReceiverCustomerId = context.Saga.ReceiverCustomerId,
                     Amount = context.Saga.Amount,
                     Currency = context.Saga.Currency
                 })
+        );
+
+        During(Pending,
+            When(FraudCheckApprovedEvent)
+                .Publish(context => new DebitSenderWalletCommand
+                {
+                    CorrelationId = context.Saga.CorrelationId,
+                    OwnerCustomerId = context.Saga.SenderCustomerId,
+                    Amount = context.Saga.Amount
+                })
+                .TransitionTo(SenderDebitPending),
+
+            When(FraudCheckDeclinedEvent)
+                .Then(context =>
+                {
+                    context.Saga.FailureReason = context.Message.Reason;
+                })
+                .TransitionTo(Failed)
+                .Finalize()
         );
     }
 }
