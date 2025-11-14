@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using WF.Shared.Abstractions;
 using WF.Shared.Infrastructure.Configuration;
+using WF.Shared.Infrastructure.EventBus;
 using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Domain.Repositories;
 using WF.WalletService.Infrastructure.Consumers;
 using WF.WalletService.Infrastructure.Data;
-using WF.WalletService.Infrastructure.EventBus;
 using WF.WalletService.Infrastructure.QueryServices;
 using WF.WalletService.Infrastructure.Repositories;
 

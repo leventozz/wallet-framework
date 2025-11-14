@@ -10,4 +10,8 @@
     <ProjectReference Include="..\WF.TransactionService.Domain\WF.TransactionService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
+  </ItemGroup>
+
 </Project>

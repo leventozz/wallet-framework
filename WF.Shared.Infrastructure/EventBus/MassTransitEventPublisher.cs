@@ -1,7 +1,7 @@
 ﻿using MassTransit;
-using WF.CustomerService.Application.Abstractions;
+using WF.Shared.Abstractions;
 
-namespace WF.CustomerService.Infrastructure.EventBus
+namespace WF.Shared.Infrastructure.EventBus
 {
     public class MassTransitEventPublisher(IPublishEndpoint _publishEndpoint) : IIntegrationEventPublisher
     {

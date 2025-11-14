@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using WF.CustomerService.Application.Abstractions;
+using WF.Shared.Abstractions;
 
 namespace WF.CustomerService.Infrastructure.Data
 {

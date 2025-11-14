@@ -1,4 +1,4 @@
-namespace WF.WalletService.Application.Abstractions
+﻿namespace WF.Shared.Abstractions
 {
     public interface IUnitOfWork
     {
@@ -8,4 +8,3 @@ namespace WF.WalletService.Application.Abstractions
         Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
     }
 }
-

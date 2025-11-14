@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WF.TransactionService.Application.Abstractions;
+using WF.Shared.Abstractions;
 using WF.TransactionService.Application.Contracts;
 using WF.TransactionService.Domain.Repositories;
 using WF.TransactionService.Infrastructure.Data;

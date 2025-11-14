@@ -1,4 +1,4 @@
-﻿namespace WF.WalletService.Application.Abstractions
+﻿namespace WF.Shared.Abstractions
 {
     public interface IIntegrationEventPublisher
     {

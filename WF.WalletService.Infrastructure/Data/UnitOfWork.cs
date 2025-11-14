@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore.Storage;
-using WF.WalletService.Application.Abstractions;
+using WF.Shared.Abstractions;
 
 namespace WF.WalletService.Infrastructure.Data
 {

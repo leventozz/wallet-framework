@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\WF.WalletService.Domain\WF.WalletService.Domain.csproj" />
     <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
