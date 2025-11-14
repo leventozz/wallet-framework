@@ -11,6 +11,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
     public State Pending { get; private set; } = null!;
     public State FraudCheckApproved { get; private set; } = null!;
     public State SenderDebitPending { get; private set; } = null!;
+    public State ReceiverCreditPending { get; private set; } = null!;
     public State SenderDebited { get; private set; } = null!;
     public State ReceiverCredited { get; private set; } = null!;
     public State Completed { get; private set; } = null!;
@@ -20,6 +21,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
     public Event<FraudCheckApprovedEvent> FraudCheckApprovedEvent { get; private set; } = null!;
     public Event<FraudCheckDeclinedEvent> FraudCheckDeclinedEvent { get; private set; } = null!;
     public Event<WalletDebitedEvent> WalletDebitedEvent { get; private set; } = null!;
+    public Event<WalletDebitFailedEvent> WalletDebitFailedEvent { get; private set; } = null!;
     public Event<WalletCreditedEvent> WalletCreditedEvent { get; private set; } = null!;
 
     public TransferSagaStateMachine()
@@ -45,6 +47,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .TransitionTo(Pending)
                 .Publish(context => new CheckFraudCommand
                 {
+                    CorrelationId = context.Saga.CorrelationId,
                     SenderCustomerId = context.Saga.SenderCustomerId,
                     ReceiverCustomerId = context.Saga.ReceiverCustomerId,
                     Amount = context.Saga.Amount,
@@ -63,6 +66,26 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .TransitionTo(SenderDebitPending),
 
             When(FraudCheckDeclinedEvent)
+                .Then(context =>
+                {
+                    context.Saga.FailureReason = context.Message.Reason;
+                })
+                .TransitionTo(Failed)
+                .Finalize()
+        );
+
+        During(SenderDebitPending,
+            When(WalletDebitedEvent)
+                .Publish(context => new CreditWalletCommand
+                {
+                    CorrelationId = context.Saga.CorrelationId,
+                    WalletId = context.Saga.ReceiverWalletId,
+                    Amount = context.Saga.Amount,
+                    Currency = context.Saga.Currency
+                })
+                .TransitionTo(ReceiverCreditPending),
+
+            When(WalletDebitFailedEvent)
                 .Then(context =>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
