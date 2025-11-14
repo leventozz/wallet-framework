@@ -18,6 +18,12 @@
     <Project Path="WF.CustomerService.Infrastructure/WF.CustomerService.Infrastructure.csproj" />
     <Project Path="WF.CustomerService/WF.CustomerService.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Services/TransactionService/">
+    <Project Path="WF.TransactionService.Application/WF.TransactionService.Application.csproj" Id="0437a887-58d7-4a1b-ab91-7384e4c9126a" />
+    <Project Path="WF.TransactionService.Domain/WF.TransactionService.Domain.csproj" Id="68b3e3ce-105c-4cd5-ba71-417cea0728fa" />
+    <Project Path="WF.TransactionService.Infrastructure/WF.TransactionService.Infrastructure.csproj" Id="0aba5c4a-621c-487c-b665-d85be62deb69" />
+    <Project Path="WF.TransactionService/WF.TransactionService.Api.csproj" Id="721c286d-87c8-40d0-a29e-d33e0a6425bd" />
+  </Folder>
   <Folder Name="/src/Services/WalletService/">
     <Project Path="WF.WalletService.Api/WF.WalletService.Api.csproj" Id="9f8271ce-96cb-4d80-9726-55d792797b9d" />
     <Project Path="WF.WalletService.Application/WF.WalletService.Application.csproj" Id="688d3475-734a-4b83-8bab-384c62f1f782" />
