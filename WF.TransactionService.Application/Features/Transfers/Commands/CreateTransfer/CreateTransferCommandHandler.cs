@@ -16,13 +16,9 @@ public class CreateTransferCommandHandler(
         var transferRequestStartedEvent = new TransferRequestStartedEvent
         {
             CorrelationId = correlationId,
-            SenderCustomerId = request.SenderCustomerId,
             SenderCustomerNumber = request.SenderCustomerNumber,
-            ReceiverCustomerId = request.ReceiverCustomerId,
             ReceiverCustomerNumber = request.ReceiverCustomerNumber,
-            SenderWalletId = request.SenderWalletId,
             SenderWalletNumber = request.SenderWalletNumber,
-            ReceiverWalletId = request.ReceiverWalletId,
             ReceiverWalletNumber = request.ReceiverWalletNumber,
             Amount = request.Amount,
             Currency = request.Currency

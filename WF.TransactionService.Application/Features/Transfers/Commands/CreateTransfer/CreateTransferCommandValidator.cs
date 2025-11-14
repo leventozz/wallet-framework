@@ -6,37 +6,25 @@ public class CreateTransferCommandValidator : AbstractValidator<CreateTransferCo
 {
     public CreateTransferCommandValidator()
     {
-        RuleFor(x => x.SenderCustomerId)
-            .NotEmpty()
-            .WithMessage("Sender customer ID is required.");
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrWhiteSpace(x.SenderCustomerNumber) || !string.IsNullOrWhiteSpace(x.SenderWalletNumber))
+            .WithMessage("Either sender customer number or sender wallet number must be provided.");
 
-        RuleFor(x => x.SenderCustomerNumber)
-            .NotEmpty()
-            .WithMessage("Sender customer number is required.");
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrWhiteSpace(x.ReceiverCustomerNumber) || !string.IsNullOrWhiteSpace(x.ReceiverWalletNumber))
+            .WithMessage("Either receiver customer number or receiver wallet number must be provided.");
 
-        RuleFor(x => x.ReceiverCustomerId)
-            .NotEmpty()
-            .WithMessage("Receiver customer ID is required.");
+        RuleFor(x => x)
+            .Must(x => !(!string.IsNullOrWhiteSpace(x.SenderCustomerNumber) && 
+                         !string.IsNullOrWhiteSpace(x.ReceiverCustomerNumber) && 
+                         x.SenderCustomerNumber == x.ReceiverCustomerNumber))
+            .WithMessage("Sender and receiver cannot be the same customer.");
 
-        RuleFor(x => x.ReceiverCustomerNumber)
-            .NotEmpty()
-            .WithMessage("Receiver customer number is required.");
-
-        RuleFor(x => x.SenderWalletId)
-            .NotEmpty()
-            .WithMessage("Sender wallet ID is required.");
-
-        RuleFor(x => x.SenderWalletNumber)
-            .NotEmpty()
-            .WithMessage("Sender wallet number is required.");
-
-        RuleFor(x => x.ReceiverWalletId)
-            .NotEmpty()
-            .WithMessage("Receiver wallet ID is required.");
-
-        RuleFor(x => x.ReceiverWalletNumber)
-            .NotEmpty()
-            .WithMessage("Receiver wallet number is required.");
+        RuleFor(x => x)
+            .Must(x => !(!string.IsNullOrWhiteSpace(x.SenderWalletNumber) && 
+                         !string.IsNullOrWhiteSpace(x.ReceiverWalletNumber) && 
+                         x.SenderWalletNumber == x.ReceiverWalletNumber))
+            .WithMessage("Sender and receiver cannot be the same wallet.");
 
         RuleFor(x => x.Amount)
             .GreaterThan(0)
