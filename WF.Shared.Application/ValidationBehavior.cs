@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using ValidationException = FluentValidation.ValidationException;
 
-namespace WF.CustomerService.Application.Common.Behaviors
+namespace WF.Shared.Application
 {
-    public class ValidationBehavior<TRequest, TResponse> 
-        (IEnumerable<IValidator<TRequest>> _validators) 
+    public class ValidationBehavior<TRequest, TResponse>
+        (IEnumerable<IValidator<TRequest>> _validators)
         : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {

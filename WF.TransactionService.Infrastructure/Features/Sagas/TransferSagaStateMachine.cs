@@ -29,10 +29,13 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
     {
         InstanceState(x => x.CurrentState);
 
+        Event(() => TransferRequestStarted, e => e.CorrelateById(x => x.Message.CorrelationId));
+
         Initially(
             When(TransferRequestStarted)
                 .Then(context =>
                 {
+                    context.Saga.CorrelationId = context.Message.CorrelationId;
                     context.Saga.SenderCustomerId = context.Message.SenderCustomerId;
                     context.Saga.SenderCustomerNumber = context.Message.SenderCustomerNumber;
                     context.Saga.ReceiverCustomerId = context.Message.ReceiverCustomerId;

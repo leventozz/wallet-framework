@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
     <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\WF.Shared.Infrastructure\WF.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Application\WF.TransactionService.Application.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Domain\WF.TransactionService.Domain.csproj" />
   </ItemGroup>

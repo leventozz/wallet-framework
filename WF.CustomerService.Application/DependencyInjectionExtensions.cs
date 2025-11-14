@@ -3,7 +3,7 @@ using Mapster;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using WF.CustomerService.Application.Common.Behaviors;
+using WF.Shared.Application;
 
 namespace WF.CustomerService.Application
 {

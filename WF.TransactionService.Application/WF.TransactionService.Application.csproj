@@ -7,16 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WF.Shared.Application\WF.Shared.Application.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Domain\WF.TransactionService.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Abstractions\" />
+    <Folder Include="Common\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageReference Include="MassTransit" Version="8.5.5" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
