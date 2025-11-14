@@ -2,7 +2,7 @@
 
 namespace WF.TransactionService.Domain.Entities
 {
-    public class TransferRequest : SagaStateMachineInstance
+    public class Transaction : SagaStateMachineInstance
     {
         public Guid CorrelationId { get; set; }
         public string CurrentState { get; set; } = string.Empty;

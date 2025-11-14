@@ -1,6 +1,6 @@
 ﻿namespace WF.TransactionService.Domain.States
 {
-    public enum TransferRequestStatus
+    public enum TransactionStatus
     {
         Pending,
         Completed,
