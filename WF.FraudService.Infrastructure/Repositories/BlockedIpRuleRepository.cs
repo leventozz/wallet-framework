@@ -7,9 +7,9 @@ using WF.FraudService.Infrastructure.Data;
 
 namespace WF.FraudService.Infrastructure.Repositories;
 
-public class BlockedIpRepository(FraudDbContext _context, NpgsqlDataSource _dataSource) : IBlockedIpRepository
+public class BlockedIpRuleRepository(FraudDbContext _context, NpgsqlDataSource _dataSource) : IBlockedIpRepository
 {
-    public async Task<BlockedIp?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<BlockedIpRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
 
@@ -19,11 +19,11 @@ public class BlockedIpRepository(FraudDbContext _context, NpgsqlDataSource _data
             WHERE "Id" = @id
             """;
 
-        return await connection.QueryFirstOrDefaultAsync<BlockedIp>(
+        return await connection.QueryFirstOrDefaultAsync<BlockedIpRule>(
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
 
-    public async Task<BlockedIp?> GetByIpAddressAsync(string ipAddress, CancellationToken cancellationToken = default)
+    public async Task<BlockedIpRule?> GetByIpAddressAsync(string ipAddress, CancellationToken cancellationToken = default)
     {
         await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
 
@@ -33,11 +33,11 @@ public class BlockedIpRepository(FraudDbContext _context, NpgsqlDataSource _data
             WHERE "IpAddress" = @ipAddress
             """;
 
-        return await connection.QueryFirstOrDefaultAsync<BlockedIp>(
+        return await connection.QueryFirstOrDefaultAsync<BlockedIpRule>(
             new CommandDefinition(sql, new { ipAddress }, cancellationToken: cancellationToken));
     }
 
-    public async Task<IEnumerable<BlockedIp>> GetActiveBlockedIpsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<BlockedIpRule>> GetActiveBlockedIpsAsync(CancellationToken cancellationToken = default)
     {
         await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
 
@@ -48,7 +48,7 @@ public class BlockedIpRepository(FraudDbContext _context, NpgsqlDataSource _data
                 AND ("ExpiresAtUtc" IS NULL OR "ExpiresAtUtc" > @now)
             """;
 
-        return await connection.QueryAsync<BlockedIp>(
+        return await connection.QueryAsync<BlockedIpRule>(
             new CommandDefinition(sql, new { now = DateTime.UtcNow }, cancellationToken: cancellationToken));
     }
 
@@ -70,12 +70,12 @@ public class BlockedIpRepository(FraudDbContext _context, NpgsqlDataSource _data
         return count > 0;
     }
 
-    public async Task AddAsync(BlockedIp blockedIp, CancellationToken cancellationToken = default)
+    public async Task AddAsync(BlockedIpRule blockedIp, CancellationToken cancellationToken = default)
     {
         await _context.BlockedIps.AddAsync(blockedIp, cancellationToken);
     }
 
-    public async Task UpdateAsync(BlockedIp blockedIp, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(BlockedIpRule blockedIp, CancellationToken cancellationToken = default)
     {
         _context.BlockedIps.Update(blockedIp);
         await Task.CompletedTask;

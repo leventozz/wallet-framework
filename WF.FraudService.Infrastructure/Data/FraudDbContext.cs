@@ -6,7 +6,7 @@ namespace WF.FraudService.Infrastructure.Data;
 
 public class FraudDbContext : DbContext
 {
-    public DbSet<BlockedIp> BlockedIps { get; set; } = null!;
+    public DbSet<BlockedIpRule> BlockedIps { get; set; } = null!;
     public DbSet<RiskyHourRule> RiskyHourRules { get; set; } = null!;
     public DbSet<AccountAgeRule> AccountAgeRules { get; set; } = null!;
     public DbSet<KycLevelRule> KycLevelRules { get; set; } = null!;
@@ -31,7 +31,7 @@ public class FraudDbContext : DbContext
 
     private static void ConfigureBlockedIp(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BlockedIp>(entity =>
+        modelBuilder.Entity<BlockedIpRule>(entity =>
         {
             entity.HasKey(e => e.Id);
 

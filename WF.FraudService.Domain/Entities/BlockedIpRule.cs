@@ -1,6 +1,6 @@
 namespace WF.FraudService.Domain.Entities;
 
-public class BlockedIp
+public class BlockedIpRule
 {
     public Guid Id { get; private set; }
     public string IpAddress { get; private set; } = string.Empty;
@@ -9,9 +9,9 @@ public class BlockedIp
     public DateTime? ExpiresAtUtc { get; private set; }
     public bool IsActive { get; private set; }
 
-    private BlockedIp() { }
+    private BlockedIpRule() { }
 
-    public BlockedIp(string ipAddress, string? reason = null, DateTime? expiresAtUtc = null)
+    public BlockedIpRule(string ipAddress, string? reason = null, DateTime? expiresAtUtc = null)
     {
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentException("IP address cannot be null or empty.", nameof(ipAddress));

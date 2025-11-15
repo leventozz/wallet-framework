@@ -50,7 +50,7 @@ public static class DependencyInjectionExtensions
             });
         });
 
-        services.AddScoped<IBlockedIpRepository, BlockedIpRepository>();
+        services.AddScoped<IBlockedIpRepository, BlockedIpRuleRepository>();
         services.AddScoped<IRiskyHourRuleRepository, RiskyHourRuleRepository>();
         services.AddScoped<IAccountAgeRuleRepository, AccountAgeRuleRepository>();
         services.AddScoped<IKycLevelRuleRepository, KycLevelRuleRepository>();
