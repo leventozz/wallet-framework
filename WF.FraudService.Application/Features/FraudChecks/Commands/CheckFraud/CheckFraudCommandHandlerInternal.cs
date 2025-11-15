@@ -1,13 +1,13 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using WF.FraudService.Application.Contracts;
 using WF.Shared.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
-using Microsoft.Extensions.Logging;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;
 
 public class CheckFraudCommandHandlerInternal(
-    IFraudRuleReadService _readService,
+    IEnumerable<IFraudEvaluationRule> _rules,
     IIntegrationEventPublisher _eventPublisher,
     IUnitOfWork _unitOfWork,
     ILogger<CheckFraudCommandHandlerInternal> _logger)
@@ -21,119 +21,41 @@ public class CheckFraudCommandHandlerInternal(
             request.SenderCustomerId,
             request.Amount);
 
-        var isApproved = await EvaluateFraudRulesAsync(request, cancellationToken);
+        var orderedRules = _rules.OrderBy(r => r.Priority);
 
-        if (isApproved)
+        foreach (var rule in orderedRules)
         {
-            var responseEvent = new FraudCheckApprovedEvent
+            var result = await rule.EvaluateAsync(request, cancellationToken);
+            if (!result.IsApproved)
             {
-                CorrelationId = request.CorrelationId
-            };
+                var declinedEvent = new FraudCheckDeclinedEvent
+                {
+                    CorrelationId = request.CorrelationId,
+                    Reason = result.FailureReason
+                };
 
-            await _eventPublisher.PublishAsync(responseEvent, cancellationToken);
-            _logger.LogInformation("Fraud check approved for CorrelationId {CorrelationId}", request.CorrelationId);
-        }
-        else
-        {
-            var reason = await GetDeclineReasonAsync(request, cancellationToken);
-            var responseEvent = new FraudCheckDeclinedEvent
-            {
-                CorrelationId = request.CorrelationId,
-                Reason = reason
-            };
+                await _eventPublisher.PublishAsync(declinedEvent, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _eventPublisher.PublishAsync(responseEvent, cancellationToken);
-            _logger.LogWarning(
-                "Fraud check declined for CorrelationId {CorrelationId}, Reason: {Reason}",
-                request.CorrelationId,
-                reason);
+                _logger.LogWarning(
+                    "Fraud check declined for CorrelationId {CorrelationId}, Reason: {Reason}",
+                    request.CorrelationId,
+                    result.FailureReason);
+
+                return false;
+            }
         }
 
+        var approvedEvent = new FraudCheckApprovedEvent
+        {
+            CorrelationId = request.CorrelationId
+        };
+
+        await _eventPublisher.PublishAsync(approvedEvent, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return isApproved;
-    }
-
-    private async Task<bool> EvaluateFraudRulesAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
-    {
-        if (!string.IsNullOrWhiteSpace(request.IpAddress))
-        {
-            var isIpBlocked = await _readService.IsIpBlockedAsync(request.IpAddress, cancellationToken);
-            if (isIpBlocked)
-            {
-                return false;
-            }
-        }
-
-        var riskyHourRules = await _readService.GetActiveRiskyHourRulesAsync(cancellationToken);
-        foreach (var rule in riskyHourRules)
-        {
-            if (rule.IsInRiskyHour(DateTime.UtcNow))
-            {
-                return false;
-            }
-        }
-
-        var accountAgeRules = await _readService.GetActiveAccountAgeRulesAsync(cancellationToken);
-        foreach (var rule in accountAgeRules)
-        {
-            if (rule.MaxAllowedAmount.HasValue && request.Amount > rule.MaxAllowedAmount.Value)
-            {
-                return false;
-            }
-        }
-
-        var kycLevelRules = await _readService.GetActiveKycLevelRulesAsync(cancellationToken);
-        foreach (var rule in kycLevelRules)
-        {
-            if (rule.MaxAllowedAmount.HasValue && request.Amount > rule.MaxAllowedAmount.Value)
-            {
-                return false;
-            }
-        }
+        _logger.LogInformation("Fraud check approved for CorrelationId {CorrelationId}", request.CorrelationId);
 
         return true;
     }
-
-    private async Task<string> GetDeclineReasonAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
-    {
-        if (!string.IsNullOrWhiteSpace(request.IpAddress))
-        {
-            var isIpBlocked = await _readService.IsIpBlockedAsync(request.IpAddress, cancellationToken);
-            if (isIpBlocked)
-            {
-                return $"IP address {request.IpAddress} is blocked";
-            }
-        }
-
-        var riskyHourRules = await _readService.GetActiveRiskyHourRulesAsync(cancellationToken);
-        foreach (var rule in riskyHourRules)
-        {
-            if (rule.IsInRiskyHour(DateTime.UtcNow))
-            {
-                return $"Transaction attempted during risky hours ({rule.StartHour}-{rule.EndHour})";
-            }
-        }
-
-        var accountAgeRules = await _readService.GetActiveAccountAgeRulesAsync(cancellationToken);
-        foreach (var rule in accountAgeRules)
-        {
-            if (rule.MaxAllowedAmount.HasValue && request.Amount > rule.MaxAllowedAmount.Value)
-            {
-                return $"Amount {request.Amount} exceeds maximum allowed amount {rule.MaxAllowedAmount.Value} for account age rule";
-            }
-        }
-
-        var kycLevelRules = await _readService.GetActiveKycLevelRulesAsync(cancellationToken);
-        foreach (var rule in kycLevelRules)
-        {
-            if (rule.MaxAllowedAmount.HasValue && request.Amount > rule.MaxAllowedAmount.Value)
-            {
-                return $"Amount {request.Amount} exceeds maximum allowed amount {rule.MaxAllowedAmount.Value} for KYC level rule";
-            }
-        }
-
-        return "Fraud check failed";
-    }
 }
-
