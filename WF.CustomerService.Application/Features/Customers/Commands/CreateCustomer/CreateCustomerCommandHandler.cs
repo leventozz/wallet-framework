@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Domain.Entities;
 using WF.Shared.Abstractions;

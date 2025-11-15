@@ -7,49 +7,8 @@ using WF.FraudService.Infrastructure.Data;
 
 namespace WF.FraudService.Infrastructure.Repositories;
 
-public class AccountAgeRuleRepository(FraudDbContext _context, NpgsqlDataSource _dataSource) : IAccountAgeRuleRepository
+public class AccountAgeRuleRepository(FraudDbContext _context) : IAccountAgeRuleRepository
 {
-    public async Task<AccountAgeRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
-
-        const string sql = """
-            SELECT "Id", "MinAccountAgeDays", "MaxAllowedAmount", "Description", "IsActive", "CreatedAtUtc"
-            FROM "AccountAgeRules"
-            WHERE "Id" = @id
-            """;
-
-        return await connection.QueryFirstOrDefaultAsync<AccountAgeRule>(
-            new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
-    }
-
-    public async Task<IEnumerable<AccountAgeRule>> GetActiveRulesAsync(CancellationToken cancellationToken = default)
-    {
-        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
-
-        const string sql = """
-            SELECT "Id", "MinAccountAgeDays", "MaxAllowedAmount", "Description", "IsActive", "CreatedAtUtc"
-            FROM "AccountAgeRules"
-            WHERE "IsActive" = true
-            """;
-
-        return await connection.QueryAsync<AccountAgeRule>(
-            new CommandDefinition(sql, cancellationToken: cancellationToken));
-    }
-
-    public async Task<IEnumerable<AccountAgeRule>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
-
-        const string sql = """
-            SELECT "Id", "MinAccountAgeDays", "MaxAllowedAmount", "Description", "IsActive", "CreatedAtUtc"
-            FROM "AccountAgeRules"
-            """;
-
-        return await connection.QueryAsync<AccountAgeRule>(
-            new CommandDefinition(sql, cancellationToken: cancellationToken));
-    }
-
     public async Task AddAsync(AccountAgeRule rule, CancellationToken cancellationToken = default)
     {
         await _context.AccountAgeRules.AddAsync(rule, cancellationToken);

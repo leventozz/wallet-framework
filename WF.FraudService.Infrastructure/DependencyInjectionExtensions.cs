@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using WF.FraudService.Application.Contracts;
 using WF.FraudService.Domain.Abstractions;
 using WF.FraudService.Infrastructure.Data;
+using WF.FraudService.Infrastructure.QueryServices;
 using WF.FraudService.Infrastructure.Repositories;
 using WF.Shared.Abstractions;
 using WF.Shared.Infrastructure.Configuration;
@@ -54,6 +56,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRiskyHourRuleRepository, RiskyHourRuleRepository>();
         services.AddScoped<IAccountAgeRuleRepository, AccountAgeRuleRepository>();
         services.AddScoped<IKycLevelRuleRepository, KycLevelRuleRepository>();
+        services.AddScoped<IFraudRuleReadService, FraudRuleReadService>();
         services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
