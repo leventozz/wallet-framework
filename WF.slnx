@@ -19,6 +19,12 @@
     <Project Path="WF.CustomerService.Infrastructure/WF.CustomerService.Infrastructure.csproj" />
     <Project Path="WF.CustomerService/WF.CustomerService.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Services/FraudService/">
+    <Project Path="WF.FraudService.Api/WF.FraudService.Api.csproj" Id="5a3b8ebc-2925-482b-89d2-08bedd7bb01e" />
+    <Project Path="WF.FraudService.Application/WF.FraudService.Application.csproj" Id="df8075be-5888-44d9-9dec-6f8346446214" />
+    <Project Path="WF.FraudService.Domain/WF.FraudService.Domain.csproj" Id="6b921419-94e7-4abe-aa76-de1ef2c79dce" />
+    <Project Path="WF.FraudService.Infrastructure/WF.FraudService.Infrastructure.csproj" Id="054791c1-41bf-4201-aa78-adf3557138e4" />
+  </Folder>
   <Folder Name="/src/Services/TransactionService/">
     <Project Path="WF.TransactionService.Application/WF.TransactionService.Application.csproj" Id="0437a887-58d7-4a1b-ab91-7384e4c9126a" />
     <Project Path="WF.TransactionService.Domain/WF.TransactionService.Domain.csproj" Id="68b3e3ce-105c-4cd5-ba71-417cea0728fa" />
