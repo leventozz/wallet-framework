@@ -1,6 +1,6 @@
 using WF.WalletService.Domain.Entities;
 
-namespace WF.WalletService.Domain.Repositories
+namespace WF.WalletService.Domain.Abstractions
 {
     public interface IWalletRepository
     {

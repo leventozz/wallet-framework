@@ -1,6 +1,6 @@
 ﻿using WF.TransactionService.Domain.Entities;
 
-namespace WF.TransactionService.Domain.Repositories
+namespace WF.TransactionService.Domain.Abstractions
 {
     public interface ITransferRequestRepository
     {

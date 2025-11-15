@@ -7,7 +7,7 @@ using WF.Shared.Abstractions;
 using WF.Shared.Infrastructure.Configuration;
 using WF.Shared.Infrastructure.EventBus;
 using WF.WalletService.Application.Abstractions;
-using WF.WalletService.Domain.Repositories;
+using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Infrastructure.Consumers;
 using WF.WalletService.Infrastructure.Data;
 using WF.WalletService.Infrastructure.QueryServices;

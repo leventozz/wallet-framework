@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WF.CustomerService.Application.Abstractions;
-using WF.CustomerService.Domain.Repositories;
+using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
 using WF.CustomerService.Infrastructure.QueryServices;

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.Entities;
-using WF.WalletService.Domain.Repositories;
 using WF.WalletService.Infrastructure.Data;
 
 namespace WF.WalletService.Infrastructure.Repositories

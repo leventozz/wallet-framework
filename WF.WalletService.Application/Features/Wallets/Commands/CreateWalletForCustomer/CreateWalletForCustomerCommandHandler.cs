@@ -2,9 +2,9 @@ using MediatR;
 using WF.Shared.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Application.Abstractions;
+using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.Entities;
 using WF.WalletService.Domain.Enums;
-using WF.WalletService.Domain.Repositories;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCustomer
 {

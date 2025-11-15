@@ -1,6 +1,6 @@
 ﻿using WF.CustomerService.Domain.Entities;
 
-namespace WF.CustomerService.Domain.Repositories
+namespace WF.CustomerService.Domain.Abstractions
 {
     public interface ICustomerRepository
     {

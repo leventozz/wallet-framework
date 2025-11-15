@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Domain.Entities;
-using WF.CustomerService.Domain.Repositories;
 using WF.CustomerService.Infrastructure.Data;
 
 namespace WF.CustomerService.Infrastructure.Repositories

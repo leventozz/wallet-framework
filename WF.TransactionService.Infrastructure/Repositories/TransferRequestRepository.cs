@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WF.TransactionService.Domain.Abstractions;
 using WF.TransactionService.Domain.Entities;
-using WF.TransactionService.Domain.Repositories;
 using WF.TransactionService.Infrastructure.Data;
 
 namespace WF.TransactionService.Infrastructure.Repositories
