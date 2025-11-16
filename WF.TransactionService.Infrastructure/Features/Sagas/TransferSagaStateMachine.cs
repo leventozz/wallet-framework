@@ -106,6 +106,10 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 
         During(ReceiverCreditPending,
             When(WalletCreditedEvent)
+                .Then(context =>
+                {
+                    context.Saga.CompletedAtUtc = DateTime.UtcNow;
+                })
                 .TransitionTo(Completed)
                 .Finalize(),
 

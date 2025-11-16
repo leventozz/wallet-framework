@@ -41,6 +41,7 @@ namespace WF.WalletService.Infrastructure
 
                 mtConfig.AddConsumer<CustomerCreatedConsumer>();
                 mtConfig.AddConsumer<DebitSenderWalletCommandConsumer>();
+                mtConfig.AddConsumer<CreditWalletCommandConsumer>();
 
                 mtConfig.UsingRabbitMq((context, cfg) =>
                 {

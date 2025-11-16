@@ -5,6 +5,7 @@ namespace WF.WalletService.Domain.Abstractions
     public interface IWalletRepository
     {
         Task<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default);
+        Task<Wallet?> GetWalletByIdForUpdateAsync(Guid walletId, CancellationToken cancellationToken = default);
         Task<Wallet?> GetWalletByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
         Task<Wallet?> GetWalletByCustomerIdForUpdateAsync(Guid customerId, CancellationToken cancellationToken = default);
         Task AddWalletAsync(Wallet wallet, CancellationToken cancellationToken = default);

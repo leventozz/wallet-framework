@@ -22,6 +22,8 @@ namespace WF.WalletService.Infrastructure.Data
 
             modelBuilder.Entity<Wallet>(entity =>
             {
+                entity.HasQueryFilter(w => !w.IsDeleted);
+
                 entity.HasIndex(w => w.WalletNumber)
                     .IsUnique()
                     .HasDatabaseName("IX_Wallets_WalletNumber");
