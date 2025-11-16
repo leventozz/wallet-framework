@@ -1,6 +1,6 @@
 namespace WF.Shared.Contracts.Commands.Wallet
 {
-    public record RefundSenderWalletCommand
+    public record RefundSenderWalletCommandContract
     {
         public Guid CorrelationId { get; init; }
         public Guid OwnerCustomerId { get; init; }

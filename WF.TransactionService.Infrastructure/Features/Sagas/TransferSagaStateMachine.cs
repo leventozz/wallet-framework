@@ -67,7 +67,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 
         During(Pending,
             When(FraudCheckApprovedEvent)
-                .Publish(context => new DebitSenderWalletCommand
+                .Publish(context => new DebitSenderWalletCommandContract
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     OwnerCustomerId = context.Saga.SenderCustomerId,
@@ -86,7 +86,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 
         During(SenderDebitPending,
             When(WalletDebitedEvent)
-                .Publish(context => new CreditWalletCommand
+                .Publish(context => new CreditWalletCommandContract
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     WalletId = context.Saga.ReceiverWalletId,
@@ -114,7 +114,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .Finalize(),
 
             When(WalletCreditFailedEvent)
-                .Publish(context => new RefundSenderWalletCommand
+                .Publish(context => new RefundSenderWalletCommandContract
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     OwnerCustomerId = context.Saga.SenderCustomerId,

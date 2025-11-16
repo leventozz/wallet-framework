@@ -21,7 +21,7 @@ namespace WF.WalletService.Infrastructure.Consumers
                 command.Amount,
                 command.CorrelationId);
 
-            var handlerCommand = new RefundSenderWalletCommand
+            var handlerCommand = new RefundSenderWalletCommandContract
             {
                 CorrelationId = command.CorrelationId,
                 OwnerCustomerId = command.OwnerCustomerId,
