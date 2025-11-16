@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WF.FraudService.Application\WF.FraudService.Application.csproj" />
     <ProjectReference Include="..\WF.FraudService.Domain\WF.FraudService.Domain.csproj" />
-    <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using WF.Shared.Application;
+using WF.TransactionService.Application.Common.Behaviors;
 
 namespace WF.TransactionService.Application;
 

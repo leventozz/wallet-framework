@@ -2,9 +2,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using WF.FraudService.Application.Common.Behaviors;
 using WF.FraudService.Application.Contracts;
 using WF.FraudService.Application.Features.FraudChecks.Rules;
-using WF.Shared.Application;
 
 namespace WF.FraudService.Application;
 

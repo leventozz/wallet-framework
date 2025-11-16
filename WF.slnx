@@ -3,8 +3,6 @@
   <Folder Name="/docs/" />
   <Folder Name="/shared/">
     <Project Path="Shared.Contracts/WF.Shared.Contracts.csproj" />
-    <Project Path="WF.Shared.Abstractions/WF.Shared.Abstractions.csproj" />
-    <Project Path="WF.Shared.Application/WF.Shared.Application.csproj" Id="2ddd51c3-64d8-4c4b-a007-ef973e0aa8bc" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="docker-compose.yml" />

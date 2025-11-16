@@ -1,5 +1,8 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using WF.WalletService.Application.Common.Behaviors;
 
 namespace WF.WalletService.Application
 {
@@ -10,6 +13,10 @@ namespace WF.WalletService.Application
         {
             services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             return services;
         }

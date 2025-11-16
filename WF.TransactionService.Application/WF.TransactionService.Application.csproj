@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WF.Shared.Application\WF.Shared.Application.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Domain\WF.TransactionService.Domain.csproj" />
   </ItemGroup>
 
@@ -23,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
 

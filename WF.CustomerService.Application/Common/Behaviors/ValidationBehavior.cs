@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using ValidationException = FluentValidation.ValidationException;
 
-namespace WF.TransactionService.Application.Common.Behaviors;
+namespace WF.CustomerService.Application.Common.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>
     (IEnumerable<IValidator<TRequest>> _validators)
@@ -34,3 +34,4 @@ public class ValidationBehavior<TRequest, TResponse>
         return await next();
     }
 }
+
