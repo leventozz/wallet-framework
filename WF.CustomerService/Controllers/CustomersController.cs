@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo;
+using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerVerificationData;
 using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Api.Controllers
@@ -35,6 +36,16 @@ namespace WF.CustomerService.Api.Controllers
         public async Task<IActionResult> GetByCustomerNo(string customerNumber)
         {
             var query = new GetCustomerByCustomerNoQuery { CustomerNumber = customerNumber };
+            var dto = await _mediator.Send(query);
+            return Ok(dto);
+        }
+
+        [HttpGet("/api/v1/customers/{id:guid}/verification-data")]
+        [ProducesResponseType(typeof(CustomerVerificationDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetVerificationData(Guid id)
+        {
+            var query = new GetCustomerVerificationDataQuery { Id = id };
             var dto = await _mediator.Send(query);
             return Ok(dto);
         }

@@ -35,5 +35,34 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
             throw;
         }
     }
+
+    public async Task<CustomerVerificationDto?> GetVerificationDataAsync(Guid customerId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"api/v1/customers/{customerId}/verification-data", cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var verificationData = await response.Content.ReadFromJsonAsync<CustomerVerificationDto>(cancellationToken: cancellationToken);
+                logger.LogInformation("Successfully retrieved customer verification data {CustomerId}", customerId);
+                return verificationData;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                logger.LogWarning("Customer verification data {CustomerId} not found", customerId);
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+            return null;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Error occurred while retrieving customer verification data {CustomerId}", customerId);
+            throw;
+        }
+    }
 }
 

@@ -22,9 +22,9 @@ public class AccountAgeRule(
             return new FraudEvaluationResult { IsApproved = true };
         }
 
-        var customer = await _customerServiceApiClient.GetCustomerByIdAsync(request.SenderCustomerId, cancellationToken);
+        var verificationData = await _customerServiceApiClient.GetVerificationDataAsync(request.SenderCustomerId, cancellationToken);
         
-        if (customer == null)
+        if (verificationData == null)
         {
             _logger.LogWarning("Customer {CustomerId} not found, declined transaction", request.SenderCustomerId);
             return new FraudEvaluationResult { IsApproved = false };
@@ -32,12 +32,12 @@ public class AccountAgeRule(
 
         foreach (var rule in accountAgeRules)
         {
-            if (!rule.IsAmountAllowed(request.Amount, customer.CreatedAtUtc))
+            if (!rule.IsAmountAllowed(request.Amount, verificationData.CreatedAtUtc))
             {
                 return new FraudEvaluationResult
                 {
                     IsApproved = false,
-                    FailureReason = $"Amount {request.Amount} exceeds maximum allowed amount {rule.MaxAllowedAmount.Value} for account age rule. Account age: {(DateTime.UtcNow - customer.CreatedAtUtc).Days} days, Required: {rule.MinAccountAgeDays} days"
+                    FailureReason = $"Amount {request.Amount} exceeds maximum allowed amount {rule.MaxAllowedAmount.Value} for account age rule. Account age: {(DateTime.UtcNow - verificationData.CreatedAtUtc).Days} days, Required: {rule.MinAccountAgeDays} days"
                 };
             }
         }

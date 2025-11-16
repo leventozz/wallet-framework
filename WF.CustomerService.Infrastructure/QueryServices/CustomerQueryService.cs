@@ -67,5 +67,21 @@ namespace WF.CustomerService.Infrastructure.QueryServices
 
             return customer;
         }
+
+        public async Task<CustomerVerificationDto?> GetVerificationDataByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "Id", "CreatedAtUtc", "KycStatus"
+                FROM "Customers"
+                WHERE "Id" = @id AND "IsActive" = true AND "IsDeleted" = false;
+                """;
+
+            var verificationData = await connection.QueryFirstOrDefaultAsync<CustomerVerificationDto>(
+                new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
+
+            return verificationData;
+        }
     }
 }

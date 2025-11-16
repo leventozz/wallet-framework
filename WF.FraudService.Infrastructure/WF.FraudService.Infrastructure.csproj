@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WF.FraudService.Application\WF.FraudService.Application.csproj" />
     <ProjectReference Include="..\WF.FraudService.Domain\WF.FraudService.Domain.csproj" />
-    <ProjectReference Include="..\Shared.Contracts\Shared.Contracts.csproj" />
+    <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
