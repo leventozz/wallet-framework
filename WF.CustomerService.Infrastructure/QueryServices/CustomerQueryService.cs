@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using WF.CustomerService.Application.Abstractions;
-using WF.CustomerService.Application.Dtos;
 using Dapper;
+using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Infrastructure.QueryServices
 {

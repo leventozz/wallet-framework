@@ -1,4 +1,4 @@
-﻿namespace WF.Shared.Abstractions
+﻿namespace WF.Shared.Contracts.Abstractions
 {
     public interface IUnitOfWork
     {

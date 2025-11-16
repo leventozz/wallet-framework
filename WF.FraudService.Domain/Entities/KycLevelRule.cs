@@ -1,4 +1,4 @@
-using WF.FraudService.Domain.Enums;
+using WF.Shared.Contracts.Enums;
 
 namespace WF.FraudService.Domain.Entities;
 

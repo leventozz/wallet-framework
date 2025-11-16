@@ -1,5 +1,5 @@
 using MediatR;
-using WF.Shared.Abstractions;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 
 namespace WF.TransactionService.Application.Features.Transfers.Commands.CreateTransfer;

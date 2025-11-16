@@ -9,7 +9,7 @@ using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
 using WF.CustomerService.Infrastructure.QueryServices;
 using WF.CustomerService.Infrastructure.Repositories;
-using WF.Shared.Abstractions;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Infrastructure.Configuration;
 using WF.Shared.Infrastructure.EventBus;
 

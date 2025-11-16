@@ -1,5 +1,5 @@
 using MediatR;
-using WF.Shared.Abstractions;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Domain.Abstractions;

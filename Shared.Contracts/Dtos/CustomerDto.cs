@@ -1,8 +1,6 @@
-﻿using Mapster;
-using WF.CustomerService.Domain.Entities;
-using WF.CustomerService.Domain.Enums;
+﻿using WF.Shared.Contracts.Enums;
 
-namespace WF.CustomerService.Application.Dtos
+namespace WF.Shared.Contracts.Dtos
 {
     public record CustomerDto
     {
@@ -14,14 +12,5 @@ namespace WF.CustomerService.Application.Dtos
         public List<WalletSummaryDto> Wallets { get; set; } = new();
         public KycStatus KycStatus { get; set; }
         public DateTime CreatedAtUtc { get; set; }
-    }
-
-    [Obsolete]
-    public class CustomerMappingConfig : IRegister
-    {
-        public void Register(TypeAdapterConfig config)
-        {
-            config.NewConfig<Customer, CustomerDto>();
-        }
     }
 }

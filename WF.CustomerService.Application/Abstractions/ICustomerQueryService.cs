@@ -1,4 +1,4 @@
-﻿using WF.CustomerService.Application.Dtos;
+﻿using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Application.Abstractions
 {

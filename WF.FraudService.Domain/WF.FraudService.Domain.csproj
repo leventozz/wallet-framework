@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\" />
+    <Folder Include="Enums\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

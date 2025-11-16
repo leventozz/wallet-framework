@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Domain.Entities;
-using WF.Shared.Abstractions;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Customer;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer

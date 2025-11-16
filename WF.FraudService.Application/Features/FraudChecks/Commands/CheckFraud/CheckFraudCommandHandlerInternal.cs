@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using WF.FraudService.Application.Contracts;
-using WF.Shared.Abstractions;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;

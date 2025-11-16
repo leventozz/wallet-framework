@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using WF.FraudService.Domain.Abstractions;
 using WF.FraudService.Domain.Entities;
 using WF.FraudService.Infrastructure.Data;

@@ -1,4 +1,4 @@
-namespace WF.FraudService.Domain.Enums;
+namespace WF.Shared.Contracts.Enums;
 
 public enum KycStatus
 {

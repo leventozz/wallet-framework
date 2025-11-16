@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WF.CustomerService.Application.Dtos;
 using WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo;
+using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Api.Controllers
 {

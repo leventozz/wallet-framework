@@ -1,6 +1,6 @@
 ﻿using WF.Shared.Contracts.IntegrationEvents.Enum;
 
-namespace WF.CustomerService.Application.Dtos
+namespace WF.Shared.Contracts.Dtos
 {
     public record WalletSummaryDto
     {
