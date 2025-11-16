@@ -1,4 +1,5 @@
 using WF.FraudService.Api.Logging;
+using WF.FraudService.Application;
 using WF.FraudService.Infrastructure;
 using WF.FraudService.Middleware;
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddWFExceptionHandler();
 

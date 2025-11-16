@@ -9,6 +9,7 @@ using WF.FraudService.Infrastructure.Data;
 using WF.FraudService.Infrastructure.QueryServices;
 using WF.FraudService.Infrastructure.Repositories;
 using WF.FraudService.Infrastructure.EventBus;
+using WF.FraudService.Infrastructure.HttpClients;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
 
@@ -29,6 +30,14 @@ public static class DependencyInjectionExtensions
         services.AddNpgsqlDataSource(connectionString);
 
         services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+        services.Configure<CustomerServiceOptions>(configuration.GetSection("CustomerService"));
+
+        services.AddHttpClient<ICustomerServiceApiClient, CustomerServiceApiClient>((serviceProvider, client) =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<CustomerServiceOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         services.AddMassTransit(mtConfig =>
         {
