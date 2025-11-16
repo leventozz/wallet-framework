@@ -9,9 +9,9 @@ using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
 using WF.CustomerService.Infrastructure.QueryServices;
 using WF.CustomerService.Infrastructure.Repositories;
+using WF.CustomerService.Infrastructure.EventBus;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
-using WF.Shared.Infrastructure.EventBus;
 
 namespace WF.CustomerService.Infrastructure
 {

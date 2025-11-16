@@ -4,7 +4,7 @@ using Serilog.Core;
 using Serilog.Events;
 using System.Diagnostics;
 
-namespace WF.TransactionService.Api.Logging;
+namespace WF.TransactionService.Logging;
 
 public static class LoggingDIExtensions
 {

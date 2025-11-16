@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.5.5" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.5" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
     <PackageReference Include="Npgsql" Version="9.0.4" />
     <PackageReference Include="Npgsql.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
@@ -17,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
     <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
-    <ProjectReference Include="..\WF.Shared.Infrastructure\WF.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Application\WF.TransactionService.Application.csproj" />
     <ProjectReference Include="..\WF.TransactionService.Domain\WF.TransactionService.Domain.csproj" />
   </ItemGroup>

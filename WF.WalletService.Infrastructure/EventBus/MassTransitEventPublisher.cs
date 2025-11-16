@@ -1,7 +1,7 @@
-﻿using MassTransit;
-using WF.Shared.Abstractions;
+using MassTransit;
+using WF.Shared.Contracts.Abstractions;
 
-namespace WF.Shared.Infrastructure.EventBus
+namespace WF.WalletService.Infrastructure.EventBus
 {
     public class MassTransitEventPublisher(IPublishEndpoint _publishEndpoint) : IIntegrationEventPublisher
     {
@@ -11,3 +11,4 @@ namespace WF.Shared.Infrastructure.EventBus
         }
     }
 }
+

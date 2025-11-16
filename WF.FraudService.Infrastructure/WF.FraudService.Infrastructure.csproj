@@ -14,6 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
     <PackageReference Include="Npgsql.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
@@ -22,7 +23,6 @@
     <ProjectReference Include="..\WF.FraudService.Application\WF.FraudService.Application.csproj" />
     <ProjectReference Include="..\WF.FraudService.Domain\WF.FraudService.Domain.csproj" />
     <ProjectReference Include="..\WF.Shared.Abstractions\WF.Shared.Abstractions.csproj" />
-    <ProjectReference Include="..\WF.Shared.Infrastructure\WF.Shared.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

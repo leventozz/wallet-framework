@@ -14,6 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
     <PackageReference Include="Npgsql.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
@@ -21,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WF.WalletService.Application\WF.WalletService.Application.csproj" />
     <ProjectReference Include="..\WF.WalletService.Domain\WF.WalletService.Domain.csproj" />
-    <ProjectReference Include="..\WF.Shared.Infrastructure\WF.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\Shared.Contracts\WF.Shared.Contracts.csproj" />
   </ItemGroup>
 
