@@ -9,7 +9,7 @@ using WF.FraudService.Infrastructure.Data;
 using WF.FraudService.Infrastructure.QueryServices;
 using WF.FraudService.Infrastructure.Repositories;
 using WF.Shared.Contracts.Abstractions;
-using WF.Shared.Infrastructure.Configuration;
+using WF.Shared.Contracts.Configuration;
 using WF.Shared.Infrastructure.EventBus;
 
 namespace WF.FraudService.Infrastructure;

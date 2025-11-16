@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace WF.CustomerService.Middleware
+namespace WF.CustomerService.Api.Middleware
 {
     public static class ExceptionHandlerDIExtensions
     {

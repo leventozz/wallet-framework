@@ -1,4 +1,4 @@
-using WF.Shared.Infrastructure.Logging;
+using WF.WalletService.Api.Logging;
 using WF.WalletService.Application;
 using WF.WalletService.Infrastructure;
 using WF.WalletService.Middleware;

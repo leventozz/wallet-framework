@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using WF.CustomerService.Domain.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
 
-namespace WF.CustomerService.Middleware
+namespace WF.CustomerService.Api.Middleware
 {
     public class ExceptionHandler(ILogger<ExceptionHandler> _logger) : IExceptionHandler
     {

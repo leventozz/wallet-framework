@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WF.Shared.Contracts.Abstractions;
-using WF.Shared.Infrastructure.Configuration;
+using WF.Shared.Contracts.Configuration;
 using WF.Shared.Infrastructure.EventBus;
 using WF.TransactionService.Application.Contracts;
 using WF.TransactionService.Domain.Abstractions;

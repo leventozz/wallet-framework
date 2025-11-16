@@ -1,6 +1,6 @@
-using WF.Shared.Infrastructure.Logging;
 using WF.TransactionService.Application;
 using WF.TransactionService.Infrastructure;
+using WF.TransactionService.Logging;
 using WF.TransactionService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);

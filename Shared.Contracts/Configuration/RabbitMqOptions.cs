@@ -1,4 +1,4 @@
-namespace WF.Shared.Infrastructure.Configuration;
+namespace WF.Shared.Contracts.Configuration;
 
 public sealed record RabbitMqOptions
 {

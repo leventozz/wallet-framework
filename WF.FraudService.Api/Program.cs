@@ -1,7 +1,10 @@
+using WF.FraudService.Api.Logging;
 using WF.FraudService.Infrastructure;
 using WF.FraudService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseLogging();
 
 
 builder.Services.AddControllers();
