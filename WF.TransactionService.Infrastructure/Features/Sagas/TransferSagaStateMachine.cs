@@ -30,6 +30,12 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
         InstanceState(x => x.CurrentState);
 
         Event(() => TransferRequestStarted, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => FraudCheckApprovedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => FraudCheckDeclinedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => WalletDebitedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => WalletDebitFailedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => WalletCreditedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+        Event(() => WalletCreditFailedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
 
         Initially(
             When(TransferRequestStarted)
