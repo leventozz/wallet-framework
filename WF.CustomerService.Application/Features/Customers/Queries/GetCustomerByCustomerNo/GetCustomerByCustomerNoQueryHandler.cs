@@ -1,7 +1,7 @@
 using MediatR;
 using WF.CustomerService.Application.Abstractions;
 using WF.CustomerService.Domain.Entities;
-using WF.Shared.Abstractions.Exceptions;
+using WF.CustomerService.Domain.Exceptions;
 using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo

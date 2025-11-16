@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using WF.Shared.Abstractions.Exceptions;
+using WF.CustomerService.Domain.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
 
-namespace WF.Shared.Infrastructure.Middleware
+namespace WF.CustomerService.Middleware
 {
-    public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> _logger) : IExceptionHandler
+    public class ExceptionHandler(ILogger<ExceptionHandler> _logger) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(
             HttpContext httpContext,
@@ -101,3 +101,4 @@ namespace WF.Shared.Infrastructure.Middleware
         }
     }
 }
+

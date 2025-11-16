@@ -1,4 +1,6 @@
-﻿namespace WF.Shared.Contracts.Abstractions
+﻿using WF.Shared.Contracts.Dtos;
+
+namespace WF.Shared.Contracts.Abstractions
 {
     public interface ICustomerServiceApiClient
     {

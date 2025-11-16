@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace WF.Shared.Infrastructure.Middleware
+namespace WF.CustomerService.Middleware
 {
     public static class ExceptionHandlerDIExtensions
     {
@@ -13,9 +13,10 @@ namespace WF.Shared.Infrastructure.Middleware
 
         public static IServiceCollection AddWFExceptionHandler(this IServiceCollection services)
         {
-            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddExceptionHandler<ExceptionHandler>();
             services.AddProblemDetails();
             return services;
         }
     }
 }
+

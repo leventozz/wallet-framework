@@ -1,7 +1,7 @@
 using WF.CustomerService.Application;
 using WF.CustomerService.Infrastructure;
+using WF.CustomerService.Middleware;
 using WF.Shared.Infrastructure.Logging;
-using WF.Shared.Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

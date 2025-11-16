@@ -1,7 +1,7 @@
 using WF.Shared.Infrastructure.Logging;
-using WF.Shared.Infrastructure.Middleware;
 using WF.WalletService.Application;
 using WF.WalletService.Infrastructure;
+using WF.WalletService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
