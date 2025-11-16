@@ -19,10 +19,12 @@ public static class DependencyInjectionExtensions
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+        #region Fraud Rules Registration
         services.AddScoped<IFraudEvaluationRule, BlockedIpRule>();
         services.AddScoped<IFraudEvaluationRule, RiskyHourRule>();
         services.AddScoped<IFraudEvaluationRule, AccountAgeRule>();
         services.AddScoped<IFraudEvaluationRule, KycLevelRule>();
+        #endregion
 
         return services;
     }
