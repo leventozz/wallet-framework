@@ -10,6 +10,7 @@ using WF.FraudService.Infrastructure.QueryServices;
 using WF.FraudService.Infrastructure.Repositories;
 using WF.FraudService.Infrastructure.EventBus;
 using WF.FraudService.Infrastructure.HttpClients;
+using WF.FraudService.Infrastructure.Consumers;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
 
@@ -46,6 +47,8 @@ public static class DependencyInjectionExtensions
                 o.UsePostgres();
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
             });
+
+            mtConfig.AddConsumer<CheckFraudCommandConsumer>();
 
             mtConfig.UsingRabbitMq((context, cfg) =>
             {
