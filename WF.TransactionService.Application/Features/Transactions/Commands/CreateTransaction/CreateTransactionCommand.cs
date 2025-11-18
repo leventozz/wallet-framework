@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace WF.TransactionService.Application.Features.Transfers.Commands.CreateTransfer;
+namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
-public record CreateTransferCommand : IRequest<Guid>
+public record CreateTransactionCommand : IRequest<Guid>
 {
     public string SenderCustomerNumber { get; init; } = string.Empty;
     public string ReceiverCustomerNumber { get; init; } = string.Empty;

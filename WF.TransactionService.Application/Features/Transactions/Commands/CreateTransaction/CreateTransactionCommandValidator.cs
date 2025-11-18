@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace WF.TransactionService.Application.Features.Transfers.Commands.CreateTransfer;
+namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
-public class CreateTransferCommandValidator : AbstractValidator<CreateTransferCommand>
+public class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
 {
-    public CreateTransferCommandValidator()
+    public CreateTransactionCommandValidator()
     {
         RuleFor(x => x)
             .Must(x => !(!string.IsNullOrWhiteSpace(x.SenderCustomerNumber) && 

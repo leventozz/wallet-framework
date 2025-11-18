@@ -3,16 +3,16 @@ using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.TransactionService.Domain.Exceptions;
 
-namespace WF.TransactionService.Application.Features.Transfers.Commands.CreateTransfer;
+namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
-public class CreateTransferCommandHandler(
+public class CreateTransactionCommandHandler(
     IIntegrationEventPublisher _integrationEventPublisher,
     IUnitOfWork _unitOfWork,
     ICustomerServiceApiClient _customerServiceApiClient,
     IWalletServiceApiClient _walletServiceApiClient)
-    : IRequestHandler<CreateTransferCommand, Guid>
+    : IRequestHandler<CreateTransactionCommand, Guid>
 {
-    public async Task<Guid> Handle(CreateTransferCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var correlationId = Guid.NewGuid();
 
