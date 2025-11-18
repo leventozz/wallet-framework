@@ -83,5 +83,21 @@ namespace WF.CustomerService.Infrastructure.QueryServices
 
             return verificationData;
         }
+
+        public async Task<Guid?> GetCustomerIdByCustomerNumberAsync(string customerNumber, CancellationToken cancellationToken)
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "Id"
+                FROM "Customers"
+                WHERE "CustomerNumber" = @customerNumber AND "IsActive" = true AND "IsDeleted" = false;
+                """;
+
+            var customerId = await connection.QueryFirstOrDefaultAsync<Guid?>(
+                new CommandDefinition(sql, new { customerNumber }, cancellationToken: cancellationToken));
+
+            return customerId;
+        }
     }
 }

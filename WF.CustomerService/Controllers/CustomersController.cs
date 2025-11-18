@@ -4,6 +4,7 @@ using WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerVerificationData;
+using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerIdByCustomerNumber;
 using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Api.Controllers
@@ -38,6 +39,22 @@ namespace WF.CustomerService.Api.Controllers
             var query = new GetCustomerByCustomerNoQuery { CustomerNumber = customerNumber };
             var dto = await _mediator.Send(query);
             return Ok(dto);
+        }
+
+        [HttpGet("number/{customerNumber}/id")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetIdByCustomerNumber(string customerNumber)
+        {
+            var query = new GetCustomerIdByCustomerNumberQuery { CustomerNumber = customerNumber };
+            var customerId = await _mediator.Send(query);
+            
+            if (customerId == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(customerId);
         }
 
         [HttpGet("/api/v1/customers/{id:guid}/verification-data")]

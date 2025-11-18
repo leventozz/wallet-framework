@@ -38,5 +38,27 @@ namespace WF.WalletService.Infrastructure.QueryServices
 
             return wallet;
         }
+
+        public async Task<Guid?> GetWalletIdByCustomerIdAndCurrencyAsync(Guid customerId, string currency, CancellationToken cancellationToken)
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "Id"
+                FROM "Wallets"
+                WHERE "CustomerId" = @customerId 
+                    AND "Currency"::text = @currency 
+                    AND "IsDeleted" = false 
+                    AND "IsActive" = true 
+                    AND "IsClosed" = false
+                    AND "IsFrozen" = false
+                LIMIT 1
+                """;
+
+            var walletId = await connection.QueryFirstOrDefaultAsync<Guid?>(
+                new CommandDefinition(sql, new { customerId, currency }, cancellationToken: cancellationToken));
+
+            return walletId;
+        }
     }
 }

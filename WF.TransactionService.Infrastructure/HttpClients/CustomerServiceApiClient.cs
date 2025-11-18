@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Dtos;
 
-namespace WF.FraudService.Infrastructure.HttpClients;
+namespace WF.TransactionService.Infrastructure.HttpClients;
 
 public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerServiceApiClient> logger) : ICustomerServiceApiClient
 {

@@ -14,6 +14,7 @@ using WF.TransactionService.Infrastructure.Data;
 using WF.TransactionService.Infrastructure.Features.Sagas;
 using WF.TransactionService.Infrastructure.QueryServices;
 using WF.TransactionService.Infrastructure.Repositories;
+using WF.TransactionService.Infrastructure.HttpClients;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -32,6 +33,22 @@ namespace WF.TransactionService.Infrastructure
             services.AddNpgsqlDataSource(connectionString);
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+            services.Configure<CustomerServiceOptions>(configuration.GetSection("CustomerService"));
+            services.Configure<WalletServiceOptions>(configuration.GetSection("WalletService"));
+
+            services.AddHttpClient<ICustomerServiceApiClient, CustomerServiceApiClient>((serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<CustomerServiceOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
+            services.AddHttpClient<IWalletServiceApiClient, WalletServiceApiClient>((serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<WalletServiceOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
 
             services.AddMassTransit(mtConfig =>
             {
