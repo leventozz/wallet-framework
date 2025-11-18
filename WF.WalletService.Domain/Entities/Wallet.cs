@@ -8,7 +8,7 @@ namespace WF.WalletService.Domain.Entities
         public Guid Id { get; private set; }
         public Guid CustomerId { get; private set; }
         public string WalletNumber { get; private set; } = string.Empty;
-        public Currency Currency { get; private set; }
+        public string Currency { get; private set; } = string.Empty;
         public decimal Balance { get; private set; }
         public decimal AvailableBalance { get; private set; } 
         public bool IsActive { get; private set; }
@@ -25,12 +25,12 @@ namespace WF.WalletService.Domain.Entities
 
         private Wallet() { }
 
-        public Wallet(Guid customerId, string walletNumber, Currency currency = Currency.TRY)
+        public Wallet(Guid customerId, string walletNumber, string? currency = null)
         {
             Id = Guid.NewGuid();
             CustomerId = customerId;
             WalletNumber = walletNumber;
-            Currency = currency;
+            Currency = currency ?? Enums.Currency.TRY.ToString();
             Balance = 0;
             AvailableBalance = 0;
             IsActive = true;

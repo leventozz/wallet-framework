@@ -17,7 +17,7 @@ namespace WF.WalletService.Infrastructure.QueryServices
                     "Id",
                     "CustomerId",
                     "WalletNumber",
-                    "Currency"::text AS "Currency",
+                    "Currency",
                     "Balance",
                     "AvailableBalance",
                     "IsActive",
@@ -48,7 +48,7 @@ namespace WF.WalletService.Infrastructure.QueryServices
                 SELECT "Id"
                 FROM "Wallets"
                 WHERE "CustomerId" = @customerId 
-                    AND "Currency"::text = @currency 
+                    AND "Currency" = @currency 
                     AND "IsDeleted" = false 
                     AND "IsActive" = true 
                     AND "IsClosed" = false
@@ -75,7 +75,7 @@ namespace WF.WalletService.Infrastructure.QueryServices
                 SELECT "CustomerId", "Id" AS "WalletId"
                 FROM "Wallets"
                 WHERE "CustomerId" = ANY(@customerIds) 
-                    AND "Currency"::text = @currency 
+                    AND "Currency" = @currency 
                     AND "IsDeleted" = false 
                     AND "IsActive" = true 
                     AND "IsClosed" = false

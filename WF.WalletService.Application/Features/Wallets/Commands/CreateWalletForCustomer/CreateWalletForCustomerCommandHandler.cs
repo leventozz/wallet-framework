@@ -37,14 +37,14 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
                     $"Unable to generate a unique wallet number after {MaxRetryAttempts} attempts. This may indicate that the system is approaching capacity.");
             }
 
-            var wallet = new Wallet(request.CustomerId, walletNumber);
+            var wallet = new Wallet(request.CustomerId, walletNumber, Currency.TRY.ToString());
             await _walletRepository.AddWalletAsync(wallet, cancellationToken);
 
             var eventToPublish = new WalletCreatedEvent(
                 wallet.Id,
                 request.CustomerId,
                 wallet.Balance,
-                Currency.TRY.ToString() //default currency
+                wallet.Currency
             );
 
             await _eventPublisher.PublishAsync(eventToPublish, cancellationToken);

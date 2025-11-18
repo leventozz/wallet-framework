@@ -227,10 +227,6 @@ namespace WF.TransactionService.Infrastructure.Migrations
                     b.Property<Guid>("ReceiverWalletId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ReceiverWalletNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("SenderCustomerId")
                         .HasColumnType("uuid");
 
@@ -241,16 +237,12 @@ namespace WF.TransactionService.Infrastructure.Migrations
                     b.Property<Guid>("SenderWalletId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("SenderWalletNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("CorrelationId");
 
                     b.HasIndex("CurrentState")
                         .HasDatabaseName("IX_TransferRequests_CurrentState");
 
-                    b.ToTable("TransferRequests");
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

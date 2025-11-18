@@ -9,19 +9,19 @@ namespace WF.TransactionService.Infrastructure.Repositories
     {
         public async Task AddAsync(Transaction request, CancellationToken cancellationToken)
         {
-            await _context.TransferRequests.AddAsync(request, cancellationToken);
+            await _context.Transactions.AddAsync(request, cancellationToken);
         }
 
         public async Task<Transaction?> GetByCorrelationIdAsync(Guid correlationId, CancellationToken cancellationToken)
         {
-            return await _context.TransferRequests
+            return await _context.Transactions
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.CorrelationId == correlationId, cancellationToken);
         }
 
         public void Update(Transaction request)
         {
-            _context.TransferRequests.Update(request);
+            _context.Transactions.Update(request);
         }
     }
 }

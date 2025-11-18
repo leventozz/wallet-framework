@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WF.WalletService.Infrastructure.Data;
+using WF.TransactionService.Infrastructure.Data;
 
 #nullable disable
 
-namespace WF.WalletService.Infrastructure.Migrations
+namespace WF.TransactionService.Infrastructure.Migrations
 {
-    [DbContext(typeof(WalletDbContext))]
-    partial class WalletDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(TransactionDbContext))]
+    [Migration("20251118112344_UpdateTransactionDbContext")]
+    partial class UpdateTransactionDbContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,21 +193,16 @@ namespace WF.WalletService.Infrastructure.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("WF.WalletService.Domain.Entities.Wallet", b =>
+            modelBuilder.Entity("WF.TransactionService.Domain.Entities.Transaction", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("CorrelationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("AvailableBalance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
-                    b.Property<decimal>("Balance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime?>("ClosedAtUtc")
+                    b.Property<DateTime?>("CompletedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAtUtc")
@@ -214,50 +212,40 @@ namespace WF.WalletService.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ReceiverCustomerId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ExternalAccountRef")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Iban")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsFrozen")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastTransactionAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastTransactionId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("WalletNumber")
+                    b.Property<string>("ReceiverCustomerNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("ReceiverWalletId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("CustomerId")
-                        .HasDatabaseName("IX_Wallets_CustomerId");
+                    b.Property<Guid>("SenderCustomerId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("WalletNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Wallets_WalletNumber");
+                    b.Property<string>("SenderCustomerNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.ToTable("Wallets");
+                    b.Property<Guid>("SenderWalletId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CorrelationId");
+
+                    b.HasIndex("CurrentState")
+                        .HasDatabaseName("IX_TransferRequests_CurrentState");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

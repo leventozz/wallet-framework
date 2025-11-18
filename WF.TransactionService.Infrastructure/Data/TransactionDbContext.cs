@@ -6,7 +6,7 @@ namespace WF.TransactionService.Infrastructure.Data
 {
     public class TransactionDbContext : DbContext
     {
-        public DbSet<Transaction> TransferRequests { get; set; } = null!;
+        public DbSet<Transaction> Transactions { get; set; } = null!;
 
         public TransactionDbContext(DbContextOptions<TransactionDbContext> options) : base(options)
         {
