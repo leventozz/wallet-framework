@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WF.Shared.Contracts.Dtos;
 using WF.WalletService.Application.Features.Wallets.Queries.GetWalletIdByCustomerIdAndCurrency;
+using WF.WalletService.Application.Features.Wallets.Queries.LookupByCustomerIds;
 
 namespace WF.WalletService.Api.Controllers;
 
@@ -27,6 +29,14 @@ public class WalletsController(IMediator _mediator) : ControllerBase
         }
 
         return Ok(walletId);
+    }
+
+    [HttpPost("/api/v1/wallets/lookup-by-customer-ids")]
+    [ProducesResponseType(typeof(List<WalletLookupDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> LookupByCustomerIds([FromBody] LookupByCustomerIdsQuery query)
+    {
+        var results = await _mediator.Send(query);
+        return Ok(results);
     }
 }
 

@@ -6,8 +6,6 @@ public record CreateTransferCommand : IRequest<Guid>
 {
     public string SenderCustomerNumber { get; init; } = string.Empty;
     public string ReceiverCustomerNumber { get; init; } = string.Empty;
-    public string SenderWalletNumber { get; init; } = string.Empty;
-    public string ReceiverWalletNumber { get; init; } = string.Empty;
     public decimal Amount { get; init; }
     public string Currency { get; init; } = string.Empty;
 }

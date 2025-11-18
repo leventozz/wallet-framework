@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
+using WF.Shared.Contracts.Dtos;
 using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Application.Dtos;
 
@@ -59,6 +60,32 @@ namespace WF.WalletService.Infrastructure.QueryServices
                 new CommandDefinition(sql, new { customerId, currency }, cancellationToken: cancellationToken));
 
             return walletId;
+        }
+
+        public async Task<List<WalletLookupDto>> LookupByCustomerIdsAsync(List<Guid> customerIds, string currency, CancellationToken cancellationToken)
+        {
+            if (customerIds == null || customerIds.Count == 0)
+            {
+                return new List<WalletLookupDto>();
+            }
+
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "CustomerId", "Id" AS "WalletId"
+                FROM "Wallets"
+                WHERE "CustomerId" = ANY(@customerIds) 
+                    AND "Currency"::text = @currency 
+                    AND "IsDeleted" = false 
+                    AND "IsActive" = true 
+                    AND "IsClosed" = false
+                    AND "IsFrozen" = false;
+                """;
+
+            var results = await connection.QueryAsync<WalletLookupDto>(
+                new CommandDefinition(sql, new { customerIds, currency }, cancellationToken: cancellationToken));
+
+            return results.ToList();
         }
     }
 }

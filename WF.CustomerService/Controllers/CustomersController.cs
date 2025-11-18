@@ -5,6 +5,7 @@ using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerVerificationData;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerIdByCustomerNumber;
+using WF.CustomerService.Application.Features.Customers.Queries.LookupByCustomerNumbers;
 using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Api.Controllers
@@ -65,6 +66,14 @@ namespace WF.CustomerService.Api.Controllers
             var query = new GetCustomerVerificationDataQuery { Id = id };
             var dto = await _mediator.Send(query);
             return Ok(dto);
+        }
+
+        [HttpPost("/api/v1/customers/lookup-by-numbers")]
+        [ProducesResponseType(typeof(List<CustomerLookupDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> LookupByCustomerNumbers([FromBody] LookupByCustomerNumbersQuery query)
+        {
+            var results = await _mediator.Send(query);
+            return Ok(results);
         }
     }
 }

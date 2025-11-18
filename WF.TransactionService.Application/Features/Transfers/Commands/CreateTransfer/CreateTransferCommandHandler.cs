@@ -16,57 +16,48 @@ public class CreateTransferCommandHandler(
     {
         var correlationId = Guid.NewGuid();
 
-        // Get customer IDs
-        var senderCustomerId = await _customerServiceApiClient.GetCustomerIdByCustomerNumberAsync(
-            request.SenderCustomerNumber, 
+        var customerLookups = await _customerServiceApiClient.LookupByCustomerNumbersAsync(
+            new List<string> { request.SenderCustomerNumber, request.ReceiverCustomerNumber },
             cancellationToken);
 
-        if (senderCustomerId == null)
+        var senderCustomerLookup = customerLookups.FirstOrDefault(c => c.CustomerNumber == request.SenderCustomerNumber);
+        if (senderCustomerLookup == null)
         {
             throw new NotFoundException("Customer", request.SenderCustomerNumber);
         }
 
-        var receiverCustomerId = await _customerServiceApiClient.GetCustomerIdByCustomerNumberAsync(
-            request.ReceiverCustomerNumber, 
-            cancellationToken);
-
-        if (receiverCustomerId == null)
+        var receiverCustomerLookup = customerLookups.FirstOrDefault(c => c.CustomerNumber == request.ReceiverCustomerNumber);
+        if (receiverCustomerLookup == null)
         {
             throw new NotFoundException("Customer", request.ReceiverCustomerNumber);
         }
 
-        // Get wallet IDs
-        var senderWalletId = await _walletServiceApiClient.GetWalletIdByCustomerIdAndCurrencyAsync(
-            senderCustomerId.Value, 
-            request.Currency, 
+        var walletLookups = await _walletServiceApiClient.LookupByCustomerIdsAsync(
+            new List<Guid> { senderCustomerLookup.CustomerId, receiverCustomerLookup.CustomerId },
+            request.Currency,
             cancellationToken);
 
-        if (senderWalletId == null)
+        var senderWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == senderCustomerLookup.CustomerId);
+        if (senderWalletLookup == null)
         {
-            throw new NotFoundException($"Wallet for customer {senderCustomerId.Value} with currency {request.Currency}");
+            throw new NotFoundException("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}");
         }
 
-        var receiverWalletId = await _walletServiceApiClient.GetWalletIdByCustomerIdAndCurrencyAsync(
-            receiverCustomerId.Value, 
-            request.Currency, 
-            cancellationToken);
-
-        if (receiverWalletId == null)
+        var receiverWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == receiverCustomerLookup.CustomerId);
+        if (receiverWalletLookup == null)
         {
-            throw new NotFoundException($"Wallet for customer {receiverCustomerId.Value} with currency {request.Currency}");
+            throw new NotFoundException("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}");
         }
 
         var transferRequestStartedEvent = new TransferRequestStartedEvent
         {
             CorrelationId = correlationId,
-            SenderCustomerId = senderCustomerId.Value,
+            SenderCustomerId = senderCustomerLookup.CustomerId,
             SenderCustomerNumber = request.SenderCustomerNumber,
-            ReceiverCustomerId = receiverCustomerId.Value,
+            ReceiverCustomerId = receiverCustomerLookup.CustomerId,
             ReceiverCustomerNumber = request.ReceiverCustomerNumber,
-            SenderWalletId = senderWalletId.Value,
-            SenderWalletNumber = request.SenderWalletNumber,
-            ReceiverWalletId = receiverWalletId.Value,
-            ReceiverWalletNumber = request.ReceiverWalletNumber,
+            SenderWalletId = senderWalletLookup.WalletId,
+            ReceiverWalletId = receiverWalletLookup.WalletId,
             Amount = request.Amount,
             Currency = request.Currency
         };

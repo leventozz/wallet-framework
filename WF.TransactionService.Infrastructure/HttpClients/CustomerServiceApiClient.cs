@@ -93,5 +93,29 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
             throw;
         }
     }
+
+    public async Task<List<CustomerLookupDto>> LookupByCustomerNumbersAsync(List<string> customerNumbers, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var requestBody = new { CustomerNumbers = customerNumbers };
+            var response = await httpClient.PostAsJsonAsync("api/v1/customers/lookup-by-numbers", requestBody, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var results = await response.Content.ReadFromJsonAsync<List<CustomerLookupDto>>(cancellationToken: cancellationToken);
+                logger.LogInformation("Successfully retrieved customer lookups for {Count} customer numbers", customerNumbers.Count);
+                return results ?? new List<CustomerLookupDto>();
+            }
+
+            response.EnsureSuccessStatusCode();
+            return new List<CustomerLookupDto>();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Error occurred while retrieving customer lookups for customer numbers");
+            throw;
+        }
+    }
 }
 

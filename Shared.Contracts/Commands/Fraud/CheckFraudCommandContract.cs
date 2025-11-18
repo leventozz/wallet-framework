@@ -1,6 +1,6 @@
 namespace WF.Shared.Contracts.Commands.Fraud
 {
-    public record CheckFraudCommand
+    public record CheckFraudCommandContract
     {
         public Guid CorrelationId { get; init; }
         public Guid SenderCustomerId { get; init; }

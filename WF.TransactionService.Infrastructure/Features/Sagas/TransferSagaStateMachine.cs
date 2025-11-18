@@ -47,15 +47,13 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.ReceiverCustomerId = context.Message.ReceiverCustomerId;
                     context.Saga.ReceiverCustomerNumber = context.Message.ReceiverCustomerNumber;
                     context.Saga.SenderWalletId = context.Message.SenderWalletId;
-                    context.Saga.SenderWalletNumber = context.Message.SenderWalletNumber;
                     context.Saga.ReceiverWalletId = context.Message.ReceiverWalletId;
-                    context.Saga.ReceiverWalletNumber = context.Message.ReceiverWalletNumber;
                     context.Saga.Amount = context.Message.Amount;
                     context.Saga.Currency = context.Message.Currency;
                     context.Saga.CreatedAtUtc = DateTime.UtcNow;
                 })
                 .TransitionTo(Pending)
-                .Publish(context => new CheckFraudCommand
+                .Publish(context => new CheckFraudCommandContract
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     SenderCustomerId = context.Saga.SenderCustomerId,

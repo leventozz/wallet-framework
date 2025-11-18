@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
+using WF.Shared.Contracts.Dtos;
 
 namespace WF.TransactionService.Infrastructure.HttpClients;
 
@@ -31,6 +32,30 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
         catch (HttpRequestException ex)
         {
             logger.LogError(ex, "Error occurred while retrieving wallet ID for customer {CustomerId} with currency {Currency}", customerId, currency);
+            throw;
+        }
+    }
+
+    public async Task<List<WalletLookupDto>> LookupByCustomerIdsAsync(List<Guid> customerIds, string currency, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var requestBody = new { CustomerIds = customerIds, Currency = currency };
+            var response = await httpClient.PostAsJsonAsync("api/v1/wallets/lookup-by-customer-ids", requestBody, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var results = await response.Content.ReadFromJsonAsync<List<WalletLookupDto>>(cancellationToken: cancellationToken);
+                logger.LogInformation("Successfully retrieved wallet lookups for {Count} customer IDs with currency {Currency}", customerIds.Count, currency);
+                return results ?? new List<WalletLookupDto>();
+            }
+
+            response.EnsureSuccessStatusCode();
+            return new List<WalletLookupDto>();
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Error occurred while retrieving wallet lookups for customer IDs with currency {Currency}", currency);
             throw;
         }
     }

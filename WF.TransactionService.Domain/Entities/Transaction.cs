@@ -11,9 +11,7 @@ namespace WF.TransactionService.Domain.Entities
         public Guid ReceiverCustomerId { get; set; }
         public string ReceiverCustomerNumber { get; set; } = string.Empty;
         public Guid SenderWalletId { get; set; }
-        public string SenderWalletNumber { get; set; } = string.Empty;
         public Guid ReceiverWalletId { get; set; }
-        public string ReceiverWalletNumber { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string Currency { get; set; } = string.Empty;
         public DateTime CreatedAtUtc { get; set; }

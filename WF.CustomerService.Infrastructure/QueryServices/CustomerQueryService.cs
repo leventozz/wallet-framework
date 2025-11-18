@@ -99,5 +99,26 @@ namespace WF.CustomerService.Infrastructure.QueryServices
 
             return customerId;
         }
+
+        public async Task<List<CustomerLookupDto>> LookupByCustomerNumbersAsync(List<string> customerNumbers, CancellationToken cancellationToken)
+        {
+            if (customerNumbers == null || customerNumbers.Count == 0)
+            {
+                return new List<CustomerLookupDto>();
+            }
+
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "Id" AS "CustomerId", "CustomerNumber"
+                FROM "Customers"
+                WHERE "CustomerNumber" = ANY(@customerNumbers) AND "IsActive" = true AND "IsDeleted" = false;
+                """;
+
+            var results = await connection.QueryAsync<CustomerLookupDto>(
+                new CommandDefinition(sql, new { customerNumbers }, cancellationToken: cancellationToken));
+
+            return results.ToList();
+        }
     }
 }
