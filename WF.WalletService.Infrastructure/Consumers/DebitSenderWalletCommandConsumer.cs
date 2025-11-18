@@ -9,9 +9,9 @@ namespace WF.WalletService.Infrastructure.Consumers
     public class DebitSenderWalletCommandConsumer(
         IMediator _mediator,
         ILogger<DebitSenderWalletCommandConsumer> _logger)
-        : IConsumer<DebitSenderWalletCommand>
+        : IConsumer<DebitSenderWalletCommandContract>
     {
-        public async Task Consume(ConsumeContext<DebitSenderWalletCommand> context)
+        public async Task Consume(ConsumeContext<DebitSenderWalletCommandContract> context)
         {
             var command = context.Message;
 
@@ -21,7 +21,7 @@ namespace WF.WalletService.Infrastructure.Consumers
                 command.Amount,
                 command.CorrelationId);
 
-            var handlerCommand = new DebitSenderWalletCommandContract
+            var handlerCommand = new DebitSenderWalletCommand
             {
                 CorrelationId = command.CorrelationId,
                 OwnerCustomerId = command.OwnerCustomerId,

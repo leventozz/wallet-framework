@@ -9,9 +9,9 @@ namespace WF.WalletService.Infrastructure.Consumers
     public class CreditWalletCommandConsumer(
         IMediator _mediator,
         ILogger<CreditWalletCommandConsumer> _logger)
-        : IConsumer<CreditWalletCommand>
+        : IConsumer<CreditWalletCommandContract>
     {
-        public async Task Consume(ConsumeContext<CreditWalletCommand> context)
+        public async Task Consume(ConsumeContext<CreditWalletCommandContract> context)
         {
             var command = context.Message;
 
@@ -21,7 +21,7 @@ namespace WF.WalletService.Infrastructure.Consumers
                 command.Amount,
                 command.CorrelationId);
 
-            var handlerCommand = new CreditWalletCommandContract
+            var handlerCommand = new CreditWalletCommand
             {
                 CorrelationId = command.CorrelationId,
                 WalletId = command.WalletId,

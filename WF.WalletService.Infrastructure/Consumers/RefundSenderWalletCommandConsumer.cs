@@ -9,9 +9,9 @@ namespace WF.WalletService.Infrastructure.Consumers
     public class RefundSenderWalletCommandConsumer(
         IMediator _mediator,
         ILogger<RefundSenderWalletCommandConsumer> _logger)
-        : IConsumer<RefundSenderWalletCommand>
+        : IConsumer<RefundSenderWalletCommandContract>
     {
-        public async Task Consume(ConsumeContext<RefundSenderWalletCommand> context)
+        public async Task Consume(ConsumeContext<RefundSenderWalletCommandContract> context)
         {
             var command = context.Message;
 
@@ -21,7 +21,7 @@ namespace WF.WalletService.Infrastructure.Consumers
                 command.Amount,
                 command.CorrelationId);
 
-            var handlerCommand = new RefundSenderWalletCommandContract
+            var handlerCommand = new RefundSenderWalletCommand
             {
                 CorrelationId = command.CorrelationId,
                 OwnerCustomerId = command.OwnerCustomerId,
