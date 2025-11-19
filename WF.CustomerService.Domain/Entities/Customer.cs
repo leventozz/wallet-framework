@@ -5,6 +5,7 @@ namespace WF.CustomerService.Domain.Entities
     public class Customer
     {
         public Guid Id { get; private set; }
+        public string IdentityId { get; private set; }
         public string CustomerNumber { get; private set; } = string.Empty;
         public string FirstName { get; private set; } = string.Empty;
         public string LastName { get; private set; } = string.Empty;
@@ -19,9 +20,10 @@ namespace WF.CustomerService.Domain.Entities
 
         private Customer() { }
 
-        public Customer(string firstName, string lastName, string email, string customerNumber, string phoneNumber)
+        public Customer(string identityId, string firstName, string lastName, string email, string customerNumber, string phoneNumber)
         {
             Id = Guid.NewGuid();
+            IdentityId = identityId;
             CustomerNumber = customerNumber;
             FirstName = firstName;
             LastName = lastName;

@@ -12,6 +12,10 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
 
         public CreateCustomerCommandValidator()
         {
+            RuleFor(x => x.IdentityId)
+                .NotEmpty()
+                .WithMessage("Identity ID is required.");
+
             RuleFor(x => x.FirstName)
                 .NotEmpty()
                 .WithMessage("First name is required.")
