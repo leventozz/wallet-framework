@@ -16,17 +16,22 @@ public class CreateTransactionCommandHandler(
     {
         var correlationId = Guid.NewGuid();
 
-        var customerLookups = await _customerServiceApiClient.LookupByCustomerNumbersAsync(
-            new List<string> { request.SenderCustomerNumber, request.ReceiverCustomerNumber },
+        var senderLookupTask = _customerServiceApiClient.GetCustomerByIdentityAsync(request.SenderIdentityId, cancellationToken);
+        var receiverLookupTask = _customerServiceApiClient.LookupByCustomerNumbersAsync(
+            new List<string> { request.ReceiverCustomerNumber },
             cancellationToken);
 
-        var senderCustomerLookup = customerLookups.FirstOrDefault(c => c.CustomerNumber == request.SenderCustomerNumber);
+        await Task.WhenAll(senderLookupTask, receiverLookupTask);
+
+        var senderCustomerLookup = await senderLookupTask;
         if (senderCustomerLookup == null)
         {
-            throw new NotFoundException("Customer", request.SenderCustomerNumber);
+            throw new NotFoundException("Customer", request.SenderIdentityId);
         }
 
-        var receiverCustomerLookup = customerLookups.FirstOrDefault(c => c.CustomerNumber == request.ReceiverCustomerNumber);
+        var receiverLookups = await receiverLookupTask;
+        var receiverCustomerLookup = receiverLookups.FirstOrDefault(c => c.CustomerNumber == request.ReceiverCustomerNumber);
+        
         if (receiverCustomerLookup == null)
         {
             throw new NotFoundException("Customer", request.ReceiverCustomerNumber);
@@ -53,7 +58,7 @@ public class CreateTransactionCommandHandler(
         {
             CorrelationId = correlationId,
             SenderCustomerId = senderCustomerLookup.CustomerId,
-            SenderCustomerNumber = request.SenderCustomerNumber,
+            SenderCustomerNumber = senderCustomerLookup.CustomerNumber,
             ReceiverCustomerId = receiverCustomerLookup.CustomerId,
             ReceiverCustomerNumber = request.ReceiverCustomerNumber,
             SenderWalletId = senderWalletLookup.WalletId,
@@ -68,4 +73,3 @@ public class CreateTransactionCommandHandler(
         return correlationId;
     }
 }
-

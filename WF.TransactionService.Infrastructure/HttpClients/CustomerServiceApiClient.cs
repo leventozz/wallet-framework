@@ -117,5 +117,33 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
             throw;
         }
     }
+    public async Task<CustomerLookupDto?> GetCustomerByIdentityAsync(string identityId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"api/v1/customers/by-identity/{identityId}", cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var customer = await response.Content.ReadFromJsonAsync<CustomerLookupDto>(cancellationToken: cancellationToken);
+                logger.LogInformation("Successfully retrieved customer lookup for identity {IdentityId}", identityId);
+                return customer;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                logger.LogWarning("Customer with identity {IdentityId} not found", identityId);
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+            return null;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Error occurred while retrieving customer lookup for identity {IdentityId}", identityId);
+            throw;
+        }
+    }
 }
 

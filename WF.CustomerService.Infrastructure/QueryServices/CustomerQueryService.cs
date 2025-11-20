@@ -37,6 +37,22 @@ namespace WF.CustomerService.Infrastructure.QueryServices
             return customer;
         }
 
+        public async Task<CustomerLookupDto?> GetCustomerByIdentityAsync(string identityId, CancellationToken cancellationToken)
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            const string sql = """
+                SELECT "Id" AS "CustomerId", "CustomerNumber"
+                FROM "Customers"
+                WHERE "IdentityId" = @identityId AND "IsActive" = true AND "IsDeleted" = false;
+                """;
+
+            var result = await connection.QueryFirstOrDefaultAsync<CustomerLookupDto>(
+                new CommandDefinition(sql, new { identityId }, cancellationToken: cancellationToken));
+
+            return result;
+        }
+
         public async Task<CustomerDto?> GetCustomerDtoByCustomerNoAsync(string customerNumber, CancellationToken cancellationToken)
         {
             await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
