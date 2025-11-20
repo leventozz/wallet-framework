@@ -4,9 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WF.CustomerService.Application.Abstractions;
+using WF.CustomerService.Application.Abstractions.Identity;
 using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
+using WF.CustomerService.Infrastructure.Identity;
 using WF.CustomerService.Infrastructure.QueryServices;
 using WF.CustomerService.Infrastructure.Repositories;
 using WF.CustomerService.Infrastructure.EventBus;
@@ -30,6 +32,14 @@ namespace WF.CustomerService.Infrastructure
             services.AddNpgsqlDataSource(connectionString);
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+            services.Configure<KeycloakOptions>(configuration.GetSection("Keycloak"));
+
+            services.AddHttpClient<IIdentityService, KeycloakIdentityService>((serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
 
             services.AddMassTransit(mtConfig =>
             {

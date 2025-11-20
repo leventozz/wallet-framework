@@ -10,12 +10,11 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
         private const int MaxPhoneNumberLength = 20;
         private const int MinPhoneNumberLength = 10;
 
+        private const int MinPasswordLength = 8;
+        private const int MaxPasswordLength = 128;
+
         public CreateCustomerCommandValidator()
         {
-            RuleFor(x => x.IdentityId)
-                .NotEmpty()
-                .WithMessage("Identity ID is required.");
-
             RuleFor(x => x.FirstName)
                 .NotEmpty()
                 .WithMessage("First name is required.")
@@ -39,6 +38,14 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                 .WithMessage("Email must be a valid email address.")
                 .MaximumLength(MaxEmailLength)
                 .WithMessage($"Email must not exceed {MaxEmailLength} characters.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty()
+                .WithMessage("Password is required.")
+                .MinimumLength(MinPasswordLength)
+                .WithMessage($"Password must be at least {MinPasswordLength} characters.")
+                .MaximumLength(MaxPasswordLength)
+                .WithMessage($"Password must not exceed {MaxPasswordLength} characters.");
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty()
