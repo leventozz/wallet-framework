@@ -96,6 +96,7 @@ public class KeycloakIdentityService : IIdentityService
 
         var userRequest = new
         {
+            username = email,
             email = email,
             firstName = firstName,
             lastName = lastName,
@@ -191,7 +192,14 @@ public class KeycloakIdentityService : IIdentityService
 
     private record TokenResponse
     {
+        [JsonPropertyName("access_token")]
         public string AccessToken { get; init; } = string.Empty;
+        
+        [JsonPropertyName("token_type")]
+        public string TokenType { get; init; } = string.Empty;
+        
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; init; }
     }
 
     private record KeycloakUser
