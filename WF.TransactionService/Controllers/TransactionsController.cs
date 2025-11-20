@@ -15,6 +15,7 @@ public class TransactionsController(IMediator _mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateTransaction([FromBody] CreateTransactionCommand command, CancellationToken cancellationToken)
     {
+        command.SenderIdentityId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         var correlationId = await _mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(CreateTransaction), new { id = correlationId }, correlationId);
     }
