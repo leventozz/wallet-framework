@@ -1,5 +1,44 @@
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using WF.Shared.Observability;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+    {
+        var attributes = OpenTelemetryConfig.GetResourceAttributes("ApiGateway", "1.0.0");
+        resource.AddAttributes(
+            attributes.Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value))
+        );
+    })
+    .WithTracing(tracing =>
+    {
+
+        foreach (var source in OpenTelemetryConfig.CommonActivitySources)
+        {
+            tracing.AddSource(source);
+        }
+        
+        tracing.AddSource("WF.ApiGateway");
+        
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+        
+        tracing.AddOtlpExporter(opts =>
+        {
+            opts.Endpoint = new Uri(OpenTelemetryConfig.OtlpEndpoint);
+        });
+    })
+    .WithMetrics(metrics => 
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+        metrics.AddPrometheusExporter();  
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,11 +70,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapPrometheusScrapingEndpoint();
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,16 +1,31 @@
-# Minimal prometheus.yml configuration
 global:
-  scrape_interval: 15s # Default scrape interval
+  scrape_interval: 15s
 
 scrape_configs:
-  # Scrape Prometheus itself
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9090"]
+  
+  # CustomerService metrics
+  - job_name: "customer-service"
+    static_configs:
+      - targets: ["host.docker.internal:5116"]  
+    metrics_path: "/metrics"
+  
+  # FraudService metrics
+  - job_name: "fraud-service"
+    static_configs:
+      - targets: ["host.docker.internal:5045"]  
+    metrics_path: "/metrics"
 
-  # Add a job for your .NET application
-  # Your .NET app needs to expose a /metrics endpoint (using OpenTelemetry or prometheus-net)
-  # - job_name: "backend-app"
-  #   static_configs:
-  #     # Use the Docker service name and port
-  #     - targets: ["backend-app:8080"]
+  # TransactionService metrics
+  - job_name: "trnsaction-service"
+    static_configs:
+      - targets: ["host.docker.internal:5068"]  
+    metrics_path: "/metrics"
+
+  # WalletService metrics
+  - job_name: "wallet-service"
+    static_configs:
+      - targets: ["host.docker.internal:5212"]  
+    metrics_path: "/metrics"

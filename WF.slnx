@@ -3,6 +3,7 @@
   <Folder Name="/docs/" />
   <Folder Name="/shared/">
     <Project Path="Shared.Contracts/WF.Shared.Contracts.csproj" />
+    <Project Path="WF.Shared.Observability/WF.Shared.Observability.csproj" Id="e37fad52-9135-40a4-aaf1-07737e610c69" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="docker-compose.yml" />
