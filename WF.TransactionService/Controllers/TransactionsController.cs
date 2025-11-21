@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,8 +6,9 @@ using WF.TransactionService.Application.Features.Transactions.Commands.CreateTra
 
 namespace WF.TransactionService.Api.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 [Authorize]
 public class TransactionsController(IMediator _mediator) : ControllerBase
 {

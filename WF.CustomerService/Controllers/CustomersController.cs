@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer;
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerById;
@@ -11,8 +12,9 @@ using WF.Shared.Contracts.Dtos;
 
 namespace WF.CustomerService.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class CustomersController(IMediator _mediator) : ControllerBase
     {
         [HttpPost]
@@ -81,7 +83,7 @@ namespace WF.CustomerService.Api.Controllers
             return Ok(customerId);
         }
 
-        [HttpGet("/api/v1/customers/{id:guid}/verification-data")]
+        [HttpGet("{id:guid}/verification-data")]
         [ProducesResponseType(typeof(CustomerVerificationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetVerificationData(Guid id)
@@ -91,7 +93,7 @@ namespace WF.CustomerService.Api.Controllers
             return Ok(dto);
         }
 
-        [HttpPost("/api/v1/customers/lookup-by-numbers")]
+        [HttpPost("lookup-by-numbers")]
         [ProducesResponseType(typeof(List<CustomerLookupDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> LookupByCustomerNumbers([FromBody] LookupByCustomerNumbersQuery query)
         {

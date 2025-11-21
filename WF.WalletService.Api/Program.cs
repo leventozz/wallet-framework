@@ -1,7 +1,4 @@
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using WF.Shared.Observability;
+using WF.WalletService.Api.Extensions;
 using WF.WalletService.Api.Logging;
 using WF.WalletService.Application;
 using WF.WalletService.Infrastructure;
@@ -15,39 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource =>
-    {
-        var attributes = OpenTelemetryConfig.GetResourceAttributes("WalletService", "1.0.0");
-        resource.AddAttributes(
-            attributes.Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value))
-        );
-    })
-    .WithTracing(tracing =>
-    {
-        foreach (var source in OpenTelemetryConfig.CommonActivitySources)
-        {
-            tracing.AddSource(source);
-        }
-        
-        tracing.AddSource("WF.WalletService");
-        
-        tracing.AddAspNetCoreInstrumentation();
-        tracing.AddHttpClientInstrumentation();
-        tracing.AddEntityFrameworkCoreInstrumentation();
-        
-        tracing.AddOtlpExporter(opts =>
-        {
-            opts.Endpoint = new Uri(OpenTelemetryConfig.OtlpEndpoint);
-        });
-    })
-    .WithMetrics(metrics => 
-    {
-        metrics.AddAspNetCoreInstrumentation();
-        metrics.AddHttpClientInstrumentation();
-        metrics.AddRuntimeInstrumentation();
-        metrics.AddPrometheusExporter();  
-    });
+builder.Services.AddWFApiVersioning();
+builder.Services.AddOpenTelemetry("WalletService", "1.0.0");
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

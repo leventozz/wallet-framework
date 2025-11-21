@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WF.Shared.Contracts.Dtos;
@@ -6,8 +7,9 @@ using WF.WalletService.Application.Features.Wallets.Queries.LookupByCustomerIds;
 
 namespace WF.WalletService.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class WalletsController(IMediator _mediator) : ControllerBase
 {
     [HttpGet("by-customer/{customerId:guid}/currency/{currency}")]
@@ -31,7 +33,7 @@ public class WalletsController(IMediator _mediator) : ControllerBase
         return Ok(walletId);
     }
 
-    [HttpPost("/api/v1/wallets/lookup-by-customer-ids")]
+    [HttpPost("lookup-by-customer-ids")]
     [ProducesResponseType(typeof(List<WalletLookupDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> LookupByCustomerIds([FromBody] LookupByCustomerIdsQuery query)
     {
