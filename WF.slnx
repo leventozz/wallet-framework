@@ -7,7 +7,9 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="docker-compose.yml" />
+    <File Path="init-db.sql" />
     <File Path="prometheus.yml" />
+    <File Path="wallet-realm.json" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Infrastructure/">

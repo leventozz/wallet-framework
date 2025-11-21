@@ -25,11 +25,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: myStrongPassword123!
-      POSTGRES_DB: WF_CustomerDb
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - microservice-network
     healthcheck:
@@ -86,10 +87,16 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak_idm
-    command: start-dev
+    command: start-dev --import-realm
+    volumes:
+      - ./wallet-realm.json:/opt/keycloak/data/import/realm.json
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/WF_KeycloakDb
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: myStrongPassword123!
     ports:
       - "8080:8080"
     networks:
