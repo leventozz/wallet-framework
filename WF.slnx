@@ -9,6 +9,9 @@
     <File Path="prometheus.yml" />
   </Folder>
   <Folder Name="/src/" />
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="WF.ApiGateway/WF.ApiGateway.csproj" Id="b37aa159-94a6-419a-be7a-0ab90f9d6cbf" />
+  </Folder>
   <Folder Name="/src/Services/" />
   <Folder Name="/src/Services/CustomerService/">
     <Project Path="WF.CustomerService.Application/WF.CustomerService.Application.csproj" />
