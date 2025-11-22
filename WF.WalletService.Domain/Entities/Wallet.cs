@@ -42,32 +42,29 @@ namespace WF.WalletService.Domain.Entities
             ExternalAccountRef = null;
         }
 
-        public void Deposit(Money amount)
+        public void Deposit(Money depositMoney)
         {
-            if (amount.Amount <= 0)
-                throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
+            if (depositMoney.Amount == 0)
+                throw new InvalidOperationException("The amount must be greater than zero.");
 
-            if (amount.Currency != Balance.Currency)
-                throw new InvalidOperationException($"Cannot deposit money with different currency. Wallet currency: {Balance.Currency}, Deposit currency: {amount.Currency}.");
-
-            Balance = Balance + amount;
-            AvailableBalance = AvailableBalance + amount;
+            Balance = Balance + depositMoney;
+            AvailableBalance = AvailableBalance + depositMoney;
             UpdatedAtUtc = DateTime.UtcNow;
         }
 
-        public void Withdraw(Money amount)
+        public void Withdraw(Money withdrawMoney)
         {
-            if (amount.Amount <= 0)
-                throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
+            if (withdrawMoney.Amount == 0)
+                throw new InvalidOperationException("The amount must be greater than zero.");
 
-            if (amount.Currency != Balance.Currency)
-                throw new InvalidOperationException($"Cannot withdraw money with different currency. Wallet currency: {Balance.Currency}, Withdraw currency: {amount.Currency}.");
+            if (Balance < withdrawMoney)
+                throw new InsufficientBalanceException(Balance.Amount, withdrawMoney.Amount);
 
-            if (Balance < amount)
-                throw new InsufficientBalanceException(Balance.Amount, amount.Amount);
+            if (AvailableBalance < withdrawMoney)
+                throw new InsufficientBalanceException(AvailableBalance.Amount, withdrawMoney.Amount);
 
-            Balance = Balance - amount;
-            AvailableBalance = AvailableBalance - amount;
+            Balance = Balance - withdrawMoney;
+            AvailableBalance = AvailableBalance - withdrawMoney;
             UpdatedAtUtc = DateTime.UtcNow;
         }
 

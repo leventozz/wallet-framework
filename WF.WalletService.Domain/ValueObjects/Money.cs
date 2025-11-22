@@ -1,3 +1,5 @@
+using WF.WalletService.Domain.Exceptions;
+
 namespace WF.WalletService.Domain.ValueObjects;
 
 public readonly record struct Money
@@ -14,7 +16,7 @@ public readonly record struct Money
     public static Money Create(decimal amount, string currency)
     {
         if (amount < 0)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Money amount cannot be negative.");
+            throw new InsufficientBalanceException(amount);
 
         if (string.IsNullOrWhiteSpace(currency))
             throw new ArgumentException("Currency cannot be null or empty.", nameof(currency));
@@ -22,19 +24,21 @@ public readonly record struct Money
         return new Money(amount, currency.Trim().ToUpperInvariant());
     }
 
-    public static Money operator +(Money left, Money right)
+    private static void ValidateSameCurrency(Money left, Money right)
     {
         if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot add money with different currencies: {left.Currency} and {right.Currency}.");
+            throw new InvalidOperationException($"Cannot operation money with different currencies: {left.Currency} and {right.Currency}.");
+    }
 
+    public static Money operator +(Money left, Money right)
+    {
+        ValidateSameCurrency(left, right);
         return Create(left.Amount + right.Amount, left.Currency);
     }
 
     public static Money operator -(Money left, Money right)
     {
-        if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot subtract money with different currencies: {left.Currency} and {right.Currency}.");
-
+        ValidateSameCurrency(left, right);
         var result = left.Amount - right.Amount;
         if (result < 0)
             throw new InvalidOperationException("Result of subtraction cannot be negative.");
@@ -44,33 +48,25 @@ public readonly record struct Money
 
     public static bool operator <(Money left, Money right)
     {
-        if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot compare money with different currencies: {left.Currency} and {right.Currency}.");
-
+        ValidateSameCurrency(left, right);
         return left.Amount < right.Amount;
     }
 
     public static bool operator >(Money left, Money right)
     {
-        if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot compare money with different currencies: {left.Currency} and {right.Currency}.");
-
+        ValidateSameCurrency(left, right);
         return left.Amount > right.Amount;
     }
 
     public static bool operator <=(Money left, Money right)
     {
-        if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot compare money with different currencies: {left.Currency} and {right.Currency}.");
-
+        ValidateSameCurrency(left, right);
         return left.Amount <= right.Amount;
     }
 
     public static bool operator >=(Money left, Money right)
     {
-        if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot compare money with different currencies: {left.Currency} and {right.Currency}.");
-
+        ValidateSameCurrency(left, right);
         return left.Amount >= right.Amount;
     }
 

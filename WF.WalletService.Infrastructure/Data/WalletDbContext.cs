@@ -53,7 +53,7 @@ namespace WF.WalletService.Infrastructure.Data
                         .IsRequired();
 
                     availableBalanceBuilder.Property(ab => ab.Currency)
-                        .HasColumnName("AvailableBalanceCurrency")
+                        .HasColumnName("Currency")
                         .HasMaxLength(10)
                         .IsRequired();
                 });

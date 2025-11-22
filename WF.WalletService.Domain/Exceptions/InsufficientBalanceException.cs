@@ -9,6 +9,13 @@
             RequestedAmount = requestedAmount;
         }
 
+        public InsufficientBalanceException(decimal requestedAmount)
+            : base($"Insufficient balance. Requested amount: {requestedAmount}")
+        {
+            Balance = 0;
+            RequestedAmount = requestedAmount;
+        }
+
         public decimal Balance { get; }
         public decimal RequestedAmount { get; }
     }
