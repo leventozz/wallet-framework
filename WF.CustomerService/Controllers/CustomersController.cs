@@ -9,13 +9,12 @@ using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerIdByC
 using WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByIdentity;
 using WF.CustomerService.Application.Features.Customers.Queries.LookupByCustomerNumbers;
 using WF.Shared.Contracts.Dtos;
+using WF.CustomerService.Api.Controllers.Base;
 
 namespace WF.CustomerService.Api.Controllers
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
     [ApiVersion("1.0")]
-    public class CustomersController(IMediator _mediator) : ControllerBase
+    public class CustomersController(IMediator _mediator) : BaseController
     {
         [HttpPost]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
@@ -60,11 +59,12 @@ namespace WF.CustomerService.Api.Controllers
         [HttpGet("number/{customerNumber}")]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByCustomerNo(string customerNumber)
         {
             var query = new GetCustomerByCustomerNoQuery { CustomerNumber = customerNumber };
-            var dto = await _mediator.Send(query);
-            return Ok(dto);
+            var result = await _mediator.Send(query);
+            return HandleResult(result);
         }
 
         [HttpGet("number/{customerNumber}/id")]

@@ -1,23 +1,17 @@
 using MediatR;
 using WF.CustomerService.Application.Abstractions;
-using WF.CustomerService.Domain.Entities;
-using WF.CustomerService.Domain.Exceptions;
 using WF.Shared.Contracts.Dtos;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Application.Features.Customers.Queries.GetCustomerByCustomerNo
 {
-    public class GetCustomerByCustomerNoQueryHandler(ICustomerQueryService _customerQueryService) : IRequestHandler<GetCustomerByCustomerNoQuery, CustomerDto>
+    public class GetCustomerByCustomerNoQueryHandler(ICustomerQueryService _customerQueryService) : IRequestHandler<GetCustomerByCustomerNoQuery, Result<CustomerDto>>
     {
-        public async Task<CustomerDto> Handle(GetCustomerByCustomerNoQuery request, CancellationToken cancellationToken)
+        public async Task<Result<CustomerDto>> Handle(GetCustomerByCustomerNoQuery request, CancellationToken cancellationToken)
         {
             var customer = await _customerQueryService.GetCustomerDtoByCustomerNoAsync(request.CustomerNumber, cancellationToken);
 
-            if (customer is null)
-            {
-                throw new NotFoundException(nameof(Customer), request.CustomerNumber);
-            }
-
-            return customer;
+            return customer.EnsureExists("Customer", request.CustomerNumber);
         }
     }
 }
