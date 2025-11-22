@@ -1,4 +1,4 @@
-﻿namespace WF.WalletService.Domain.Enums
+﻿namespace WF.Shared.Contracts.Enums
 {
     public enum Currency
     {

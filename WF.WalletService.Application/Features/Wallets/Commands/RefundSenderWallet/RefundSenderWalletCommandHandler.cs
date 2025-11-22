@@ -4,6 +4,7 @@ using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Domain.Abstractions;
+using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWallet
 {
@@ -48,7 +49,8 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
 
             try
             {
-                wallet.Deposit(request.Amount);
+                var refundAmount = Money.Create(request.Amount, wallet.Balance.Currency);
+                wallet.Deposit(refundAmount);
                 await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
 
                 var refundEvent = new SenderRefundedEvent
@@ -62,7 +64,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
 
                 var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
                     wallet.Id,
-                    wallet.Balance,
+                    wallet.Balance.Amount,
                     DateTime.UtcNow);
 
                 await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);

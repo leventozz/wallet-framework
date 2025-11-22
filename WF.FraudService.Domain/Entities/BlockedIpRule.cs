@@ -13,32 +13,6 @@ public class BlockedIpRule
 
     private BlockedIpRule() { }
 
-    public BlockedIpRule(IpAddress ipAddress, string? reason = null, DateTime? expiresAtUtc = null)
-    {
-        Id = Guid.NewGuid();
-        IpAddress = ipAddress;
-        Reason = reason;
-        CreatedAtUtc = DateTime.UtcNow;
-        ExpiresAtUtc = expiresAtUtc;
-        IsActive = true;
-    }
-
-    public BlockedIpRule(
-        Guid id,
-        IpAddress ipAddress,
-        string? reason,
-        DateTime createdAtUtc,
-        DateTime? expiresAtUtc,
-        bool isActive)
-    {
-        Id = id;
-        IpAddress = ipAddress;
-        Reason = reason;
-        CreatedAtUtc = createdAtUtc;
-        ExpiresAtUtc = expiresAtUtc;
-        IsActive = isActive;
-    }
-
     public void Deactivate()
     {
         IsActive = false;

@@ -12,29 +12,6 @@ public class RiskyHourRule
 
     private RiskyHourRule() { }
 
-    public RiskyHourRule(TimeRange timeRange, string? description = null)
-    {
-        Id = Guid.NewGuid();
-        TimeRange = timeRange;
-        Description = description;
-        IsActive = true;
-        CreatedAtUtc = DateTime.UtcNow;
-    }
-
-    public RiskyHourRule(
-        Guid id,
-        TimeRange timeRange,
-        string? description,
-        DateTime createdAtUtc,
-        bool isActive)
-    {
-        Id = id;
-        TimeRange = timeRange;
-        Description = description;
-        CreatedAtUtc = createdAtUtc;
-        IsActive = isActive;
-    }
-
     public void Deactivate()
     {
         IsActive = false;

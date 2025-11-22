@@ -5,6 +5,7 @@ using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.Exceptions;
+using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWallet
 {
@@ -105,7 +106,8 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
 
             try
             {
-                wallet.Withdraw(request.Amount);
+                var withdrawAmount = Money.Create(request.Amount, wallet.Balance.Currency);
+                wallet.Withdraw(withdrawAmount);
                 await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
 
                 var successEvent = new WalletDebitedEvent
@@ -119,7 +121,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
 
                 var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
                     wallet.Id,
-                    wallet.Balance,
+                    wallet.Balance.Amount,
                     DateTime.UtcNow);
 
                 await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);

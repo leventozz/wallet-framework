@@ -1,5 +1,5 @@
-﻿using WF.WalletService.Domain.Enums;
-using WF.WalletService.Domain.Exceptions;
+﻿using WF.WalletService.Domain.Exceptions;
+using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Domain.Entities
 {
@@ -8,9 +8,8 @@ namespace WF.WalletService.Domain.Entities
         public Guid Id { get; private set; }
         public Guid CustomerId { get; private set; }
         public string WalletNumber { get; private set; } = string.Empty;
-        public string Currency { get; private set; } = string.Empty;
-        public decimal Balance { get; private set; }
-        public decimal AvailableBalance { get; private set; } 
+        public Money Balance { get; private set; }
+        public Money AvailableBalance { get; private set; } 
         public bool IsActive { get; private set; }
         public bool IsFrozen { get; private set; }
         public bool IsClosed { get; private set; }
@@ -20,7 +19,7 @@ namespace WF.WalletService.Domain.Entities
         public DateTime? ClosedAtUtc { get; private set; }
         public string? LastTransactionId { get; private set; }
         public DateTime? LastTransactionAtUtc { get; private set; }
-        public string? Iban { get; private set; }
+        public Iban? Iban { get; private set; }
         public string? ExternalAccountRef { get; private set; }
 
         private Wallet() { }
@@ -30,9 +29,9 @@ namespace WF.WalletService.Domain.Entities
             Id = Guid.NewGuid();
             CustomerId = customerId;
             WalletNumber = walletNumber;
-            Currency = currency ?? Enums.Currency.TRY.ToString();
-            Balance = 0;
-            AvailableBalance = 0;
+            var currencyCode = currency ?? Shared.Contracts.Enums.Currency.TRY.ToString();
+            Balance = Money.Create(0, currencyCode);
+            AvailableBalance = Money.Create(0, currencyCode);
             IsActive = true;
             CreatedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = null;
@@ -43,24 +42,32 @@ namespace WF.WalletService.Domain.Entities
             ExternalAccountRef = null;
         }
 
-        public void Deposit(decimal amount)
+        public void Deposit(Money amount)
         {
-            if (amount <= 0)
+            if (amount.Amount <= 0)
                 throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
 
-            Balance += amount;
+            if (amount.Currency != Balance.Currency)
+                throw new InvalidOperationException($"Cannot deposit money with different currency. Wallet currency: {Balance.Currency}, Deposit currency: {amount.Currency}.");
+
+            Balance = Balance + amount;
+            AvailableBalance = AvailableBalance + amount;
             UpdatedAtUtc = DateTime.UtcNow;
         }
 
-        public void Withdraw(decimal amount)
+        public void Withdraw(Money amount)
         {
-            if (amount <= 0)
+            if (amount.Amount <= 0)
                 throw new ArgumentException("The amount must be greater than zero.", nameof(amount));
 
-            if (Balance < amount)
-                throw new InsufficientBalanceException(Balance, amount);
+            if (amount.Currency != Balance.Currency)
+                throw new InvalidOperationException($"Cannot withdraw money with different currency. Wallet currency: {Balance.Currency}, Withdraw currency: {amount.Currency}.");
 
-            Balance -= amount;
+            if (Balance < amount)
+                throw new InsufficientBalanceException(Balance.Amount, amount.Amount);
+
+            Balance = Balance - amount;
+            AvailableBalance = AvailableBalance - amount;
             UpdatedAtUtc = DateTime.UtcNow;
         }
 
@@ -114,7 +121,7 @@ namespace WF.WalletService.Domain.Entities
             if (IsClosed)
                 return;
 
-            if (Balance != 0)
+            if (Balance.Amount != 0)
                 throw new InvalidOperationException("Cannot close a wallet with non-zero balance.");
 
             IsClosed = true;
@@ -138,7 +145,7 @@ namespace WF.WalletService.Domain.Entities
             if (IsDeleted)
                 return;
 
-            if (Balance != 0)
+            if (Balance.Amount != 0)
                 throw new InvalidOperationException("Cannot delete a wallet with non-zero balance.");
 
             IsDeleted = true;

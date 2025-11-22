@@ -1,10 +1,9 @@
 using MediatR;
 using WF.Shared.Contracts.Abstractions;
+using WF.Shared.Contracts.Enums;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
-using WF.WalletService.Application.Abstractions;
 using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.Entities;
-using WF.WalletService.Domain.Enums;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletForCustomer
 {
@@ -43,8 +42,8 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
             var eventToPublish = new WalletCreatedEvent(
                 wallet.Id,
                 request.CustomerId,
-                wallet.Balance,
-                wallet.Currency
+                wallet.Balance.Amount,
+                wallet.Balance.Currency
             );
 
             await _eventPublisher.PublishAsync(eventToPublish, cancellationToken);

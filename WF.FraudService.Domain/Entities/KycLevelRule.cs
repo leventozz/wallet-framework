@@ -14,32 +14,6 @@ public class KycLevelRule
 
     private KycLevelRule() { }
 
-    public KycLevelRule(KycStatus requiredKycStatus, Money? maxAllowedAmount = null, string? description = null)
-    {
-        Id = Guid.NewGuid();
-        RequiredKycStatus = requiredKycStatus;
-        MaxAllowedAmount = maxAllowedAmount;
-        Description = description;
-        IsActive = true;
-        CreatedAtUtc = DateTime.UtcNow;
-    }
-
-    public KycLevelRule(
-        Guid id,
-        KycStatus requiredKycStatus,
-        Money? maxAllowedAmount,
-        string? description,
-        DateTime createdAtUtc,
-        bool isActive)
-    {
-        Id = id;
-        RequiredKycStatus = requiredKycStatus;
-        MaxAllowedAmount = maxAllowedAmount;
-        Description = description;
-        CreatedAtUtc = createdAtUtc;
-        IsActive = isActive;
-    }
-
     public void Deactivate()
     {
         IsActive = false;

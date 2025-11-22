@@ -4,6 +4,7 @@ using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Domain.Abstractions;
+using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
 {
@@ -104,7 +105,8 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
 
             try
             {
-                wallet.Deposit(request.Amount);
+                var depositAmount = Money.Create(request.Amount, request.Currency);
+                wallet.Deposit(depositAmount);
                 await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
 
                 var successEvent = new WalletCreditedEvent
@@ -118,7 +120,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
 
                 var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
                     wallet.Id,
-                    wallet.Balance,
+                    wallet.Balance.Amount,
                     DateTime.UtcNow);
 
                 await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);

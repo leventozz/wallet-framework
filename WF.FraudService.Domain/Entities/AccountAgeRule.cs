@@ -13,35 +13,6 @@ public class AccountAgeRule
 
     private AccountAgeRule() { }
 
-    public AccountAgeRule(int minAccountAgeDays, Money? maxAllowedAmount = null, string? description = null)
-    {
-        if (minAccountAgeDays < 0)
-            throw new ArgumentOutOfRangeException(nameof(minAccountAgeDays), "Minimum account age days cannot be negative.");
-
-        Id = Guid.NewGuid();
-        MinAccountAgeDays = minAccountAgeDays;
-        MaxAllowedAmount = maxAllowedAmount;
-        Description = description;
-        IsActive = true;
-        CreatedAtUtc = DateTime.UtcNow;
-    }
-
-    public AccountAgeRule(
-        Guid id,
-        int minAccountAgeDays,
-        Money? maxAllowedAmount,
-        string? description,
-        DateTime createdAtUtc,
-        bool isActive)
-    {
-        Id = id;
-        MinAccountAgeDays = minAccountAgeDays;
-        MaxAllowedAmount = maxAllowedAmount;
-        Description = description;
-        CreatedAtUtc = createdAtUtc;
-        IsActive = isActive;
-    }
-
     public void Deactivate()
     {
         IsActive = false;
