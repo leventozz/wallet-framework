@@ -42,6 +42,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .Then(context =>
                 {
                     context.Saga.CorrelationId = context.Message.CorrelationId;
+                    context.Saga.TransactionId = context.Message.TransactionId;
                     context.Saga.SenderCustomerId = context.Message.SenderCustomerId;
                     context.Saga.SenderCustomerNumber = context.Message.SenderCustomerNumber;
                     context.Saga.ReceiverCustomerId = context.Message.ReceiverCustomerId;

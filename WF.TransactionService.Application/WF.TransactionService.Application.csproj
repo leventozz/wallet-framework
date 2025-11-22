@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
+    <PackageReference Include="IdGen" Version="3.0.7" />
     <PackageReference Include="MassTransit" Version="8.5.5" />
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>

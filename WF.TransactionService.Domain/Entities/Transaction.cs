@@ -6,6 +6,7 @@ namespace WF.TransactionService.Domain.Entities
     {
         public Guid CorrelationId { get; set; }
         public string CurrentState { get; set; } = string.Empty;
+        public string TransactionId { get; set; } = string.Empty;
         public Guid SenderCustomerId { get; set; }
         public string SenderCustomerNumber { get; set; } = string.Empty;
         public Guid ReceiverCustomerId { get; set; }

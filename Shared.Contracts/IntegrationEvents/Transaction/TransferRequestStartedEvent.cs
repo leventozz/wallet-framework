@@ -3,6 +3,7 @@ namespace WF.Shared.Contracts.IntegrationEvents.Transaction
     public record TransferRequestStartedEvent
     {
         public Guid CorrelationId { get; init; }
+        public string TransactionId { get; init; } = string.Empty;
         public Guid SenderCustomerId { get; init; }
         public string SenderCustomerNumber { get; init; } = string.Empty;
         public Guid ReceiverCustomerId { get; init; }

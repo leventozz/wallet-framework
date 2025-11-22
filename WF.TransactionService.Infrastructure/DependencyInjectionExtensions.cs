@@ -3,15 +3,18 @@ using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
+using WF.TransactionService.Application.Abstractions;
 using WF.TransactionService.Application.Contracts;
 using WF.TransactionService.Infrastructure.EventBus;
 using WF.TransactionService.Domain.Abstractions;
 using WF.TransactionService.Domain.Entities;
 using WF.TransactionService.Infrastructure.Data;
 using WF.TransactionService.Infrastructure.Features.Sagas;
+using WF.TransactionService.Infrastructure.MachineContext;
 using WF.TransactionService.Infrastructure.QueryServices;
 using WF.TransactionService.Infrastructure.Repositories;
 using WF.TransactionService.Infrastructure.HttpClients;
@@ -31,6 +34,12 @@ namespace WF.TransactionService.Infrastructure
                 options.UseNpgsql(connectionString));
 
             services.AddNpgsqlDataSource(connectionString);
+
+            services.AddSingleton<IMachineContextProvider>(serviceProvider =>
+            {
+                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+                return new EnvironmentMachineContextProvider(env, configuration);
+            });
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
             services.Configure<CustomerServiceOptions>(configuration.GetSection("CustomerService"));
