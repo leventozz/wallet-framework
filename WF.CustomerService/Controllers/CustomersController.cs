@@ -30,14 +30,8 @@ namespace WF.CustomerService.Api.Controllers
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             var query = new GetCustomerByIdQuery { Id = id };
-            var customer = await _mediator.Send(query, cancellationToken);
-            
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(customer);
+            var result = await _mediator.Send(query, cancellationToken);
+            return HandleResult(result);
         }
 
         [HttpGet("by-identity/{identityId}")]
@@ -46,14 +40,8 @@ namespace WF.CustomerService.Api.Controllers
         public async Task<IActionResult> GetCustomerByIdentity(string identityId, CancellationToken cancellationToken)
         {
             var query = new GetCustomerByIdentityQuery { IdentityId = identityId };
-            var customer = await _mediator.Send(query, cancellationToken);
-            
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(customer);
+            var result = await _mediator.Send(query, cancellationToken);
+            return HandleResult(result);
         }
 
         [HttpGet("number/{customerNumber}")]
@@ -73,14 +61,8 @@ namespace WF.CustomerService.Api.Controllers
         public async Task<IActionResult> GetIdByCustomerNumber(string customerNumber)
         {
             var query = new GetCustomerIdByCustomerNumberQuery { CustomerNumber = customerNumber };
-            var customerId = await _mediator.Send(query);
-            
-            if (customerId == null)
-            {
-                return NotFound();
-            }
-            
-            return Ok(customerId);
+            var result = await _mediator.Send(query);
+            return HandleResult(result);
         }
 
         [HttpGet("{id:guid}/verification-data")]
@@ -89,16 +71,16 @@ namespace WF.CustomerService.Api.Controllers
         public async Task<IActionResult> GetVerificationData(Guid id)
         {
             var query = new GetCustomerVerificationDataQuery { Id = id };
-            var dto = await _mediator.Send(query);
-            return Ok(dto);
+            var result = await _mediator.Send(query);
+            return HandleResult(result);
         }
 
         [HttpPost("lookup-by-numbers")]
         [ProducesResponseType(typeof(List<CustomerLookupDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> LookupByCustomerNumbers([FromBody] LookupByCustomerNumbersQuery query)
         {
-            var results = await _mediator.Send(query);
-            return Ok(results);
+            var result = await _mediator.Send(query);
+            return HandleResult(result);
         }
     }
 }
