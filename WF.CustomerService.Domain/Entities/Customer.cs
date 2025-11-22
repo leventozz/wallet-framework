@@ -1,5 +1,6 @@
 ﻿using WF.CustomerService.Domain.ValueObjects;
 using WF.Shared.Contracts.Enums;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Domain.Entities
 {
@@ -20,7 +21,7 @@ namespace WF.CustomerService.Domain.Entities
 
         private Customer() { }
 
-        public Customer(string identityId, PersonName name, Email email, string customerNumber, PhoneNumber phoneNumber)
+        private Customer(string identityId, PersonName name, Email email, string customerNumber, PhoneNumber phoneNumber)
         {
             Id = Guid.NewGuid();
             IdentityId = identityId;
@@ -35,10 +36,27 @@ namespace WF.CustomerService.Domain.Entities
             IsActive = true;
         }
 
-        public void Update(PersonName? name = null, Email? email = null, PhoneNumber? phoneNumber = null)
+        public static Result<Customer> Create(
+            string identityId,
+            PersonName name,
+            Email email,
+            string customerNumber,
+            PhoneNumber phoneNumber)
+        {
+            if (string.IsNullOrWhiteSpace(identityId))
+                return Result<Customer>.Failure(Error.Validation("Customer.IdentityId.Required", "Identity ID cannot be null or empty."));
+
+            if (string.IsNullOrWhiteSpace(customerNumber))
+                return Result<Customer>.Failure(Error.Validation("Customer.CustomerNumber.Required", "Customer number cannot be null or empty."));
+
+            var customer = new Customer(identityId, name, email, customerNumber, phoneNumber);
+            return Result<Customer>.Success(customer);
+        }
+
+        public Result Update(PersonName? name = null, Email? email = null, PhoneNumber? phoneNumber = null)
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot update a deleted customer.");
+                return Result.Failure(Error.Failure("Customer.Deleted", "Cannot update a deleted customer."));
 
             if (name.HasValue)
                 Name = name.Value;
@@ -50,35 +68,39 @@ namespace WF.CustomerService.Domain.Entities
                 PhoneNumber = phoneNumber.Value;
 
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void UpdateKycStatus(KycStatus status)
+        public Result UpdateKycStatus(KycStatus status)
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot update KYC status of a deleted customer.");
+                return Result.Failure(Error.Failure("Customer.Deleted", "Cannot update KYC status of a deleted customer."));
 
             KycStatus = status;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void SetActive(bool isActive)
+        public Result SetActive(bool isActive)
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot change active status of a deleted customer.");
+                return Result.Failure(Error.Failure("Customer.Deleted", "Cannot change active status of a deleted customer."));
 
             IsActive = isActive;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void SoftDelete(string? deletedBy = null)
+        public Result SoftDelete(string? deletedBy = null)
         {
             if (IsDeleted)
-                return;
+                return Result.Success();
 
             IsDeleted = true;
             IsActive = false;
             DeletedBy = deletedBy;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
     }
 }

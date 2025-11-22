@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Domain.ValueObjects;
 
@@ -18,27 +19,35 @@ public readonly record struct PhoneNumber
         Value = value;
     }
 
-    public static PhoneNumber Create(string value)
+    public static Result<PhoneNumber> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Phone number cannot be null or empty.", nameof(value));
+            return Result<PhoneNumber>.Failure(Error.Validation("PhoneNumber.Required", "Phone number cannot be null or empty."));
 
         var trimmedValue = value.Trim();
 
         if (trimmedValue.Length < MinPhoneNumberLength)
-            throw new ArgumentException($"Phone number must be at least {MinPhoneNumberLength} characters.", nameof(value));
+            return Result<PhoneNumber>.Failure(Error.Validation("PhoneNumber.MinLength", $"Phone number must be at least {MinPhoneNumberLength} characters."));
 
         if (trimmedValue.Length > MaxPhoneNumberLength)
-            throw new ArgumentException($"Phone number must not exceed {MaxPhoneNumberLength} characters.", nameof(value));
+            return Result<PhoneNumber>.Failure(Error.Validation("PhoneNumber.MaxLength", $"Phone number must not exceed {MaxPhoneNumberLength} characters."));
 
         if (!PhoneNumberRegex.IsMatch(trimmedValue))
-            throw new ArgumentException("Phone number can only contain digits, spaces, hyphens, plus signs, and parentheses.", nameof(value));
+            return Result<PhoneNumber>.Failure(Error.Validation("PhoneNumber.InvalidFormat", "Phone number can only contain digits, spaces, hyphens, plus signs, and parentheses."));
 
         var digitCount = trimmedValue.Count(char.IsDigit);
         if (digitCount < MinPhoneNumberLength - 2)
-            throw new ArgumentException("Phone number must contain sufficient digits.", nameof(value));
+            return Result<PhoneNumber>.Failure(Error.Validation("PhoneNumber.InsufficientDigits", "Phone number must contain sufficient digits."));
 
-        return new PhoneNumber(trimmedValue);
+        return Result<PhoneNumber>.Success(new PhoneNumber(trimmedValue));
+    }
+
+    public static PhoneNumber FromDatabaseValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new InvalidOperationException("Phone number cannot be null or empty when reading from database.");
+
+        return new PhoneNumber(value.Trim());
     }
 
     public static implicit operator string(PhoneNumber phoneNumber) => phoneNumber.Value;

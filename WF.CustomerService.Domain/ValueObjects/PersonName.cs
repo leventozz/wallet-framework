@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Domain.ValueObjects;
 
@@ -19,30 +20,30 @@ public readonly record struct PersonName
         LastName = lastName;
     }
 
-    public static PersonName Create(string firstName, string lastName)
+    public static Result<PersonName> Create(string firstName, string lastName)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("First name cannot be null or empty.", nameof(firstName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.FirstName.Required", "First name cannot be null or empty."));
 
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Last name cannot be null or empty.", nameof(lastName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.LastName.Required", "Last name cannot be null or empty."));
 
         var trimmedFirstName = firstName.Trim();
         var trimmedLastName = lastName.Trim();
 
         if (trimmedFirstName.Length > MaxNameLength)
-            throw new ArgumentException($"First name must not exceed {MaxNameLength} characters.", nameof(firstName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.FirstName.MaxLength", $"First name must not exceed {MaxNameLength} characters."));
 
         if (trimmedLastName.Length > MaxNameLength)
-            throw new ArgumentException($"Last name must not exceed {MaxNameLength} characters.", nameof(lastName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.LastName.MaxLength", $"Last name must not exceed {MaxNameLength} characters."));
 
         if (!NameRegex.IsMatch(trimmedFirstName))
-            throw new ArgumentException("First name can only contain letters, spaces, hyphens, apostrophes, and periods.", nameof(firstName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.FirstName.InvalidFormat", "First name can only contain letters, spaces, hyphens, apostrophes, and periods."));
 
         if (!NameRegex.IsMatch(trimmedLastName))
-            throw new ArgumentException("Last name can only contain letters, spaces, hyphens, apostrophes, and periods.", nameof(lastName));
+            return Result<PersonName>.Failure(Error.Validation("PersonName.LastName.InvalidFormat", "Last name can only contain letters, spaces, hyphens, apostrophes, and periods."));
 
-        return new PersonName(trimmedFirstName, trimmedLastName);
+        return Result<PersonName>.Success(new PersonName(trimmedFirstName, trimmedLastName));
     }
 
     public string FullName => $"{FirstName} {LastName}";

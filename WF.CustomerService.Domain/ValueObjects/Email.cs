@@ -1,5 +1,6 @@
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Domain.ValueObjects;
 
@@ -18,31 +19,40 @@ public readonly record struct Email
         Value = value;
     }
 
-    public static Email Create(string value)
+    public static Result<Email> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Email cannot be null or empty.", nameof(value));
+            return Result<Email>.Failure(Error.Validation("Email.Required", "Email cannot be null or empty."));
 
         var trimmedValue = value.Trim();
 
         if (trimmedValue.Length > MaxEmailLength)
-            throw new ArgumentException($"Email must not exceed {MaxEmailLength} characters.", nameof(value));
+            return Result<Email>.Failure(Error.Validation("Email.MaxLength", $"Email must not exceed {MaxEmailLength} characters."));
 
         if (!EmailRegex.IsMatch(trimmedValue))
-            throw new ArgumentException("Email must be a valid email address.", nameof(value));
+            return Result<Email>.Failure(Error.Validation("Email.InvalidFormat", "Email must be a valid email address."));
 
         try
         {
             var mailAddress = new MailAddress(trimmedValue);
             if (mailAddress.Address != trimmedValue)
-                throw new ArgumentException("Email contains invalid characters.", nameof(value));
+                return Result<Email>.Failure(Error.Validation("Email.InvalidCharacters", "Email contains invalid characters."));
         }
         catch (Exception ex) when (ex is ArgumentException || ex is FormatException)
         {
-            throw new ArgumentException("Email must be a valid email address.", nameof(value), ex);
+            return Result<Email>.Failure(Error.Validation("Email.InvalidFormat", "Email must be a valid email address."));
         }
 
-        return new Email(trimmedValue);
+        return Result<Email>.Success(new Email(trimmedValue));
+    }
+
+    // for efcore
+    public static Email FromDatabaseValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new InvalidOperationException("Email cannot be null or empty when reading from database.");
+
+        return new Email(value.Trim());
     }
 
     public static implicit operator string(Email email) => email.Value;

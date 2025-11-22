@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer
 {
-    public record class CreateCustomerCommand : IRequest<Guid>
+    public record class CreateCustomerCommand : IRequest<Result<Guid>>
     {
         public string FirstName { get; init; } = string.Empty;
         public string LastName { get; init; } = string.Empty;

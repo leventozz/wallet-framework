@@ -27,6 +27,16 @@ namespace WF.CustomerService.Api.Controllers.Base
             return Problem(result.Error);
         }
 
+        protected IActionResult HandleResultCreated<T>(Result<T> result, string actionName, object? routeValues = null)
+        {
+            if (result.IsSuccess)
+            {
+                return CreatedAtAction(actionName, routeValues, result.Value);
+            }
+
+            return Problem(result.Error);
+        }
+
         private IActionResult Problem(Error error)
         {
             var statusCode = error.Code switch

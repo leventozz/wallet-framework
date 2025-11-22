@@ -6,6 +6,7 @@ using WF.CustomerService.Domain.Entities;
 using WF.CustomerService.Domain.ValueObjects;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Customer;
+using WF.Shared.Contracts.Result;
 
 namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCustomer
 {
@@ -15,11 +16,11 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
         IIntegrationEventPublisher _integrationEventPublisher,
         IUnitOfWork _unitOfWork,
         ILogger<CreateCustomerCommandHandler> _logger)
-        : IRequestHandler<CreateCustomerCommand, Guid>
+        : IRequestHandler<CreateCustomerCommand, Result<Guid>>
     {
         private const int MaxRetryAttempts = 5;
 
-        public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation(
                 "Creating customer with email {Email}",
@@ -61,11 +62,35 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                     $"Unable to generate a unique customer number after {MaxRetryAttempts} attempts. This may indicate that the system is approaching capacity.");
             }
 
-            var name = PersonName.Create(request.FirstName, request.LastName);
-            var email = Email.Create(request.Email);
-            var phoneNumber = PhoneNumber.Create(request.PhoneNumber);
+            var nameResult = PersonName.Create(request.FirstName, request.LastName);
+            if (nameResult.IsFailure)
+            {
+                _logger.LogWarning("Failed to create person name: {Error}", nameResult.Error.Message);
+                return Result<Guid>.Failure(nameResult.Error);
+            }
+            
+            var emailResult = Email.Create(request.Email);
+            if (emailResult.IsFailure)
+            {
+                _logger.LogWarning("Failed to create email: {Error}", emailResult.Error.Message);
+                return Result<Guid>.Failure(emailResult.Error);
+            }
 
-            var customer = new Customer(identityId, name, email, customerNumber, phoneNumber);
+            var phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
+            if (phoneNumberResult.IsFailure)
+            {
+                _logger.LogWarning("Failed to create phone number: {Error}", phoneNumberResult.Error.Message);
+                return Result<Guid>.Failure(phoneNumberResult.Error);
+            }
+
+            var customerResult = Customer.Create(identityId, nameResult.Value, emailResult.Value, customerNumber, phoneNumberResult.Value);
+            if (customerResult.IsFailure)
+            {
+                _logger.LogWarning("Failed to create customer: {Error}",customerResult.Error.Message);
+                return Result<Guid>.Failure(customerResult.Error);
+            }
+
+            var customer = customerResult.Value;
             await _customerRepository.AddCustomerAsync(customer);
             await _integrationEventPublisher.PublishAsync(new CustomerCreatedEvent() { CustomerId = customer.Id }, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -75,7 +100,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                 customer.Id,
                 identityId);
 
-            return customer.Id;
+            return Result<Guid>.Success(customer.Id);
         }
     }
 }

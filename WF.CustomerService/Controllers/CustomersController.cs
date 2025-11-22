@@ -18,10 +18,15 @@ namespace WF.CustomerService.Api.Controllers
     {
         [HttpPost]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateCustomerCommand command)
         {
-            var customerId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(Create), new { id = customerId }, customerId);
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess)
+            {
+                return HandleResultCreated(result, nameof(Create), new { id = result.Value });
+            }
+            return HandleResult(result);
         }
 
         [HttpGet("{id:guid}")]
