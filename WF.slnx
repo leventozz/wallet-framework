@@ -7,6 +7,7 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="docker-compose.yml" />
+    <File Path="grafana/provisioning/datasources/datasource.yml" />
     <File Path="init-db.sql" />
     <File Path="prometheus.yml" />
     <File Path="wallet-realm.json" />
