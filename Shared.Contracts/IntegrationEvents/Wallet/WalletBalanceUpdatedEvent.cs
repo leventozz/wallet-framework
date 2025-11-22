@@ -8,6 +8,5 @@ namespace WF.Shared.Contracts.IntegrationEvents.Wallet
         DateTime TransactionDate) : WalletEventBase(WalletId)
     {
         public decimal NewBalance { get; init; } = NewBalance;
-        public DateTime TransactionDate { get; init; } = TransactionDate;
     }
 }
