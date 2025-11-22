@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
+using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Domain.Abstractions;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
@@ -114,6 +115,13 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                 };
 
                 await _eventPublisher.PublishAsync(successEvent, cancellationToken);
+
+                var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
+                    wallet.Id,
+                    wallet.Balance,
+                    DateTime.UtcNow);
+
+                await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(

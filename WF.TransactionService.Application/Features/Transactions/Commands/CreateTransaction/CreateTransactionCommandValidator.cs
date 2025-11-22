@@ -6,11 +6,9 @@ public class CreateTransactionCommandValidator : AbstractValidator<CreateTransac
 {
     public CreateTransactionCommandValidator()
     {
-        RuleFor(x => x)
-            .Must(x => !(!string.IsNullOrWhiteSpace(x.SenderCustomerNumber) && 
-                         !string.IsNullOrWhiteSpace(x.ReceiverCustomerNumber) && 
-                         x.SenderCustomerNumber == x.ReceiverCustomerNumber))
-            .WithMessage("Sender and receiver cannot be the same customer.");
+        RuleFor(x => x.ReceiverCustomerNumber)
+            .NotEmpty()
+            .WithMessage("Receiver customer number is required.");
 
         RuleFor(x => x.Amount)
             .GreaterThan(0)

@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
+using WF.Shared.Contracts.IntegrationEvents.Wallet;
 using WF.WalletService.Domain.Abstractions;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWallet
@@ -58,6 +59,13 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
                 };
 
                 await _eventPublisher.PublishAsync(refundEvent, cancellationToken);
+
+                var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
+                    wallet.Id,
+                    wallet.Balance,
+                    DateTime.UtcNow);
+
+                await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(
