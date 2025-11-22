@@ -13,7 +13,12 @@ public readonly record struct Email
 
     public string Value { get; }
 
-    public Email(string value)
+    private Email(string value)
+    {
+        Value = value;
+    }
+
+    public static Email Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Email cannot be null or empty.", nameof(value));
@@ -37,12 +42,10 @@ public readonly record struct Email
             throw new ArgumentException("Email must be a valid email address.", nameof(value), ex);
         }
 
-        Value = trimmedValue;
+        return new Email(trimmedValue);
     }
 
     public static implicit operator string(Email email) => email.Value;
-
-    public static implicit operator Email(string value) => new(value);
 
     public override string ToString() => Value;
 }

@@ -13,7 +13,12 @@ public readonly record struct PhoneNumber
 
     public string Value { get; }
 
-    public PhoneNumber(string value)
+    private PhoneNumber(string value)
+    {
+        Value = value;
+    }
+
+    public static PhoneNumber Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Phone number cannot be null or empty.", nameof(value));
@@ -29,17 +34,14 @@ public readonly record struct PhoneNumber
         if (!PhoneNumberRegex.IsMatch(trimmedValue))
             throw new ArgumentException("Phone number can only contain digits, spaces, hyphens, plus signs, and parentheses.", nameof(value));
 
- 
         var digitCount = trimmedValue.Count(char.IsDigit);
         if (digitCount < MinPhoneNumberLength - 2)
             throw new ArgumentException("Phone number must contain sufficient digits.", nameof(value));
 
-        Value = trimmedValue;
+        return new PhoneNumber(trimmedValue);
     }
 
     public static implicit operator string(PhoneNumber phoneNumber) => phoneNumber.Value;
-
-    public static implicit operator PhoneNumber(string value) => new(value);
 
     public override string ToString() => Value;
 }

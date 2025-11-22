@@ -13,7 +13,13 @@ public readonly record struct PersonName
     public string FirstName { get; }
     public string LastName { get; }
 
-    public PersonName(string firstName, string lastName)
+    private PersonName(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+
+    public static PersonName Create(string firstName, string lastName)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be null or empty.", nameof(firstName));
@@ -36,8 +42,7 @@ public readonly record struct PersonName
         if (!NameRegex.IsMatch(trimmedLastName))
             throw new ArgumentException("Last name can only contain letters, spaces, hyphens, apostrophes, and periods.", nameof(lastName));
 
-        FirstName = trimmedFirstName;
-        LastName = trimmedLastName;
+        return new PersonName(trimmedFirstName, trimmedLastName);
     }
 
     public string FullName => $"{FirstName} {LastName}";

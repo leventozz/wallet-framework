@@ -36,14 +36,14 @@ namespace WF.CustomerService.Infrastructure.Data
                 entity.Property(c => c.Email)
                     .HasConversion(
                         email => email.Value,
-                        value => new Email(value))
+                        value => Email.Create(value))
                     .HasColumnName("Email")
                     .HasMaxLength(320);
 
                 entity.Property(c => c.PhoneNumber)
                     .HasConversion(
                         phoneNumber => phoneNumber.Value,
-                        value => new PhoneNumber(value))
+                        value => PhoneNumber.Create(value))
                     .HasColumnName("PhoneNumber")
                     .HasMaxLength(20);
 
