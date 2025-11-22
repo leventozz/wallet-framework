@@ -11,7 +11,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
         private const int MinPhoneNumberLength = 10;
 
         private const int MinPasswordLength = 8;
-        private const int MaxPasswordLength = 128;
+        private const int MaxPasswordLength = 40;
 
         public CreateCustomerCommandValidator()
         {

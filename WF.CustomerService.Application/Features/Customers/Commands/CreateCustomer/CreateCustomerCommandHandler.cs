@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using WF.CustomerService.Application.Abstractions.Identity;
 using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Domain.Entities;
+using WF.CustomerService.Domain.ValueObjects;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Customer;
 
@@ -60,7 +61,11 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                     $"Unable to generate a unique customer number after {MaxRetryAttempts} attempts. This may indicate that the system is approaching capacity.");
             }
 
-            var customer = new Customer(identityId, request.FirstName, request.LastName, request.Email, customerNumber, request.PhoneNumber);
+            var name = new PersonName(request.FirstName, request.LastName);
+            var email = new Email(request.Email);
+            var phoneNumber = new PhoneNumber(request.PhoneNumber);
+
+            var customer = new Customer(identityId, name, email, customerNumber, phoneNumber);
             await _customerRepository.AddCustomerAsync(customer);
             await _integrationEventPublisher.PublishAsync(new CustomerCreatedEvent() { CustomerId = customer.Id }, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

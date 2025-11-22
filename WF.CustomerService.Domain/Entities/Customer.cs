@@ -1,4 +1,5 @@
 ﻿using WF.CustomerService.Domain.Enums;
+using WF.CustomerService.Domain.ValueObjects;
 
 namespace WF.CustomerService.Domain.Entities
 {
@@ -7,10 +8,9 @@ namespace WF.CustomerService.Domain.Entities
         public Guid Id { get; private set; }
         public string IdentityId { get; private set; }
         public string CustomerNumber { get; private set; } = string.Empty;
-        public string FirstName { get; private set; } = string.Empty;
-        public string LastName { get; private set; } = string.Empty;
-        public string Email { get; private set; } = string.Empty;
-        public string PhoneNumber { get; private set; } = string.Empty;
+        public PersonName Name { get; private set; }
+        public Email Email { get; private set; }
+        public PhoneNumber PhoneNumber { get; private set; }
         public KycStatus KycStatus { get; private set; }
         public DateTime CreatedAtUtc { get; private set; }
         public DateTime? UpdatedAtUtc { get; private set; }
@@ -20,13 +20,12 @@ namespace WF.CustomerService.Domain.Entities
 
         private Customer() { }
 
-        public Customer(string identityId, string firstName, string lastName, string email, string customerNumber, string phoneNumber)
+        public Customer(string identityId, PersonName name, Email email, string customerNumber, PhoneNumber phoneNumber)
         {
             Id = Guid.NewGuid();
             IdentityId = identityId;
             CustomerNumber = customerNumber;
-            FirstName = firstName;
-            LastName = lastName;
+            Name = name;
             Email = email;
             PhoneNumber = phoneNumber;
             CreatedAtUtc = DateTime.UtcNow;
@@ -36,22 +35,19 @@ namespace WF.CustomerService.Domain.Entities
             IsActive = true;
         }
 
-        public void Update(string? firstName = null, string? lastName = null, string? email = null, string? phoneNumber = null)
+        public void Update(PersonName? name = null, Email? email = null, PhoneNumber? phoneNumber = null)
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Cannot update a deleted customer.");
 
-            if (!string.IsNullOrWhiteSpace(firstName))
-                FirstName = firstName;
+            if (name.HasValue)
+                Name = name.Value;
 
-            if (!string.IsNullOrWhiteSpace(lastName))
-                LastName = lastName;
+            if (email.HasValue)
+                Email = email.Value;
 
-            if (!string.IsNullOrWhiteSpace(email))
-                Email = email;
-
-            if (!string.IsNullOrWhiteSpace(phoneNumber))
-                PhoneNumber = phoneNumber;
+            if (phoneNumber.HasValue)
+                PhoneNumber = phoneNumber.Value;
 
             UpdatedAtUtc = DateTime.UtcNow;
         }
