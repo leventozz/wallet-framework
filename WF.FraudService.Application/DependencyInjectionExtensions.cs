@@ -20,10 +20,10 @@ public static class DependencyInjectionExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         #region Fraud Rules Registration
-        services.AddScoped<IFraudEvaluationRule, BlockedIpRule>();
-        services.AddScoped<IFraudEvaluationRule, RiskyHourRule>();
-        services.AddScoped<IFraudEvaluationRule, AccountAgeRule>();
-        services.AddScoped<IFraudEvaluationRule, KycLevelRule>();
+        services.AddScoped<IFraudEvaluationRule, BlockedIpFraudRule>();
+        services.AddScoped<IFraudEvaluationRule, RiskyHourFraudRule>();
+        services.AddScoped<IFraudEvaluationRule, AccountAgeFraudRule>();
+        services.AddScoped<IFraudEvaluationRule, KycLevelFraudRule>();
         #endregion
 
         return services;

@@ -1,5 +1,5 @@
-﻿using WF.CustomerService.Domain.Enums;
-using WF.CustomerService.Domain.ValueObjects;
+﻿using WF.CustomerService.Domain.ValueObjects;
+using WF.Shared.Contracts.Enums;
 
 namespace WF.CustomerService.Domain.Entities
 {
@@ -31,7 +31,7 @@ namespace WF.CustomerService.Domain.Entities
             CreatedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = null;
             IsDeleted = false;
-            KycStatus = KycStatus.None;
+            KycStatus = KycStatus.Unverified;
             IsActive = true;
         }
 

@@ -1,13 +1,13 @@
-using WF.FraudService.Domain.Entities;
+using WF.FraudService.Application.Contracts.DTOs;
 
 namespace WF.FraudService.Application.Contracts;
 
 public interface IFraudRuleReadService
 {
-    Task<IEnumerable<BlockedIpRule>> GetActiveBlockedIpsAsync(CancellationToken cancellationToken = default);
-    Task<bool> IsIpBlockedAsync(string ipAddress, CancellationToken cancellationToken = default);
-    Task<IEnumerable<RiskyHourRule>> GetActiveRiskyHourRulesAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<AccountAgeRule>> GetActiveAccountAgeRulesAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<KycLevelRule>> GetActiveKycLevelRulesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<BlockedIpRuleDto>> GetActiveBlockedIpsAsync(CancellationToken cancellationToken = default);
+    Task<BlockedIpRuleDto?> GetBlockedIpRuleAsync(string ipAddress, CancellationToken cancellationToken = default);
+    Task<IEnumerable<RiskyHourRuleDto>> GetActiveRiskyHourRulesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AccountAgeRuleDto>> GetActiveAccountAgeRulesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<KycLevelRuleDto>> GetActiveKycLevelRulesAsync(CancellationToken cancellationToken = default);
 }
 

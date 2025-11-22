@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using WF.FraudService.Domain.Entities;
+using WF.FraudService.Domain.ValueObjects;
 
 namespace WF.FraudService.Infrastructure.Data;
 
@@ -42,6 +43,9 @@ public class FraudDbContext : DbContext
                 .HasDatabaseName("IX_BlockedIps_IpAddress_IsActive");
 
             entity.Property(e => e.IpAddress)
+                .HasConversion(
+                    ip => ip.ToString(),
+                    str => new IpAddress(str))
                 .IsRequired()
                 .HasMaxLength(45);
 
@@ -65,11 +69,16 @@ public class FraudDbContext : DbContext
             entity.HasIndex(e => e.IsActive)
                 .HasDatabaseName("IX_RiskyHourRules_IsActive");
 
-            entity.Property(e => e.StartHour)
-                .IsRequired();
+            entity.ComplexProperty(e => e.TimeRange, timeRange =>
+            {
+                timeRange.Property(t => t.StartHour)
+                    .HasColumnName("StartHour")
+                    .IsRequired();
 
-            entity.Property(e => e.EndHour)
-                .IsRequired();
+                timeRange.Property(t => t.EndHour)
+                    .HasColumnName("EndHour")
+                    .IsRequired();
+            });
 
             entity.Property(e => e.Description)
                 .HasMaxLength(500);
@@ -95,6 +104,9 @@ public class FraudDbContext : DbContext
                 .IsRequired();
 
             entity.Property(e => e.MaxAllowedAmount)
+                .HasConversion(
+                    money => money.HasValue ? money.Value.Amount : (decimal?)null,
+                    dec => dec.HasValue ? new Money(dec.Value) : (Money?)null)
                 .HasPrecision(18, 2);
 
             entity.Property(e => e.Description)
@@ -125,6 +137,9 @@ public class FraudDbContext : DbContext
                 .HasConversion<int>();
 
             entity.Property(e => e.MaxAllowedAmount)
+                .HasConversion(
+                    money => money.HasValue ? money.Value.Amount : (decimal?)null,
+                    dec => dec.HasValue ? new Money(dec.Value) : (Money?)null)
                 .HasPrecision(18, 2);
 
             entity.Property(e => e.Description)

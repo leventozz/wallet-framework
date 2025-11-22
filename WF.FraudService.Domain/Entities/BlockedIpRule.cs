@@ -1,9 +1,11 @@
+using WF.FraudService.Domain.ValueObjects;
+
 namespace WF.FraudService.Domain.Entities;
 
 public class BlockedIpRule
 {
     public Guid Id { get; private set; }
-    public string IpAddress { get; private set; } = string.Empty;
+    public IpAddress IpAddress { get; private set; }
     public string? Reason { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? ExpiresAtUtc { get; private set; }
@@ -11,17 +13,30 @@ public class BlockedIpRule
 
     private BlockedIpRule() { }
 
-    public BlockedIpRule(string ipAddress, string? reason = null, DateTime? expiresAtUtc = null)
+    public BlockedIpRule(IpAddress ipAddress, string? reason = null, DateTime? expiresAtUtc = null)
     {
-        if (string.IsNullOrWhiteSpace(ipAddress))
-            throw new ArgumentException("IP address cannot be null or empty.", nameof(ipAddress));
-
         Id = Guid.NewGuid();
         IpAddress = ipAddress;
         Reason = reason;
         CreatedAtUtc = DateTime.UtcNow;
         ExpiresAtUtc = expiresAtUtc;
         IsActive = true;
+    }
+
+    public BlockedIpRule(
+        Guid id,
+        IpAddress ipAddress,
+        string? reason,
+        DateTime createdAtUtc,
+        DateTime? expiresAtUtc,
+        bool isActive)
+    {
+        Id = id;
+        IpAddress = ipAddress;
+        Reason = reason;
+        CreatedAtUtc = createdAtUtc;
+        ExpiresAtUtc = expiresAtUtc;
+        IsActive = isActive;
     }
 
     public void Deactivate()
@@ -37,11 +52,6 @@ public class BlockedIpRule
     public void UpdateReason(string? reason)
     {
         Reason = reason;
-    }
-
-    public bool IsExpired()
-    {
-        return ExpiresAtUtc.HasValue && ExpiresAtUtc.Value < DateTime.UtcNow;
     }
 }
 

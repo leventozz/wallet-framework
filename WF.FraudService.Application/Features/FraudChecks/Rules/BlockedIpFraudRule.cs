@@ -1,9 +1,10 @@
 using WF.FraudService.Application.Contracts;
+using WF.FraudService.Application.Contracts.DTOs;
 using WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Rules;
 
-public class BlockedIpRule(IFraudRuleReadService _readService) : IFraudEvaluationRule
+public class BlockedIpFraudRule(IFraudRuleReadService _readService) : IFraudEvaluationRule
 {
     public int Priority => 1;
 
@@ -14,8 +15,8 @@ public class BlockedIpRule(IFraudRuleReadService _readService) : IFraudEvaluatio
             return new FraudEvaluationResult { IsApproved = true };
         }
 
-        var isBlocked = await _readService.IsIpBlockedAsync(request.IpAddress, cancellationToken);
-        if (isBlocked)
+        var blockedIpRule = await _readService.GetBlockedIpRuleAsync(request.IpAddress, cancellationToken);
+        if (blockedIpRule.IsBlocked(DateTime.UtcNow))
         {
             return new FraudEvaluationResult
             {

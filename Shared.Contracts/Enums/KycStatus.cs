@@ -2,9 +2,10 @@ namespace WF.Shared.Contracts.Enums;
 
 public enum KycStatus
 {
-    None = 0,
-    Pending = 1,
-    Approved = 2,
-    Rejected = 3
+    Unverified = 0,
+    EmailVerified = 10,
+    IdentityVerified = 20,
+    VideoVerified = 30,
+    Enterprise = 40
 }
 

@@ -1,24 +1,26 @@
 using WF.FraudService.Application.Contracts;
+using WF.FraudService.Application.Contracts.DTOs;
 using WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Rules;
 
-public class RiskyHourRule(IFraudRuleReadService _readService) : IFraudEvaluationRule
+public class RiskyHourFraudRule(IFraudRuleReadService _readService) : IFraudEvaluationRule
 {
     public int Priority => 2;
 
     public async Task<FraudEvaluationResult> EvaluateAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
     {
-        var riskyHourRules = await _readService.GetActiveRiskyHourRulesAsync(cancellationToken);
+        var riskyHourRuleDtos = await _readService.GetActiveRiskyHourRulesAsync(cancellationToken);
+        var currentTime = DateTime.UtcNow;
         
-        foreach (var rule in riskyHourRules)
+        foreach (var dto in riskyHourRuleDtos)
         {
-            if (rule.IsInRiskyHour(DateTime.UtcNow))
+            if (dto.IsCurrentTimeRisky(currentTime))
             {
                 return new FraudEvaluationResult
                 {
                     IsApproved = false,
-                    FailureReason = $"Transaction attempted during risky hours ({rule.StartHour}-{rule.EndHour})"
+                    FailureReason = $"Transaction attempted during risky hours ({dto.StartHour}-{dto.EndHour})"
                 };
             }
         }
