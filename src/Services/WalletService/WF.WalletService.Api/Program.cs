@@ -18,6 +18,7 @@ builder.Services.AddOpenTelemetry("WalletService", "1.0.0");
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddWFExceptionHandler();
+builder.Services.AddWFAuthentication(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
@@ -32,6 +33,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

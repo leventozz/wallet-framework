@@ -7,40 +7,11 @@ namespace WF.FraudService.Infrastructure.HttpClients;
 
 public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerServiceApiClient> logger) : ICustomerServiceApiClient
 {
-    public async Task<CustomerDto?> GetCustomerByIdAsync(Guid customerId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var response = await httpClient.GetAsync($"api/customers/{customerId}", cancellationToken);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var customer = await response.Content.ReadFromJsonAsync<CustomerDto>(cancellationToken: cancellationToken);
-                logger.LogInformation("Successfully retrieved customer {CustomerId}", customerId);
-                return customer;
-            }
-
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                logger.LogWarning("Customer {CustomerId} not found", customerId);
-                return null;
-            }
-
-            response.EnsureSuccessStatusCode();
-            return null;
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError(ex, "Error occurred while retrieving customer {CustomerId}", customerId);
-            throw;
-        }
-    }
-
     public async Task<CustomerVerificationDto?> GetVerificationDataAsync(Guid customerId, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await httpClient.GetAsync($"api/v1/customers/{customerId}/verification-data", cancellationToken);
+            var response = await httpClient.GetAsync($"api/v1/internal/customers/{customerId}/verification-data", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -63,14 +34,14 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
             logger.LogError(ex, "Error occurred while retrieving customer verification data {CustomerId}", customerId);
             throw;
         }
-        }
+    }
 
     public async Task<List<CustomerLookupDto>> LookupByCustomerNumbersAsync(List<string> customerNumbers, CancellationToken cancellationToken)
     {
         try
         {
             var requestBody = new { CustomerNumbers = customerNumbers };
-            var response = await httpClient.PostAsJsonAsync("api/v1/customers/lookup-by-numbers", requestBody, cancellationToken);
+            var response = await httpClient.PostAsJsonAsync("api/v1/internal/customers/lookup-by-numbers", requestBody, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -92,7 +63,7 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
     {
         try
         {
-            var response = await httpClient.GetAsync($"api/v1/customers/by-identity/{identityId}", cancellationToken);
+            var response = await httpClient.GetAsync($"api/v1/internal/customers/by-identity/{identityId}", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

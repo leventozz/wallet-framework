@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WF.TransactionService.Api.Extensions;
 using WF.TransactionService.Application;
 using WF.TransactionService.Infrastructure;
@@ -44,23 +43,7 @@ builder.Services.AddOpenTelemetry("TransactionService", "1.0.0");
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddWFExceptionHandler();
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.Authority = "http://localhost:8080/realms/wallet-realm";
-    options.RequireHttpsMetadata = builder.Environment.IsProduction();
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    {
-        ValidateAudience = builder.Environment.IsProduction(),
-        ValidateIssuer = true,
-        ValidIssuer = "http://localhost:8080/realms/wallet-realm"
-    };
-});
+builder.Services.AddWFAuthentication(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
