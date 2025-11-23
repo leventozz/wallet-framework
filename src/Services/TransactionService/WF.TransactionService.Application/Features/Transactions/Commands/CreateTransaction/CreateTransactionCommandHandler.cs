@@ -3,7 +3,6 @@ using MediatR;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.TransactionService.Application.Abstractions;
-using WF.TransactionService.Domain.Exceptions;
 using WF.Shared.Contracts.Result;
 
 namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;

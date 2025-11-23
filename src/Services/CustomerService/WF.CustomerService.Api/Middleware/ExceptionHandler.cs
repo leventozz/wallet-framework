@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
-using WF.CustomerService.Domain.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
 
 namespace WF.CustomerService.Api.Middleware
@@ -17,10 +16,6 @@ namespace WF.CustomerService.Api.Middleware
                 ValidationException validationException => await HandleValidationExceptionAsync(
                     httpContext,
                     validationException,
-                    cancellationToken),
-                NotFoundException notFoundException => await HandleNotFoundExceptionAsync(
-                    httpContext,
-                    notFoundException,
                     cancellationToken),
                 _ => await HandleGenericExceptionAsync(
                     httpContext,
@@ -72,25 +67,6 @@ namespace WF.CustomerService.Api.Middleware
             {
                 statusCode = httpContext.Response.StatusCode,
                 message = "An unhandled exception occurred."
-            };
-
-            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
-
-            return true;
-        }
-
-        private async Task<bool> HandleNotFoundExceptionAsync(
-            HttpContext httpContext,
-            NotFoundException exception,
-            CancellationToken cancellationToken)
-        {
-            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            httpContext.Response.ContentType = "application/json";
-
-            var response = new
-            {
-                statusCode = httpContext.Response.StatusCode,
-                message = exception.Message
             };
 
             await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);

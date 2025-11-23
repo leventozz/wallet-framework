@@ -1,5 +1,4 @@
 using WF.Shared.Contracts.Result;
-using WF.WalletService.Domain.Exceptions;
 
 namespace WF.WalletService.Domain.ValueObjects;
 
