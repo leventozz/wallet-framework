@@ -11,7 +11,7 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
     {
         try
         {
-            var response = await httpClient.GetAsync($"api/wallets/by-customer/{customerId}/currency/{currency}", cancellationToken);
+            var response = await httpClient.GetAsync($"api/v1/internal/wallets/by-customer/{customerId}/currency/{currency}", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -41,7 +41,7 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
         try
         {
             var requestBody = new { CustomerIds = customerIds, Currency = currency };
-            var response = await httpClient.PostAsJsonAsync("api/v1/wallets/lookup-by-customer-ids", requestBody, cancellationToken);
+            var response = await httpClient.PostAsJsonAsync("api/v1/internal/wallets/lookup-by-customer-ids", requestBody, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

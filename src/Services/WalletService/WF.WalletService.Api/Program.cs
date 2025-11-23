@@ -12,6 +12,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ServiceToService", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("azp",
+            "wallet-client"
+            //add more clients
+        );
+    });
+});
+
 builder.Services.AddWFApiVersioning();
 builder.Services.AddOpenTelemetry("WalletService", "1.0.0");
 
