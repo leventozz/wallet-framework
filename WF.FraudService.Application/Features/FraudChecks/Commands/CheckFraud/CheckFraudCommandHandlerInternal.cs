@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using WF.FraudService.Application.Contracts;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;
 
@@ -26,12 +27,12 @@ public class CheckFraudCommandHandlerInternal(
         foreach (var rule in orderedRules)
         {
             var result = await rule.EvaluateAsync(request, cancellationToken);
-            if (!result.IsApproved)
+            if (result.IsFailure)
             {
                 var declinedEvent = new FraudCheckDeclinedEvent
                 {
                     CorrelationId = request.CorrelationId,
-                    Reason = result.FailureReason
+                    Reason = result.Error.Message
                 };
 
                 await _eventPublisher.PublishAsync(declinedEvent, cancellationToken);
@@ -40,7 +41,7 @@ public class CheckFraudCommandHandlerInternal(
                 _logger.LogWarning(
                     "Fraud check declined for CorrelationId {CorrelationId}, Reason: {Reason}",
                     request.CorrelationId,
-                    result.FailureReason);
+                    result.Error.Message);
 
                 return false;
             }

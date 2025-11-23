@@ -3,6 +3,7 @@ using WF.FraudService.Application.Contracts;
 using WF.FraudService.Application.Contracts.DTOs;
 using WF.FraudService.Application.Features.FraudChecks.Commands.CheckFraud;
 using WF.Shared.Contracts.Abstractions;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Rules;
 
@@ -13,13 +14,13 @@ public class AccountAgeFraudRule(
 {
     public int Priority => 3;
 
-    public async Task<FraudEvaluationResult> EvaluateAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
+    public async Task<Result> EvaluateAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
     {
         var accountAgeRuleDtos = await _readService.GetActiveAccountAgeRulesAsync(cancellationToken);
         
         if (!accountAgeRuleDtos.Any())
         {
-            return new FraudEvaluationResult { IsApproved = true };
+            return Result.Success();
         }
 
         var verificationData = await _customerServiceApiClient.GetVerificationDataAsync(request.SenderCustomerId, cancellationToken);
@@ -27,7 +28,7 @@ public class AccountAgeFraudRule(
         if (verificationData == null)
         {
             _logger.LogWarning("Customer {CustomerId} not found, declined transaction", request.SenderCustomerId);
-            return new FraudEvaluationResult { IsApproved = false };
+            return Result.Failure(Error.Failure("FraudCheck", "Customer not found"));
         }
 
         var accountAgeDays = (DateTime.UtcNow - verificationData.CreatedAtUtc).Days;
@@ -36,15 +37,12 @@ public class AccountAgeFraudRule(
         {
             if (!dto.IsAmountAllowed(request.Amount, accountAgeDays))
             {
-                return new FraudEvaluationResult
-                {
-                    IsApproved = false,
-                    FailureReason = $"Amount {request.Amount} exceeds maximum allowed amount {dto.MaxAllowedAmount} for account age rule. Account age: {accountAgeDays} days, Required: {dto.MinAccountAgeDays} days"
-                };
+                var failureReason = $"Amount {request.Amount} exceeds maximum allowed amount {dto.MaxAllowedAmount} for account age rule. Account age: {accountAgeDays} days, Required: {dto.MinAccountAgeDays} days";
+                return Result.Failure(Error.Failure("FraudCheck", failureReason));
             }
         }
 
-        return new FraudEvaluationResult { IsApproved = true };
+        return Result.Success();
     }
 }
 
