@@ -13,9 +13,9 @@ public class CreateTransactionCommandHandler(
     ICustomerServiceApiClient _customerServiceApiClient,
     IWalletServiceApiClient _walletServiceApiClient,
     IMachineContextProvider _machineContextProvider)
-    : IRequestHandler<CreateTransactionCommand, Result<Guid>>
+    : IRequestHandler<CreateTransactionCommand, Result<string>>
 {
-    public async Task<Result<Guid>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var correlationId = Guid.NewGuid();
 
@@ -33,7 +33,7 @@ public class CreateTransactionCommandHandler(
         var senderCustomerLookup = await senderLookupTask;
         if (senderCustomerLookup == null)
         {
-            return Result<Guid>.Failure(Error.NotFound("Customer", request.SenderIdentityId));
+            return Result<string>.Failure(Error.NotFound("Customer", request.SenderIdentityId));
         }
 
         var receiverLookups = await receiverLookupTask;
@@ -41,7 +41,7 @@ public class CreateTransactionCommandHandler(
         
         if (receiverCustomerLookup == null)
         {
-            return Result<Guid>.Failure(Error.NotFound("Customer", request.ReceiverCustomerNumber));
+            return Result<string>.Failure(Error.NotFound("Customer", request.ReceiverCustomerNumber));
         }
 
         var walletLookups = await _walletServiceApiClient.LookupByCustomerIdsAsync(
@@ -52,13 +52,13 @@ public class CreateTransactionCommandHandler(
         var senderWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == senderCustomerLookup.CustomerId);
         if (senderWalletLookup == null)
         {
-            return Result<Guid>.Failure(Error.NotFound("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}"));
+            return Result<string>.Failure(Error.NotFound("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var receiverWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == receiverCustomerLookup.CustomerId);
         if (receiverWalletLookup == null)
         {
-            return Result<Guid>.Failure(Error.NotFound("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}"));
+            return Result<string>.Failure(Error.NotFound("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var transferRequestStartedEvent = new TransferRequestStartedEvent
@@ -78,6 +78,6 @@ public class CreateTransactionCommandHandler(
         await _integrationEventPublisher.PublishAsync(transferRequestStartedEvent, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result<Guid>.Success(correlationId);
+        return Result<string>.Success(transactionId);
     }
 }

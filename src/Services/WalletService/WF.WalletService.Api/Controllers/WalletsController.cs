@@ -2,7 +2,6 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WF.Shared.Contracts.Dtos;
-using WF.Shared.Contracts.Result;
 using WF.WalletService.Api.Controllers.Base;
 using WF.WalletService.Application.Features.Wallets.Queries.GetWalletIdByCustomerIdAndCurrency;
 using WF.WalletService.Application.Features.Wallets.Queries.LookupByCustomerIds;

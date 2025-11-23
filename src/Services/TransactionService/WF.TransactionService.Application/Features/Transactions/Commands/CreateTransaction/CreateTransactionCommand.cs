@@ -5,7 +5,7 @@ using WF.Shared.Contracts.Result;
 
 namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
-public record CreateTransactionCommand : IRequest<Result<Guid>>
+public record CreateTransactionCommand : IRequest<Result<string>>
 {
     public string SenderIdentityId { get; set; } = string.Empty;
     [JsonIgnore]
