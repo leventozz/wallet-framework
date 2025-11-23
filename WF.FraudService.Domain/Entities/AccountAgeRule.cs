@@ -1,4 +1,5 @@
 using WF.FraudService.Domain.ValueObjects;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Domain.Entities;
 
@@ -28,12 +29,13 @@ public class AccountAgeRule
         Description = description;
     }
 
-    public void UpdateMinAccountAgeDays(int minAccountAgeDays)
+    public Result UpdateMinAccountAgeDays(int minAccountAgeDays)
     {
         if (minAccountAgeDays < 0)
-            throw new ArgumentOutOfRangeException(nameof(minAccountAgeDays), "Minimum account age days cannot be negative.");
+            return Result.Failure(Error.Validation("AccountAgeRule.NegativeMinAccountAgeDays", "Minimum account age days cannot be negative."));
 
         MinAccountAgeDays = minAccountAgeDays;
+        return Result.Success();
     }
 
     public void UpdateMaxAllowedAmount(Money? maxAllowedAmount)
