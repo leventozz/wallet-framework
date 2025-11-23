@@ -63,36 +63,7 @@ public class CustomerServiceApiClient(HttpClient httpClient, ILogger<CustomerSer
             logger.LogError(ex, "Error occurred while retrieving customer verification data {CustomerId}", customerId);
             throw;
         }
-    }
-
-    public async Task<Guid?> GetCustomerIdByCustomerNumberAsync(string customerNumber, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var response = await httpClient.GetAsync($"api/customers/number/{customerNumber}/id", cancellationToken);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var customerId = await response.Content.ReadFromJsonAsync<Guid?>(cancellationToken: cancellationToken);
-                logger.LogInformation("Successfully retrieved customer ID for customer number {CustomerNumber}", customerNumber);
-                return customerId;
-            }
-
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                logger.LogWarning("Customer with number {CustomerNumber} not found", customerNumber);
-                return null;
-            }
-
-            response.EnsureSuccessStatusCode();
-            return null;
         }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError(ex, "Error occurred while retrieving customer ID for customer number {CustomerNumber}", customerNumber);
-            throw;
-        }
-    }
 
     public async Task<List<CustomerLookupDto>> LookupByCustomerNumbersAsync(List<string> customerNumbers, CancellationToken cancellationToken)
     {
