@@ -4,6 +4,7 @@ using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.TransactionService.Application.Abstractions;
 using WF.TransactionService.Domain.Exceptions;
+using WF.Shared.Contracts.Result;
 
 namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
@@ -13,9 +14,9 @@ public class CreateTransactionCommandHandler(
     ICustomerServiceApiClient _customerServiceApiClient,
     IWalletServiceApiClient _walletServiceApiClient,
     IMachineContextProvider _machineContextProvider)
-    : IRequestHandler<CreateTransactionCommand, Guid>
+    : IRequestHandler<CreateTransactionCommand, Result<Guid>>
 {
-    public async Task<Guid> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var correlationId = Guid.NewGuid();
 
@@ -33,7 +34,7 @@ public class CreateTransactionCommandHandler(
         var senderCustomerLookup = await senderLookupTask;
         if (senderCustomerLookup == null)
         {
-            throw new NotFoundException("Customer", request.SenderIdentityId);
+            return Result<Guid>.Failure(Error.NotFound("Customer", request.SenderIdentityId));
         }
 
         var receiverLookups = await receiverLookupTask;
@@ -41,7 +42,7 @@ public class CreateTransactionCommandHandler(
         
         if (receiverCustomerLookup == null)
         {
-            throw new NotFoundException("Customer", request.ReceiverCustomerNumber);
+            return Result<Guid>.Failure(Error.NotFound("Customer", request.ReceiverCustomerNumber));
         }
 
         var walletLookups = await _walletServiceApiClient.LookupByCustomerIdsAsync(
@@ -52,13 +53,13 @@ public class CreateTransactionCommandHandler(
         var senderWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == senderCustomerLookup.CustomerId);
         if (senderWalletLookup == null)
         {
-            throw new NotFoundException("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}");
+            return Result<Guid>.Failure(Error.NotFound("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var receiverWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == receiverCustomerLookup.CustomerId);
         if (receiverWalletLookup == null)
         {
-            throw new NotFoundException("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}");
+            return Result<Guid>.Failure(Error.NotFound("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var transferRequestStartedEvent = new TransferRequestStartedEvent
@@ -78,6 +79,6 @@ public class CreateTransactionCommandHandler(
         await _integrationEventPublisher.PublishAsync(transferRequestStartedEvent, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return correlationId;
+        return Result<Guid>.Success(correlationId);
     }
 }

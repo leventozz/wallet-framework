@@ -1,9 +1,11 @@
 using MediatR;
 using System.Text.Json.Serialization;
 
+using WF.Shared.Contracts.Result;
+
 namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
-public record CreateTransactionCommand : IRequest<Guid>
+public record CreateTransactionCommand : IRequest<Result<Guid>>
 {
     public string SenderIdentityId { get; set; } = string.Empty;
     [JsonIgnore]
