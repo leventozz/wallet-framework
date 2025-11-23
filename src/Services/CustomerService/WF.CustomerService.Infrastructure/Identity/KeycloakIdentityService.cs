@@ -9,7 +9,7 @@ namespace WF.CustomerService.Infrastructure.Identity;
 
 public class KeycloakIdentityService : IIdentityService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly KeycloakOptions _options;
     private readonly ILogger<KeycloakIdentityService> _logger;
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -20,11 +20,11 @@ public class KeycloakIdentityService : IIdentityService
     };
 
     public KeycloakIdentityService(
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         IOptions<KeycloakOptions> options,
         ILogger<KeycloakIdentityService> logger)
     {
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         _options = options.Value;
         _logger = logger;
     }
@@ -40,7 +40,27 @@ public class KeycloakIdentityService : IIdentityService
         {
             var accessToken = await GetAdminTokenAsync(cancellationToken);
 
-            var userId = await CreateUserAsync(accessToken, email, password, firstName, lastName, cancellationToken);
+            var (userId, isNewUser) = await CreateUserAsync(accessToken, email, password, firstName, lastName, cancellationToken);
+
+            if (isNewUser)
+            {
+                try
+                {
+                    await SendVerifyEmailAsync(accessToken, userId, cancellationToken);
+                    _logger.LogInformation(
+                        "Verification email sent successfully for user with email {Email} and userId {UserId}",
+                        email,
+                        userId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "Failed to send verification email for user with email {Email} and userId {UserId}. User registration was successful.",
+                        email,
+                        userId);
+                }
+            }
 
             _logger.LogInformation(
                 "User registered successfully in Keycloak with email {Email} and userId {UserId}",
@@ -58,6 +78,8 @@ public class KeycloakIdentityService : IIdentityService
 
     private async Task<string> GetAdminTokenAsync(CancellationToken cancellationToken)
     {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
         var tokenEndpoint = $"{_options.BaseUrl}/realms/{_options.Realm}/protocol/openid-connect/token";
 
         var requestBody = new Dictionary<string, string>
@@ -72,7 +94,7 @@ public class KeycloakIdentityService : IIdentityService
             Content = new FormUrlEncodedContent(requestBody)
         };
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        var response = await httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(
@@ -83,7 +105,7 @@ public class KeycloakIdentityService : IIdentityService
         return tokenResponse.AccessToken;
     }
 
-    private async Task<string> CreateUserAsync(
+    private async Task<(string userId, bool isNewUser)> CreateUserAsync(
         string accessToken,
         string email,
         string password,
@@ -91,6 +113,8 @@ public class KeycloakIdentityService : IIdentityService
         string lastName,
         CancellationToken cancellationToken)
     {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
         var createUserEndpoint = $"{_options.BaseUrl}/admin/realms/{_options.Realm}/users";
 
         var userRequest = new
@@ -101,6 +125,7 @@ public class KeycloakIdentityService : IIdentityService
             lastName = lastName,
             enabled = true,
             emailVerified = false,
+            RequiredActions = new List<string> { "VERIFY_EMAIL" },
             credentials = new[]
             {
                 new
@@ -121,7 +146,7 @@ public class KeycloakIdentityService : IIdentityService
             }
         };
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        var response = await httpClient.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
         {
@@ -129,7 +154,7 @@ public class KeycloakIdentityService : IIdentityService
                 "User with email {Email} already exists in Keycloak. Attempting to retrieve existing user.",
                 email);
             var existingUserId = await GetUserIdByEmailAsync(accessToken, email, cancellationToken);
-            return existingUserId;
+            return (existingUserId, false);
         }
 
         if (!response.IsSuccessStatusCode)
@@ -144,14 +169,17 @@ public class KeycloakIdentityService : IIdentityService
         }
 
         var locationHeader = response.Headers.Location?.ToString();
+        string userId;
         if (string.IsNullOrEmpty(locationHeader))
         {
-            var userId = await GetUserIdByEmailAsync(accessToken, email, cancellationToken);
-            return userId;
+            userId = await GetUserIdByEmailAsync(accessToken, email, cancellationToken);
+        }
+        else
+        {
+            userId = ExtractUserIdFromLocation(locationHeader);
         }
 
-        var userIdFromLocation = ExtractUserIdFromLocation(locationHeader);
-        return userIdFromLocation;
+        return (userId, true);
     }
 
     private async Task<string> GetUserIdByEmailAsync(
@@ -159,6 +187,8 @@ public class KeycloakIdentityService : IIdentityService
         string email,
         CancellationToken cancellationToken)
     {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
         var searchEndpoint = $"{_options.BaseUrl}/admin/realms/{_options.Realm}/users?email={Uri.EscapeDataString(email)}";
 
         var request = new HttpRequestMessage(HttpMethod.Get, searchEndpoint)
@@ -169,7 +199,7 @@ public class KeycloakIdentityService : IIdentityService
             }
         };
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        var response = await httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var users = await response.Content.ReadFromJsonAsync<List<KeycloakUser>>(
@@ -181,6 +211,27 @@ public class KeycloakIdentityService : IIdentityService
             ?? throw new InvalidOperationException($"User with email {email} was not found after creation.");
 
         return user.Id;
+    }
+
+    private async Task SendVerifyEmailAsync(
+        string accessToken,
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
+        var sendVerifyEmailEndpoint = $"{_options.BaseUrl}/admin/realms/{_options.Realm}/users/{userId}/send-verify-email";
+
+        var request = new HttpRequestMessage(HttpMethod.Put, sendVerifyEmailEndpoint)
+        {
+            Headers =
+            {
+                { "Authorization", $"Bearer {accessToken}" }
+            }
+        };
+
+        var response = await httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
     }
 
     private static string ExtractUserIdFromLocation(string location)

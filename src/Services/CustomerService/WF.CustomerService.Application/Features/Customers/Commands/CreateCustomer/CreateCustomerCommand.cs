@@ -9,6 +9,7 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
         public string LastName { get; init; } = string.Empty;
         public string Email { get; init; } = string.Empty;
         public string Password { get; init; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
         public string PhoneNumber { get; init; } = string.Empty;
     }
 }

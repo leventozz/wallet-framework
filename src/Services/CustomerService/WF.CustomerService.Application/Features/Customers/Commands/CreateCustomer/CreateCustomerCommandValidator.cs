@@ -47,6 +47,10 @@ namespace WF.CustomerService.Application.Features.Customers.Commands.CreateCusto
                 .MaximumLength(MaxPasswordLength)
                 .WithMessage($"Password must not exceed {MaxPasswordLength} characters.");
 
+            RuleFor(x => x.ConfirmPassword)
+                .Equal(x => x.Password)
+                .WithMessage("Passwords do not match");
+
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty()
                 .WithMessage("Phone number is required.")

@@ -34,12 +34,14 @@ namespace WF.CustomerService.Infrastructure
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
             services.Configure<KeycloakOptions>(configuration.GetSection("Keycloak"));
 
-            services.AddHttpClient<IIdentityService, KeycloakIdentityService>((serviceProvider, client) =>
+            services.AddHttpClient(nameof(IIdentityService), (serviceProvider, client) =>
             {
                 var options = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
+
+            services.AddScoped<IIdentityService, KeycloakIdentityService>();
 
             services.AddMassTransit(mtConfig =>
             {
