@@ -8,12 +8,12 @@ using WF.CustomerService.Application.Abstractions.Identity;
 using WF.CustomerService.Domain.Abstractions;
 using WF.CustomerService.Infrastructure.Consumers;
 using WF.CustomerService.Infrastructure.Data;
-using WF.CustomerService.Infrastructure.Identity;
 using WF.CustomerService.Infrastructure.QueryServices;
 using WF.CustomerService.Infrastructure.Repositories;
 using WF.CustomerService.Infrastructure.EventBus;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
+using WF.CustomerService.Infrastructure.Authentication;
 
 namespace WF.CustomerService.Infrastructure
 {

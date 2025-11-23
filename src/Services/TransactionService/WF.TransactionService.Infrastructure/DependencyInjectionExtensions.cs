@@ -1,6 +1,7 @@
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +19,7 @@ using WF.TransactionService.Infrastructure.MachineContext;
 using WF.TransactionService.Infrastructure.QueryServices;
 using WF.TransactionService.Infrastructure.Repositories;
 using WF.TransactionService.Infrastructure.HttpClients;
+using WF.TransactionService.Infrastructure.Authentication;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -42,22 +44,44 @@ namespace WF.TransactionService.Infrastructure
             });
 
             services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+            services.Configure<RedisOptions>(configuration.GetSection("Redis"));
+            services.Configure<KeycloakOptions>(configuration.GetSection("Keycloak"));
             services.Configure<CustomerServiceOptions>(configuration.GetSection("CustomerService"));
             services.Configure<WalletServiceOptions>(configuration.GetSection("WalletService"));
+            
+            services.AddStackExchangeRedisCache(options =>
+            {
+                var redisOptionsValue = configuration.GetSection("Redis").Get<RedisOptions>()
+                    ?? throw new InvalidOperationException("Redis configuration not found.");
+                options.Configuration = redisOptionsValue.GetConnectionString();
+            });
+
+            services.AddHttpClient("Keycloak", (serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
+            services.AddSingleton<IKeycloakTokenService, KeycloakTokenService>();
+            services.AddSingleton<ITokenCacheService, TokenCacheService>();
+            services.AddScoped<ServiceAuthenticationHandler>();
 
             services.AddHttpClient<ICustomerServiceApiClient, CustomerServiceApiClient>((serviceProvider, client) =>
             {
                 var options = serviceProvider.GetRequiredService<IOptions<CustomerServiceOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
-            });
+            })
+            .AddHttpMessageHandler<ServiceAuthenticationHandler>();
 
             services.AddHttpClient<IWalletServiceApiClient, WalletServiceApiClient>((serviceProvider, client) =>
             {
                 var options = serviceProvider.GetRequiredService<IOptions<WalletServiceOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
-            });
+            })
+            .AddHttpMessageHandler<ServiceAuthenticationHandler>();
 
             services.AddMassTransit(mtConfig =>
             {

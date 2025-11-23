@@ -4,8 +4,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WF.CustomerService.Application.Abstractions.Identity;
+using WF.Shared.Contracts.Configuration;
 
-namespace WF.CustomerService.Infrastructure.Identity;
+namespace WF.CustomerService.Infrastructure.Authentication;
 
 public class KeycloakIdentityService : IIdentityService
 {
