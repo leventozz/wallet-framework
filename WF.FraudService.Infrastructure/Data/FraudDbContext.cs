@@ -45,7 +45,7 @@ public class FraudDbContext : DbContext
             entity.Property(e => e.IpAddress)
                 .HasConversion(
                     ip => ip.ToString(),
-                    str => new IpAddress(str))
+                    str => IpAddress.FromDatabaseValue(str))
                 .IsRequired()
                 .HasMaxLength(45);
 
@@ -106,7 +106,7 @@ public class FraudDbContext : DbContext
             entity.Property(e => e.MaxAllowedAmount)
                 .HasConversion(
                     money => money.HasValue ? money.Value.Amount : (decimal?)null,
-                    dec => dec.HasValue ? new Money(dec.Value) : (Money?)null)
+                    dec => dec.HasValue ? Money.FromDatabaseValue(dec.Value) : (Money?)null)
                 .HasPrecision(18, 2);
 
             entity.Property(e => e.Description)
@@ -139,7 +139,7 @@ public class FraudDbContext : DbContext
             entity.Property(e => e.MaxAllowedAmount)
                 .HasConversion(
                     money => money.HasValue ? money.Value.Amount : (decimal?)null,
-                    dec => dec.HasValue ? new Money(dec.Value) : (Money?)null)
+                    dec => dec.HasValue ? Money.FromDatabaseValue(dec.Value) : (Money?)null)
                 .HasPrecision(18, 2);
 
             entity.Property(e => e.Description)

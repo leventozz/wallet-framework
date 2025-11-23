@@ -16,7 +16,14 @@ public class RiskyHourFraudRule(IFraudRuleReadService _readService) : IFraudEval
         
         foreach (var dto in riskyHourRuleDtos)
         {
-            if (dto.IsCurrentTimeRisky(currentTime))
+            var isRiskyResult = dto.IsCurrentTimeRisky(currentTime);
+            
+            if (isRiskyResult.IsFailure)
+            {
+                return Result.Failure(isRiskyResult.Error);
+            }
+            
+            if (isRiskyResult.Value)
             {
                 return Result.Failure(Error.Failure("FraudCheck", $"Transaction attempted during risky hours ({dto.StartHour}-{dto.EndHour})"));
             }

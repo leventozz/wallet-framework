@@ -1,4 +1,5 @@
 using WF.FraudService.Domain.ValueObjects;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Application.Contracts.DTOs;
 
@@ -15,15 +16,18 @@ public class RiskyHourRuleDto
 
 public static class RiskyHourRuleDtoExtensions
 {
-    public static TimeRange ToTimeRange(this RiskyHourRuleDto dto)
+    public static Result<TimeRange> ToTimeRange(this RiskyHourRuleDto dto)
     {
         return TimeRange.Create(dto.StartHour, dto.EndHour);
     }
 
-    public static bool IsCurrentTimeRisky(this RiskyHourRuleDto dto, DateTime utcDateTime)
+    public static Result<bool> IsCurrentTimeRisky(this RiskyHourRuleDto dto, DateTime utcDateTime)
     {
         var timeRangeResult = dto.ToTimeRange();
+        
+        if (timeRangeResult.IsFailure)
+            return Result<bool>.Failure(timeRangeResult.Error);
 
-        return timeRangeResult.IsCurrentTimeInRange(utcDateTime);
+        return Result<bool>.Success(timeRangeResult.Value.IsCurrentTimeInRange(utcDateTime));
     }
 }
