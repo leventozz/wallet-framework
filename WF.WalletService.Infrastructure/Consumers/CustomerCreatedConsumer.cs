@@ -21,7 +21,17 @@ namespace WF.WalletService.Infrastructure.Consumers
                 CustomerId = customerId
             };
 
-            await _mediator.Send(command, context.CancellationToken);
+            var result = await _mediator.Send(command, context.CancellationToken);
+
+            if (result.IsFailure)
+            {
+                _logger.LogError(
+                    "Failed to create wallet for CustomerId {CustomerId}. Error: {ErrorCode} - {ErrorMessage}",
+                    customerId,
+                    result.Error.Code,
+                    result.Error.Message);
+                return;
+            }
 
             _logger.LogInformation(
                 "Wallet created successfully for CustomerId {CustomerId}",

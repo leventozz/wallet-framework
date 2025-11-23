@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
+using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.ValueObjects;
 
@@ -47,52 +48,54 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
                 return;
             }
 
-            try
-            {
-                var refundAmount = Money.Create(request.Amount, wallet.Balance.Currency);
-                wallet.Deposit(refundAmount);
-                await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
-
-                var refundEvent = new SenderRefundedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    WalletId = wallet.Id,
-                    Amount = request.Amount
-                };
-
-                await _eventPublisher.PublishAsync(refundEvent, cancellationToken);
-
-                var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
-                    wallet.Id,
-                    wallet.Balance.Amount,
-                    DateTime.UtcNow);
-
-                await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation(
-                    "Wallet refunded successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.Amount,
-                    request.CorrelationId);
-            }
-            catch (ArgumentException ex)
+            var refundAmountResult = Money.Create(request.Amount, wallet.Balance.Currency);
+            if (refundAmountResult.IsFailure)
             {
                 _logger.LogError(
-                    ex,
                     "Invalid amount for refund. WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
                     request.CorrelationId,
-                    ex.Message);
+                    refundAmountResult.Error.Message);
+
+                return;
             }
-            catch (Exception ex)
+
+            var depositResult = wallet.Deposit(refundAmountResult.Value);
+            if (depositResult.IsFailure)
             {
                 _logger.LogError(
-                    ex,
-                    "Error refunding wallet for WalletId {WalletId}, CorrelationId {CorrelationId}",
+                    "Failed to refund wallet for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
-                    request.CorrelationId);
+                    request.CorrelationId,
+                    depositResult.Error.Message);
+
+                return;
             }
+
+            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
+            var refundEvent = new SenderRefundedEvent
+            {
+                CorrelationId = request.CorrelationId,
+                WalletId = wallet.Id,
+                Amount = request.Amount
+            };
+
+            await _eventPublisher.PublishAsync(refundEvent, cancellationToken);
+
+            var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
+                wallet.Id,
+                wallet.Balance.Amount,
+                DateTime.UtcNow);
+
+            await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Wallet refunded successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
+                wallet.Id,
+                request.Amount,
+                request.CorrelationId);
         }
     }
 }

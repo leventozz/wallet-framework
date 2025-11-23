@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
+using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.Abstractions;
-using WF.WalletService.Domain.Exceptions;
 using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWallet
@@ -104,69 +104,72 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
                 return;
             }
 
-            try
-            {
-                var withdrawAmount = Money.Create(request.Amount, wallet.Balance.Currency);
-                wallet.Withdraw(withdrawAmount);
-                await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
-
-                var successEvent = new WalletDebitedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    WalletId = wallet.Id,
-                    Amount = request.Amount
-                };
-
-                await _eventPublisher.PublishAsync(successEvent, cancellationToken);
-
-                var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
-                    wallet.Id,
-                    wallet.Balance.Amount,
-                    DateTime.UtcNow);
-
-                await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation(
-                    "Wallet debited successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.Amount,
-                    request.CorrelationId);
-            }
-            catch (InsufficientBalanceException ex)
+            var withdrawAmountResult = Money.Create(request.Amount, wallet.Balance.Currency);
+            if (withdrawAmountResult.IsFailure)
             {
                 var failureEvent = new WalletDebitFailedEvent
                 {
                     CorrelationId = request.CorrelationId,
-                    Reason = ex.Message
+                    Reason = withdrawAmountResult.Error.Message
                 };
 
                 await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 _logger.LogWarning(
-                    "Insufficient balance for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
+                    "Invalid amount for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
                     request.CorrelationId,
-                    ex.Message);
+                    withdrawAmountResult.Error.Message);
+
+                return;
             }
-            catch (Exception ex)
+
+            var withdrawResult = wallet.Withdraw(withdrawAmountResult.Value);
+            if (withdrawResult.IsFailure)
             {
                 var failureEvent = new WalletDebitFailedEvent
                 {
                     CorrelationId = request.CorrelationId,
-                    Reason = $"An error occurred while debiting wallet: {ex.Message}"
+                    Reason = withdrawResult.Error.Message
                 };
 
                 await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                _logger.LogError(
-                    ex,
-                    "Error debiting wallet for WalletId {WalletId}, CorrelationId {CorrelationId}",
+                _logger.LogWarning(
+                    "Failed to debit wallet for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
-                    request.CorrelationId);
+                    request.CorrelationId,
+                    withdrawResult.Error.Message);
+
+                return;
             }
+
+            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
+            var successEvent = new WalletDebitedEvent
+            {
+                CorrelationId = request.CorrelationId,
+                WalletId = wallet.Id,
+                Amount = request.Amount
+            };
+
+            await _eventPublisher.PublishAsync(successEvent, cancellationToken);
+
+            var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
+                wallet.Id,
+                wallet.Balance.Amount,
+                DateTime.UtcNow);
+
+            await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Wallet debited successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
+                wallet.Id,
+                request.Amount,
+                request.CorrelationId);
         }
     }
 }

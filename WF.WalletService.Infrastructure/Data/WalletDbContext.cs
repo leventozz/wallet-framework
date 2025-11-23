@@ -61,7 +61,7 @@ namespace WF.WalletService.Infrastructure.Data
                 entity.Property(w => w.Iban)
                     .HasConversion(
                         iban => iban.HasValue ? iban.Value.Value : null,
-                        value => !string.IsNullOrWhiteSpace(value) ? new Iban(value) : (Iban?)null)
+                        value => !string.IsNullOrWhiteSpace(value) ? Iban.FromDatabaseValue(value) : (Iban?)null)
                     .HasColumnName("Iban")
                     .HasMaxLength(34);
             });

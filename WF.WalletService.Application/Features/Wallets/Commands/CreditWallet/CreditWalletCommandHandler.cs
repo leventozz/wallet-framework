@@ -103,41 +103,13 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                 return;
             }
 
-            try
-            {
-                var depositAmount = Money.Create(request.Amount, request.Currency);
-                wallet.Deposit(depositAmount);
-                await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
-
-                var successEvent = new WalletCreditedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    WalletId = wallet.Id,
-                    Amount = request.Amount
-                };
-
-                await _eventPublisher.PublishAsync(successEvent, cancellationToken);
-
-                var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
-                    wallet.Id,
-                    wallet.Balance.Amount,
-                    DateTime.UtcNow);
-
-                await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation(
-                    "Wallet credited successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.Amount,
-                    request.CorrelationId);
-            }
-            catch (ArgumentException ex)
+            var depositAmountResult = Money.Create(request.Amount, request.Currency);
+            if (depositAmountResult.IsFailure)
             {
                 var failureEvent = new WalletCreditFailedEvent
                 {
                     CorrelationId = request.CorrelationId,
-                    Reason = ex.Message
+                    Reason = depositAmountResult.Error.Message
                 };
 
                 await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
@@ -147,25 +119,56 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                     "Invalid amount for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
                     request.CorrelationId,
-                    ex.Message);
+                    depositAmountResult.Error.Message);
+
+                return;
             }
-            catch (Exception ex)
+
+            var depositResult = wallet.Deposit(depositAmountResult.Value);
+            if (depositResult.IsFailure)
             {
                 var failureEvent = new WalletCreditFailedEvent
                 {
                     CorrelationId = request.CorrelationId,
-                    Reason = $"An error occurred while crediting wallet: {ex.Message}"
+                    Reason = depositResult.Error.Message
                 };
 
                 await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                _logger.LogError(
-                    ex,
-                    "Error crediting wallet for WalletId {WalletId}, CorrelationId {CorrelationId}",
+                _logger.LogWarning(
+                    "Failed to credit wallet for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
                     wallet.Id,
-                    request.CorrelationId);
+                    request.CorrelationId,
+                    depositResult.Error.Message);
+
+                return;
             }
+
+            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
+            var successEvent = new WalletCreditedEvent
+            {
+                CorrelationId = request.CorrelationId,
+                WalletId = wallet.Id,
+                Amount = request.Amount
+            };
+
+            await _eventPublisher.PublishAsync(successEvent, cancellationToken);
+
+            var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
+                wallet.Id,
+                wallet.Balance.Amount,
+                DateTime.UtcNow);
+
+            await _eventPublisher.PublishAsync(balanceUpdatedEvent, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Wallet credited successfully. WalletId {WalletId}, Amount {Amount}, CorrelationId {CorrelationId}",
+                wallet.Id,
+                request.Amount,
+                request.CorrelationId);
         }
     }
 }

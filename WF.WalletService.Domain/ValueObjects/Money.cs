@@ -1,3 +1,4 @@
+using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.Exceptions;
 
 namespace WF.WalletService.Domain.ValueObjects;
@@ -13,15 +14,15 @@ public readonly record struct Money
         Currency = currency;
     }
 
-    public static Money Create(decimal amount, string currency)
+    public static Result<Money> Create(decimal amount, string currency)
     {
         if (amount < 0)
-            throw new InsufficientBalanceException(amount);
+            return Result<Money>.Failure(Error.Validation("Money.NegativeAmount", "Money amount cannot be negative."));
 
         if (string.IsNullOrWhiteSpace(currency))
-            throw new ArgumentException("Currency cannot be null or empty.", nameof(currency));
+            return Result<Money>.Failure(Error.Validation("Money.InvalidCurrency", "Currency cannot be null or empty."));
 
-        return new Money(amount, currency.Trim().ToUpperInvariant());
+        return Result<Money>.Success(new Money(amount, currency.Trim().ToUpperInvariant()));
     }
 
     private static void ValidateSameCurrency(Money left, Money right)
@@ -33,7 +34,7 @@ public readonly record struct Money
     public static Money operator +(Money left, Money right)
     {
         ValidateSameCurrency(left, right);
-        return Create(left.Amount + right.Amount, left.Currency);
+        return new Money(left.Amount + right.Amount, left.Currency);
     }
 
     public static Money operator -(Money left, Money right)
@@ -43,7 +44,7 @@ public readonly record struct Money
         if (result < 0)
             throw new InvalidOperationException("Result of subtraction cannot be negative.");
 
-        return Create(result, left.Currency);
+        return new Money(result, left.Currency);
     }
 
     public static bool operator <(Money left, Money right)

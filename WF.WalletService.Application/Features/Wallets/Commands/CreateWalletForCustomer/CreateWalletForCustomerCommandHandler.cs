@@ -2,6 +2,7 @@ using MediatR;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Enums;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
+using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.Entities;
 
@@ -11,11 +12,11 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
         IWalletRepository _walletRepository, 
         IUnitOfWork _unitOfWork,
         IIntegrationEventPublisher _eventPublisher) 
-        : IRequestHandler<CreateWalletForCustomerCommand, Guid>
+        : IRequestHandler<CreateWalletForCustomerCommand, Result<Guid>>
     {
         private const int MaxRetryAttempts = 5;
 
-        public async Task<Guid> Handle(CreateWalletForCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(CreateWalletForCustomerCommand request, CancellationToken cancellationToken)
         {
             string walletNumber = string.Empty;
             bool isUnique = false;
@@ -48,7 +49,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
 
             await _eventPublisher.PublishAsync(eventToPublish, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return wallet.Id;
+            return Result<Guid>.Success(wallet.Id);
         }
     }
 }

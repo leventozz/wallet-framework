@@ -1,4 +1,4 @@
-﻿using WF.WalletService.Domain.Exceptions;
+﻿using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.ValueObjects;
 
 namespace WF.WalletService.Domain.Entities
@@ -30,8 +30,8 @@ namespace WF.WalletService.Domain.Entities
             CustomerId = customerId;
             WalletNumber = walletNumber;
             var currencyCode = currency ?? Shared.Contracts.Enums.Currency.TRY.ToString();
-            Balance = Money.Create(0, currencyCode);
-            AvailableBalance = Money.Create(0, currencyCode);
+            Balance = Money.Create(0, currencyCode).Value;
+            AvailableBalance = Money.Create(0, currencyCode).Value;
             IsActive = true;
             CreatedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = null;
@@ -42,114 +42,122 @@ namespace WF.WalletService.Domain.Entities
             ExternalAccountRef = null;
         }
 
-        public void Deposit(Money depositMoney)
+        public Result Deposit(Money depositMoney)
         {
             if (depositMoney.Amount == 0)
-                throw new InvalidOperationException("The amount must be greater than zero.");
+                return Result.Failure(Error.Validation("Wallet.InvalidAmount", "The amount must be greater than zero."));
 
             Balance = Balance + depositMoney;
             AvailableBalance = AvailableBalance + depositMoney;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void Withdraw(Money withdrawMoney)
+        public Result Withdraw(Money withdrawMoney)
         {
             if (withdrawMoney.Amount == 0)
-                throw new InvalidOperationException("The amount must be greater than zero.");
+                return Result.Failure(Error.Validation("Wallet.InvalidAmount", "The amount must be greater than zero."));
 
             if (Balance < withdrawMoney)
-                throw new InsufficientBalanceException(Balance.Amount, withdrawMoney.Amount);
+                return Result.Failure(Error.Conflict("Wallet.InsufficientBalance", $"Insufficient balance. Current balance: {Balance.Amount}, Requested amount: {withdrawMoney.Amount}"));
 
             if (AvailableBalance < withdrawMoney)
-                throw new InsufficientBalanceException(AvailableBalance.Amount, withdrawMoney.Amount);
+                return Result.Failure(Error.Conflict("Wallet.InsufficientAvailableBalance", $"Insufficient available balance. Current available balance: {AvailableBalance.Amount}, Requested amount: {withdrawMoney.Amount}"));
 
             Balance = Balance - withdrawMoney;
             AvailableBalance = AvailableBalance - withdrawMoney;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void SetActive(bool isActive)
+        public Result SetActive(bool isActive)
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot change active status of a deleted wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot change active status of a deleted wallet."));
 
             if (IsClosed)
-                throw new InvalidOperationException("Cannot change active status of a closed wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Closed", "Cannot change active status of a closed wallet."));
 
             IsActive = isActive;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void Freeze()
+        public Result Freeze()
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot freeze a deleted wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot freeze a deleted wallet."));
 
             if (IsClosed)
-                throw new InvalidOperationException("Cannot freeze a closed wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Closed", "Cannot freeze a closed wallet."));
 
             if (IsFrozen)
-                return;
+                return Result.Success();
 
             IsFrozen = true;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void Unfreeze()
+        public Result Unfreeze()
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot unfreeze a deleted wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot unfreeze a deleted wallet."));
 
             if (IsClosed)
-                throw new InvalidOperationException("Cannot unfreeze a closed wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Closed", "Cannot unfreeze a closed wallet."));
 
             if (!IsFrozen)
-                return;
+                return Result.Success();
 
             IsFrozen = false;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void Close()
+        public Result Close()
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot close a deleted wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot close a deleted wallet."));
 
             if (IsClosed)
-                return;
+                return Result.Success();
 
             if (Balance.Amount != 0)
-                throw new InvalidOperationException("Cannot close a wallet with non-zero balance.");
+                return Result.Failure(Error.Conflict("Wallet.NonZeroBalance", "Cannot close a wallet with non-zero balance."));
 
             IsClosed = true;
             IsActive = false;
             ClosedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void UpdateLastTransaction(string transactionId)
+        public Result UpdateLastTransaction(string transactionId)
         {
             if (IsDeleted)
-                throw new InvalidOperationException("Cannot update transaction info of a deleted wallet.");
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot update transaction info of a deleted wallet."));
 
             LastTransactionId = transactionId;
             LastTransactionAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
 
-        public void SoftDelete()
+        public Result SoftDelete()
         {
             if (IsDeleted)
-                return;
+                return Result.Success();
 
             if (Balance.Amount != 0)
-                throw new InvalidOperationException("Cannot delete a wallet with non-zero balance.");
+                return Result.Failure(Error.Conflict("Wallet.NonZeroBalance", "Cannot delete a wallet with non-zero balance."));
 
             IsDeleted = true;
             IsActive = false;
             IsClosed = true;
             ClosedAtUtc = DateTime.UtcNow;
             UpdatedAtUtc = DateTime.UtcNow;
+            return Result.Success();
         }
     }
 }
