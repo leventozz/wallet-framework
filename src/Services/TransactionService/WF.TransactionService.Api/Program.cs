@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using WF.TransactionService.Api.Extensions;
 using WF.TransactionService.Application;
 using WF.TransactionService.Infrastructure;
@@ -37,6 +38,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddWFApiVersioning();
 builder.Services.AddOpenTelemetry("TransactionService", "1.0.0");
 
@@ -57,6 +65,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+app.UseForwardedHeaders();
 
 app.UseAuthentication();
 app.UseAuthorization();

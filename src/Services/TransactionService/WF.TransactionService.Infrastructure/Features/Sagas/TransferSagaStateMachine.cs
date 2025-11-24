@@ -51,6 +51,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.ReceiverWalletId = context.Message.ReceiverWalletId;
                     context.Saga.Amount = context.Message.Amount;
                     context.Saga.Currency = context.Message.Currency;
+                    context.Saga.ClientIpAddress = context.Message.ClientIpAddress;
                     context.Saga.CreatedAtUtc = DateTime.UtcNow;
                 })
                 .TransitionTo(Pending)

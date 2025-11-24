@@ -72,7 +72,8 @@ public class CreateTransactionCommandHandler(
             SenderWalletId = senderWalletLookup.WalletId,
             ReceiverWalletId = receiverWalletLookup.WalletId,
             Amount = request.Amount,
-            Currency = request.Currency
+            Currency = request.Currency,
+            ClientIpAddress = request.ClientIpAddress
         };
 
         await _integrationEventPublisher.PublishAsync(transferRequestStartedEvent, cancellationToken);

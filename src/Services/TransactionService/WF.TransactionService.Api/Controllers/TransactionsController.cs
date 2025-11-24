@@ -16,7 +16,12 @@ public class TransactionsController(IMediator _mediator) : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateTransaction([FromBody] CreateTransactionCommand command, CancellationToken cancellationToken)
     {
-        command.SenderIdentityId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+        var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        command = command with 
+        { 
+            SenderIdentityId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty,
+            ClientIpAddress = clientIpAddress
+        };
         var result = await _mediator.Send(command, cancellationToken);
         return HandleResultCreated(result, nameof(CreateTransaction), result.IsSuccess ? new { id = result.Value } : null);
     }

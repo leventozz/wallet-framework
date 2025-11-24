@@ -21,6 +21,7 @@ namespace WF.TransactionService.Infrastructure.Data
             {
                 entity.HasKey(e => e.CorrelationId);
                 entity.Property(e => e.CurrentState).HasMaxLength(64);
+                entity.Property(e => e.ClientIpAddress).HasMaxLength(45);
                 entity.HasIndex(e => e.CurrentState).HasDatabaseName("IX_TransferRequests_CurrentState");
                 entity.HasIndex(e => e.TransactionId).IsUnique().HasDatabaseName("IX_Transactions_TransactionId");
             });
