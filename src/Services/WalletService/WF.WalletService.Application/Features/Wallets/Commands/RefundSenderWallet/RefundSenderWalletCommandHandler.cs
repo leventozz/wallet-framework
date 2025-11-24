@@ -72,6 +72,18 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
                 return;
             }
 
+            var updateTransactionResult = wallet.UpdateLastTransaction(request.TransactionId);
+            if (updateTransactionResult.IsFailure)
+            {
+                _logger.LogError(
+                    "Failed to update transaction info for refund. WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
+                    wallet.Id,
+                    request.CorrelationId,
+                    updateTransactionResult.Error.Message);
+
+                return;
+            }
+
             await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
 
             var refundEvent = new SenderRefundedEvent

@@ -70,7 +70,8 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     OwnerCustomerId = context.Saga.SenderCustomerId,
-                    Amount = context.Saga.Amount
+                    Amount = context.Saga.Amount,
+                    TransactionId = context.Saga.TransactionId
                 })
                 .TransitionTo(SenderDebitPending),
 
@@ -90,7 +91,8 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     CorrelationId = context.Saga.CorrelationId,
                     WalletId = context.Saga.ReceiverWalletId,
                     Amount = context.Saga.Amount,
-                    Currency = context.Saga.Currency
+                    Currency = context.Saga.Currency,
+                    TransactionId = context.Saga.TransactionId
                 })
                 .TransitionTo(ReceiverCreditPending),
 
@@ -117,7 +119,8 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     CorrelationId = context.Saga.CorrelationId,
                     OwnerCustomerId = context.Saga.SenderCustomerId,
-                    Amount = context.Saga.Amount
+                    Amount = context.Saga.Amount,
+                    TransactionId = context.Saga.TransactionId
                 })
                 .Then(context =>
                 {

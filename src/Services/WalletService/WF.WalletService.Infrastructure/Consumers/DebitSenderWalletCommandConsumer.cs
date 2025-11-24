@@ -25,7 +25,8 @@ namespace WF.WalletService.Infrastructure.Consumers
             {
                 CorrelationId = command.CorrelationId,
                 OwnerCustomerId = command.OwnerCustomerId,
-                Amount = command.Amount
+                Amount = command.Amount,
+                TransactionId = command.TransactionId
             };
 
             await _mediator.Send(handlerCommand, context.CancellationToken);

@@ -44,6 +44,18 @@ namespace WF.WalletService.Domain.Entities
 
         public Result Deposit(Money depositMoney)
         {
+            if (IsDeleted)
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot deposit to a deleted wallet."));
+
+            if (IsClosed)
+                return Result.Failure(Error.Conflict("Wallet.Closed", $"Wallet {Id} is closed"));
+
+            if (IsFrozen)
+                return Result.Failure(Error.Conflict("Wallet.Frozen", $"Wallet {Id} is frozen"));
+
+            if (!IsActive)
+                return Result.Failure(Error.Conflict("Wallet.NotActive", $"Wallet {Id} is not active"));
+
             if (depositMoney.Amount == 0)
                 return Result.Failure(Error.Validation("Wallet.InvalidAmount", "The amount must be greater than zero."));
 
@@ -55,6 +67,18 @@ namespace WF.WalletService.Domain.Entities
 
         public Result Withdraw(Money withdrawMoney)
         {
+            if (IsDeleted)
+                return Result.Failure(Error.Conflict("Wallet.Deleted", "Cannot withdraw from a deleted wallet."));
+
+            if (IsClosed)
+                return Result.Failure(Error.Conflict("Wallet.Closed", $"Wallet {Id} is closed"));
+
+            if (IsFrozen)
+                return Result.Failure(Error.Conflict("Wallet.Frozen", $"Wallet {Id} is frozen"));
+
+            if (!IsActive)
+                return Result.Failure(Error.Conflict("Wallet.NotActive", $"Wallet {Id} is not active"));
+
             if (withdrawMoney.Amount == 0)
                 return Result.Failure(Error.Validation("Wallet.InvalidAmount", "The amount must be greater than zero."));
 

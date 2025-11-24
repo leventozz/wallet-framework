@@ -26,6 +26,7 @@ namespace WF.WalletService.Infrastructure.Consumers
                 CorrelationId = command.CorrelationId,
                 WalletId = command.WalletId,
                 Amount = command.Amount,
+                TransactionId = command.TransactionId,
                 Currency = command.Currency
             };
 

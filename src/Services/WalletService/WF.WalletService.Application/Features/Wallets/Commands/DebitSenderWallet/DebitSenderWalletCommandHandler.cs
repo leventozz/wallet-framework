@@ -30,119 +30,48 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
 
             if (wallet == null)
             {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = $"Wallet not found for customer {request.OwnerCustomerId}"
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
+                await HandleFailureAsync(
+                    request.CorrelationId,
+                    $"Wallet not found for customer {request.OwnerCustomerId}",
                     "Wallet not found for CustomerId {CustomerId}, CorrelationId {CorrelationId}",
-                    request.OwnerCustomerId,
-                    request.CorrelationId);
-
-                return;
-            }
-
-            if (!wallet.IsActive)
-            {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = $"Wallet {wallet.Id} is not active"
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
-                    "Wallet {WalletId} is not active, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.CorrelationId);
-
-                return;
-            }
-
-            if (wallet.IsFrozen)
-            {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = $"Wallet {wallet.Id} is frozen"
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
-                    "Wallet {WalletId} is frozen, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.CorrelationId);
-
-                return;
-            }
-
-            if (wallet.IsClosed)
-            {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = $"Wallet {wallet.Id} is closed"
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
-                    "Wallet {WalletId} is closed, CorrelationId {CorrelationId}",
-                    wallet.Id,
-                    request.CorrelationId);
-
+                    [request.OwnerCustomerId, request.CorrelationId],
+                    cancellationToken);
                 return;
             }
 
             var withdrawAmountResult = Money.Create(request.Amount, wallet.Balance.Currency);
             if (withdrawAmountResult.IsFailure)
             {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = withdrawAmountResult.Error.Message
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
-                    "Invalid amount for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
-                    wallet.Id,
+                await HandleFailureAsync(
                     request.CorrelationId,
-                    withdrawAmountResult.Error.Message);
-
+                    withdrawAmountResult.Error.Message,
+                    "Invalid amount for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
+                    [wallet.Id, request.CorrelationId, withdrawAmountResult.Error.Message],
+                    cancellationToken);
                 return;
             }
 
             var withdrawResult = wallet.Withdraw(withdrawAmountResult.Value);
             if (withdrawResult.IsFailure)
             {
-                var failureEvent = new WalletDebitFailedEvent
-                {
-                    CorrelationId = request.CorrelationId,
-                    Reason = withdrawResult.Error.Message
-                };
-
-                await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                _logger.LogWarning(
-                    "Failed to debit wallet for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
-                    wallet.Id,
+                await HandleFailureAsync(
                     request.CorrelationId,
-                    withdrawResult.Error.Message);
+                    withdrawResult.Error.Message,
+                    "Failed to debit wallet for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
+                    [wallet.Id, request.CorrelationId, withdrawResult.Error.Message],
+                    cancellationToken);
+                return;
+            }
 
+            var updateTransactionResult = wallet.UpdateLastTransaction(request.TransactionId);
+            if (updateTransactionResult.IsFailure)
+            {
+                await HandleFailureAsync(
+                    request.CorrelationId,
+                    updateTransactionResult.Error.Message,
+                    "Failed to update transaction info for WalletId {WalletId}, CorrelationId {CorrelationId}, Reason {Reason}",
+                    [wallet.Id, request.CorrelationId, updateTransactionResult.Error.Message],
+                    cancellationToken);
                 return;
             }
 
@@ -170,6 +99,25 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
                 wallet.Id,
                 request.Amount,
                 request.CorrelationId);
+        }
+
+        private async Task HandleFailureAsync(
+            Guid correlationId,
+            string reason,
+            string logMessage,
+            object[] logArgs,
+            CancellationToken cancellationToken)
+        {
+            var failureEvent = new WalletDebitFailedEvent
+            {
+                CorrelationId = correlationId,
+                Reason = reason
+            };
+
+            await _eventPublisher.PublishAsync(failureEvent, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogWarning(logMessage, logArgs);
         }
     }
 }
