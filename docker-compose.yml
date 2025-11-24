@@ -174,32 +174,158 @@ services:
     networks:
       - microservice-network
 
-  # --- APPLICATION PLACEHOLDER ---
+  # --- APPLICATION SERVICES ---
 
-  # 10. .NET 8 Application (Example)
-  # This is a placeholder for your .NET app.
-  # You will need to create a Dockerfile for your project.
-  # backend-app:
-  #   container_name: backend_app
-  #   build:
-  #     context: . # Assumes Dockerfile is in the same directory
-  #     dockerfile: YourApp/Dockerfile
-  #   ports:
-  #     - "8001:8080" # Example: Map host 8001 to container 8080
-  #   environment:
-  #     # IMPORTANT: Use the service name 'postgres', not 'localhost'
-  #     ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_CustomerDb;Username=postgres;Password=myStrongPassword123!"
-  #     RabbitMq__Host: "rabbitmq"
-  #     Redis__Host: "redis"
-  #     Keycloak__Authority: "http://keycloak:8080/realms/your-realm"
-  #     Vault__Address: "http://vault:8200"
-  #     Otel__ExporterEndpoint: "http://jaeger:4317" # OTLP gRPC endpoint
-  #   networks:
-  #     - microservice-network
-  #   depends_on:
-  #     - postgres
-  #     - rabbitmq
-  #     - redis
-  #     - keycloak
-  #     - vault
-  #     - jaeger
+  # 10. ApiGateway
+  apigateway:
+    container_name: wf_apigateway
+    build:
+      context: .
+      dockerfile: src/Infrastructure/WF.ApiGateway/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      Redis__Host: redis
+      Redis__Port: 6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+      ReverseProxy__Clusters__customer-cluster__Destinations__destination1__Address: http://customerservice:8080
+      ReverseProxy__Clusters__fraud-cluster__Destinations__destination1__Address: http://fraudservice:8080
+      ReverseProxy__Clusters__transaction-cluster__Destinations__destination1__Address: http://transactionservice:8080
+      ReverseProxy__Clusters__wallet-cluster__Destinations__destination1__Address: http://walletservice:8080
+      ReverseProxy__Clusters__identity-cluster__Destinations__destination1__Address: http://keycloak:8080
+    networks:
+      - microservice-network
+    depends_on:
+      - redis
+      - customerservice
+      - walletservice
+      - transactionservice
+      - fraudservice
+      - keycloak
+      - jaeger
+
+  # 11. CustomerService
+  customerservice:
+    container_name: wf_customerservice
+    build:
+      context: .
+      dockerfile: src/Services/CustomerService/WF.CustomerService.Api/Dockerfile
+    ports:
+      - "7001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_CustomerDb;Username=postgres;Password=myStrongPassword123!"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__VirtualHost: /
+      RabbitMQ__Username: user
+      RabbitMQ__Password: password
+      Keycloak__BaseUrl: http://keycloak:8080
+      Keycloak__Realm: wallet-realm
+      Keycloak__ClientId: wallet-client
+      Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+    networks:
+      - microservice-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - keycloak
+      - jaeger
+
+  # 12. WalletService
+  walletservice:
+    container_name: wf_walletservice
+    build:
+      context: .
+      dockerfile: src/Services/WalletService/WF.WalletService.Api/Dockerfile
+    ports:
+      - "7004:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_WalletDb;Username=postgres;Password=myStrongPassword123!"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__VirtualHost: /
+      RabbitMQ__Username: user
+      RabbitMQ__Password: password
+      Keycloak__BaseUrl: http://keycloak:8080
+      Keycloak__Realm: wallet-realm
+      Keycloak__ClientId: wallet-client
+      Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+    networks:
+      - microservice-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - keycloak
+      - jaeger
+
+  # 13. TransactionService
+  transactionservice:
+    container_name: wf_transactionservice
+    build:
+      context: .
+      dockerfile: src/Services/TransactionService/WF.TransactionService.Api/Dockerfile
+    ports:
+      - "7003:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_TransactionDb;Username=postgres;Password=myStrongPassword123!"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__VirtualHost: /
+      RabbitMQ__Username: user
+      RabbitMQ__Password: password
+      Redis__Host: redis
+      Redis__Port: 6379
+      Keycloak__BaseUrl: http://keycloak:8080
+      Keycloak__Realm: wallet-realm
+      Keycloak__ClientId: wallet-client
+      Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
+      CustomerService__BaseUrl: http://customerservice:8080
+      WalletService__BaseUrl: http://walletservice:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+    networks:
+      - microservice-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+      - customerservice
+      - walletservice
+      - keycloak
+      - jaeger
+
+  # 14. FraudService
+  fraudservice:
+    container_name: wf_fraudservice
+    build:
+      context: .
+      dockerfile: src/Services/FraudService/WF.FraudService.Api/Dockerfile
+    ports:
+      - "7002:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres; Port=5432; Database=WF_FraudDb;Username=postgres;Password=myStrongPassword123!"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__VirtualHost: /
+      RabbitMQ__Username: user
+      RabbitMQ__Password: password
+      CustomerService__BaseUrl: http://customerservice:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+    networks:
+      - microservice-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - customerservice
+      - jaeger
