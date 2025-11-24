@@ -20,6 +20,7 @@ using WF.TransactionService.Infrastructure.QueryServices;
 using WF.TransactionService.Infrastructure.Repositories;
 using WF.TransactionService.Infrastructure.HttpClients;
 using WF.TransactionService.Infrastructure.Authentication;
+using WF.TransactionService.Infrastructure.Data.Interceptors;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -32,8 +33,14 @@ namespace WF.TransactionService.Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            services.AddDbContext<TransactionDbContext>(options =>
-                options.UseNpgsql(connectionString));
+
+            services.AddScoped<AuditableEntityInterceptor>();
+
+            services.AddDbContext<TransactionDbContext>((serviceProvider, options) =>
+            {
+                options.UseNpgsql(connectionString);
+                options.AddInterceptors(serviceProvider.GetRequiredService<AuditableEntityInterceptor>());
+            });
 
             services.AddNpgsqlDataSource(connectionString);
 

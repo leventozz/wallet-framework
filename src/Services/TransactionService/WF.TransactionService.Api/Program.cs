@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using WF.Shared.Contracts.Abstractions;
 using WF.TransactionService.Api.Extensions;
+using WF.TransactionService.Api.Services;
 using WF.TransactionService.Application;
 using WF.TransactionService.Infrastructure;
 using WF.TransactionService.Logging;
@@ -47,6 +49,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddWFApiVersioning();
 builder.Services.AddOpenTelemetry("TransactionService", "1.0.0");
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

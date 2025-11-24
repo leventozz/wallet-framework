@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WF.Shared.Contracts.Abstractions;
 using WF.TransactionService.Api.Controllers.Base;
 using WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
 
@@ -9,7 +10,7 @@ namespace WF.TransactionService.Api.Controllers;
 
 [ApiVersion("1.0")]
 [Authorize]
-public class TransactionsController(IMediator _mediator) : BaseController
+public class TransactionsController(IMediator _mediator, ICurrentUserService _currentUserService) : BaseController
 {
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
@@ -19,7 +20,7 @@ public class TransactionsController(IMediator _mediator) : BaseController
         var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         command = command with 
         { 
-            SenderIdentityId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty,
+            SenderIdentityId = _currentUserService.UserId ?? string.Empty,
             ClientIpAddress = clientIpAddress
         };
         var result = await _mediator.Send(command, cancellationToken);
