@@ -1,6 +1,8 @@
+using AspNetCoreRateLimit;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using WF.ApiGateway.Extensions;
 using WF.Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +63,9 @@ builder.Services.AddCors(options =>
     }
 });
 
+builder.Services.AddRedis(builder.Configuration);
+builder.Services.AddRateLimiting(builder.Configuration);
+
 var app = builder.Build();
 
 
@@ -75,15 +80,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseAuthorization();
-
-app.MapControllers();
-app.MapPrometheusScrapingEndpoint();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AllowAll");
 }
+
+app.UseIpRateLimiting();
+
+app.UseAuthorization();
+
+app.MapControllers();
+app.MapPrometheusScrapingEndpoint();
 app.MapReverseProxy();
 
 app.Run();
