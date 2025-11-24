@@ -8,6 +8,7 @@ namespace WF.WalletService.Infrastructure.Data
     public class WalletDbContext : DbContext
     {
         public DbSet<Wallet> Wallets { get; set; } = null!;
+        public DbSet<AuditLog> AuditLogs { get; set; } = null!;
 
         public WalletDbContext(DbContextOptions<WalletDbContext> options) : base(options)
         {
@@ -64,6 +65,18 @@ namespace WF.WalletService.Infrastructure.Data
                         value => !string.IsNullOrWhiteSpace(value) ? Iban.FromDatabaseValue(value) : (Iban?)null)
                     .HasColumnName("Iban")
                     .HasMaxLength(34);
+            });
+
+            modelBuilder.Entity<AuditLog>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Type).HasMaxLength(20);
+                entity.Property(e => e.TableName).HasMaxLength(128);
+                entity.Property(e => e.PrimaryKey).HasMaxLength(256);
+                entity.Property(e => e.UserId).HasMaxLength(256);
+                entity.HasIndex(e => e.TableName).HasDatabaseName("IX_AuditLogs_TableName");
+                entity.HasIndex(e => e.DateTimeUtc).HasDatabaseName("IX_AuditLogs_DateTimeUtc");
+                entity.HasIndex(e => e.UserId).HasDatabaseName("IX_AuditLogs_UserId");
             });
         }
     }

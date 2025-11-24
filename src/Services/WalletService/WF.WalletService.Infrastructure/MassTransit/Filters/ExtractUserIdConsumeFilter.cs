@@ -1,7 +1,7 @@
 using MassTransit;
-using WF.TransactionService.Infrastructure.PropagationContext;
+using WF.WalletService.Infrastructure.PropagationContext;
 
-namespace WF.TransactionService.Infrastructure.MassTransit.Filters;
+namespace WF.WalletService.Infrastructure.MassTransit.Filters;
 
 
 public class ExtractUserIdConsumeFilter<T>(UserContext userContext) : IFilter<ConsumeContext<T>>

@@ -1,5 +1,7 @@
+using WF.Shared.Contracts.Abstractions;
 using WF.WalletService.Api.Extensions;
 using WF.WalletService.Api.Logging;
+using WF.WalletService.Api.Services;
 using WF.WalletService.Application;
 using WF.WalletService.Infrastructure;
 using WF.WalletService.Middleware;
@@ -31,6 +33,9 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddWFExceptionHandler();
 builder.Services.AddWFAuthentication(builder.Configuration, builder.Environment);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var app = builder.Build();
 

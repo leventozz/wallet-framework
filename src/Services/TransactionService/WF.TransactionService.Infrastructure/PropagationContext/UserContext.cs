@@ -1,4 +1,4 @@
-namespace WF.TransactionService.Infrastructure.Context;
+namespace WF.TransactionService.Infrastructure.PropagationContext;
 
 public class UserContext
 {

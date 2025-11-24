@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using WF.Shared.Contracts.Abstractions;
-using WF.TransactionService.Infrastructure.PropagationContext;
+using WF.WalletService.Infrastructure.PropagationContext;
 
-namespace WF.TransactionService.Api.Services;
+namespace WF.WalletService.Api.Services;
 
 public class CurrentUserService(
     IHttpContextAccessor httpContextAccessor,

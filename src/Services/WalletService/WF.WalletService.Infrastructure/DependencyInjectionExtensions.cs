@@ -12,6 +12,9 @@ using WF.WalletService.Infrastructure.Consumers;
 using WF.WalletService.Infrastructure.Data;
 using WF.WalletService.Infrastructure.QueryServices;
 using WF.WalletService.Infrastructure.Repositories;
+using WF.WalletService.Infrastructure.PropagationContext;
+using WF.WalletService.Infrastructure.MassTransit.Filters;
+using WF.WalletService.Infrastructure.Data.Interceptors;
 
 namespace WF.WalletService.Infrastructure
 {
@@ -24,8 +27,15 @@ namespace WF.WalletService.Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            services.AddDbContext<WalletDbContext>(options =>
-                options.UseNpgsql(connectionString));
+            services.AddSingleton<UserContext>();
+
+            services.AddScoped<AuditableEntityInterceptor>();
+
+            services.AddDbContext<WalletDbContext>((serviceProvider, options) =>
+            {
+                options.UseNpgsql(connectionString);
+                options.AddInterceptors(serviceProvider.GetRequiredService<AuditableEntityInterceptor>());
+            });
 
             services.AddNpgsqlDataSource(connectionString);
 
@@ -53,6 +63,8 @@ namespace WF.WalletService.Infrastructure
                         h.Username(rabbitMqOptions.Username);
                         h.Password(rabbitMqOptions.Password);
                     });
+
+                    cfg.UseConsumeFilter(typeof(ExtractUserIdConsumeFilter<>), context);
 
                     cfg.ConfigureEndpoints(context);
                 });

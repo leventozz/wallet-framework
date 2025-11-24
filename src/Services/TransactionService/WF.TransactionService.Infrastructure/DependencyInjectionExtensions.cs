@@ -21,8 +21,8 @@ using WF.TransactionService.Infrastructure.Repositories;
 using WF.TransactionService.Infrastructure.HttpClients;
 using WF.TransactionService.Infrastructure.Authentication;
 using WF.TransactionService.Infrastructure.Data.Interceptors;
-using WF.TransactionService.Infrastructure.Context;
 using WF.TransactionService.Infrastructure.MassTransit.Filters;
+using WF.TransactionService.Infrastructure.PropagationContext;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -35,7 +35,7 @@ namespace WF.TransactionService.Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            services.AddSingleton<Context.UserContext>();
+            services.AddSingleton<UserContext>();
 
             services.AddScoped<AuditableEntityInterceptor>();
 

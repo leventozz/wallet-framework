@@ -1,6 +1,5 @@
 using MassTransit;
 using WF.Shared.Contracts.Abstractions;
-using WF.TransactionService.Infrastructure.Context;
 
 namespace WF.TransactionService.Infrastructure.MassTransit.Filters;
 
