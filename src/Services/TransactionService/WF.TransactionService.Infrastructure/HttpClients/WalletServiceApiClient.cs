@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
@@ -20,7 +21,7 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
                 return walletId;
             }
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 logger.LogWarning("Wallet not found for customer {CustomerId} with currency {Currency}", customerId, currency);
                 return null;
@@ -49,9 +50,11 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
                 logger.LogInformation("Successfully retrieved wallet lookups for {Count} customer IDs with currency {Currency}", customerIds.Count, currency);
                 return results ?? new List<WalletLookupDto>();
             }
-
-            response.EnsureSuccessStatusCode();
-            return new List<WalletLookupDto>();
+            else
+            {
+                logger.LogWarning("Wallet lookup failed with {StatusCode} for currency {Currency}", response.StatusCode, currency);
+                return new List<WalletLookupDto>();
+            }
         }
         catch (HttpRequestException ex)
         {
