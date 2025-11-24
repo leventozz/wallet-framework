@@ -21,6 +21,8 @@ using WF.TransactionService.Infrastructure.Repositories;
 using WF.TransactionService.Infrastructure.HttpClients;
 using WF.TransactionService.Infrastructure.Authentication;
 using WF.TransactionService.Infrastructure.Data.Interceptors;
+using WF.TransactionService.Infrastructure.Context;
+using WF.TransactionService.Infrastructure.MassTransit.Filters;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -33,6 +35,7 @@ namespace WF.TransactionService.Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+            services.AddSingleton<Context.UserContext>();
 
             services.AddScoped<AuditableEntityInterceptor>();
 
@@ -114,6 +117,12 @@ namespace WF.TransactionService.Infrastructure
                         h.Username(rabbitMqOptions.Username);
                         h.Password(rabbitMqOptions.Password);
                     });
+
+                    cfg.UsePublishFilter(typeof(AddUserIdPublishFilter<>), context);
+                    
+                    cfg.UseSendFilter(typeof(AddUserIdSendFilter<>), context);
+                    
+                    cfg.UseConsumeFilter(typeof(ExtractUserIdConsumeFilter<>), context);
 
                     cfg.ConfigureEndpoints(context);
                 });
