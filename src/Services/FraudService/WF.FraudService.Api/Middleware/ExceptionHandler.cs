@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ValidationException = FluentValidation.ValidationException;
 
@@ -40,14 +39,15 @@ namespace WF.FraudService.Middleware
                     g => g.Key,
                     g => g.ToArray());
 
-            var response = new
+            var problemDetails = new ValidationProblemDetails(errors)
             {
-                statusCode = httpContext.Response.StatusCode,
-                message = "Validation failed",
-                errors = errors
+                Status = httpContext.Response.StatusCode,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Title = "One or more validation errors occurred.",
+                Instance = httpContext.Request.Path
             };
 
-            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
         }
@@ -65,13 +65,18 @@ namespace WF.FraudService.Middleware
                 "An unhandled exception occurred. RequestId: {RequestId}",
                 httpContext.TraceIdentifier);
 
-            var response = new
+            var problemDetails = new ProblemDetails
             {
-                statusCode = httpContext.Response.StatusCode,
-                message = "An unhandled exception occurred."
+                Status = httpContext.Response.StatusCode,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                Title = "An error occurred while processing your request.",
+                Detail = "Internal Server Error",
+                Instance = httpContext.Request.Path
             };
 
-            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+            problemDetails.Extensions.Add("traceId", httpContext.TraceIdentifier);
+
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
         }
