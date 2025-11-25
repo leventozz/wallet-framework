@@ -33,7 +33,7 @@ public class CreateTransactionCommandHandler(
         var senderCustomerLookup = await senderLookupTask;
         if (senderCustomerLookup == null)
         {
-            return Result<string>.Failure(Error.NotFound("Customer", request.SenderIdentityId));
+            return Result<string>.Failure(Error.NotFound("Sender customer", request.SenderIdentityId));
         }
 
         var receiverLookups = await receiverLookupTask;
@@ -41,7 +41,7 @@ public class CreateTransactionCommandHandler(
         
         if (receiverCustomerLookup == null)
         {
-            return Result<string>.Failure(Error.NotFound("Customer", request.ReceiverCustomerNumber));
+            return Result<string>.Failure(Error.NotFound("Receiver ustomer", request.ReceiverCustomerNumber));
         }
 
         var walletLookups = await _walletServiceApiClient.LookupByCustomerIdsAsync(
@@ -52,13 +52,13 @@ public class CreateTransactionCommandHandler(
         var senderWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == senderCustomerLookup.CustomerId);
         if (senderWalletLookup == null)
         {
-            return Result<string>.Failure(Error.NotFound("Wallet", $"Customer {senderCustomerLookup.CustomerId} with currency {request.Currency}"));
+            return Result<string>.Failure(Error.NotFound("Wallet", $"Sender customer {senderCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var receiverWalletLookup = walletLookups.FirstOrDefault(w => w.CustomerId == receiverCustomerLookup.CustomerId);
         if (receiverWalletLookup == null)
         {
-            return Result<string>.Failure(Error.NotFound("Wallet", $"Customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}"));
+            return Result<string>.Failure(Error.NotFound("Wallet", $"Receiver customer {receiverCustomerLookup.CustomerId} with currency {request.Currency}"));
         }
 
         var transferRequestStartedEvent = new TransferRequestStartedEvent

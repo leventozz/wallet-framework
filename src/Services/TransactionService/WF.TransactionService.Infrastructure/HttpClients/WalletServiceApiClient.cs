@@ -50,11 +50,15 @@ public class WalletServiceApiClient(HttpClient httpClient, ILogger<WalletService
                 logger.LogInformation("Successfully retrieved wallet lookups for {Count} customer IDs with currency {Currency}", customerIds.Count, currency);
                 return results ?? new List<WalletLookupDto>();
             }
-            else
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                logger.LogWarning("Wallet lookup failed with {StatusCode} for currency {Currency}", response.StatusCode, currency);
+                logger.LogWarning("No wallets found for the provided customer IDs with currency {Currency}", currency);
                 return new List<WalletLookupDto>();
             }
+
+            response.EnsureSuccessStatusCode();
+            return new List<WalletLookupDto>();
         }
         catch (HttpRequestException ex)
         {
