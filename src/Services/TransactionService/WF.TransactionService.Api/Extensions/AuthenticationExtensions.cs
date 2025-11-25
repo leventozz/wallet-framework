@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using WF.Shared.Contracts.Configuration;
 
 namespace WF.TransactionService.Api.Extensions;
 
@@ -11,10 +11,14 @@ public static class AuthenticationExtensions
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
-        var keycloakSection = configuration.GetSection("Keycloak");
-        var baseUrl = keycloakSection["BaseUrl"] ?? "http://localhost:8080";
-        var realm = keycloakSection["Realm"] ?? "wallet-realm";
-        var authority = $"{baseUrl}/realms/{realm}";
+        var keycloakOptions = configuration.GetSection("Keycloak").Get<KeycloakOptions>() 
+            ?? new KeycloakOptions 
+            { 
+                BaseUrl = "http://localhost:8080", 
+                Realm = "wallet-realm" 
+            };
+        
+        var authority = $"{keycloakOptions.BaseUrl}/realms/{keycloakOptions.Realm}";
 
         services.AddAuthentication(options =>
         {
@@ -35,16 +39,16 @@ public static class AuthenticationExtensions
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy =>
+            options.AddPolicy("Admin", policy =>
                 policy.RequireRole("wf-admin"));
 
-            options.AddPolicy("CustomerOnly", policy =>
+            options.AddPolicy("Customer", policy =>
                 policy.RequireRole("wf-customer"));
 
-            options.AddPolicy("OfficerAccess", policy =>
+            options.AddPolicy("Officer", policy =>
                 policy.RequireRole("wf-admin", "wf-officer"));
 
-            options.AddPolicy("ReadOnly", policy =>
+            options.AddPolicy("Support", policy =>
                 policy.RequireRole("wf-admin", "wf-officer", "wf-support"));
         });
 
