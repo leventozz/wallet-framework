@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WF.CustomerService.Application.Abstractions.Identity;
 using WF.Shared.Contracts.Configuration;
+using WF.Shared.Contracts.Enums;
 
 namespace WF.CustomerService.Infrastructure.Authentication;
 
@@ -45,6 +46,10 @@ public class KeycloakIdentityService : IIdentityService
 
             if (isNewUser)
             {
+                var roleName = KeycloakRoles.Customer.GetRoleName();
+                var role = await GetRealmRoleAsync(accessToken, roleName, cancellationToken);
+                await AssignRealmRoleAsync(accessToken, userId, role, cancellationToken);
+
                 try
                 {
                     await SendVerifyEmailAsync(accessToken, userId, cancellationToken);
@@ -235,6 +240,94 @@ public class KeycloakIdentityService : IIdentityService
         response.EnsureSuccessStatusCode();
     }
 
+    private async Task<KeycloakRole> GetRealmRoleAsync(
+        string accessToken,
+        string roleName,
+        CancellationToken cancellationToken)
+    {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
+        var roleEndpoint = $"{_options.BaseUrl}/admin/realms/{_options.Realm}/roles/{Uri.EscapeDataString(roleName)}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, roleEndpoint)
+        {
+            Headers =
+            {
+                { "Authorization", $"Bearer {accessToken}" }
+            }
+        };
+
+        var response = await httpClient.SendAsync(request, cancellationToken);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError(
+                "Failed to get realm role {RoleName} from Keycloak. Status: {StatusCode}, Response: {ErrorContent}",
+                roleName,
+                response.StatusCode,
+                errorContent);
+            throw new HttpRequestException(
+                $"Failed to get realm role {roleName} from Keycloak. Status: {response.StatusCode}, Response: {errorContent}");
+        }
+
+        var role = await response.Content.ReadFromJsonAsync<KeycloakRole>(
+            JsonOptions,
+            cancellationToken: cancellationToken)
+            ?? throw new InvalidOperationException($"Failed to deserialize role response from Keycloak for role {roleName}.");
+
+        return role;
+    }
+
+    private async Task AssignRealmRoleAsync(
+        string accessToken,
+        string userId,
+        KeycloakRole role,
+        CancellationToken cancellationToken)
+    {
+        using var httpClient = _httpClientFactory.CreateClient(nameof(IIdentityService));
+        
+        var assignRoleEndpoint = $"{_options.BaseUrl}/admin/realms/{_options.Realm}/users/{userId}/role-mappings/realm";
+
+        var roleMapping = new[]
+        {
+            new
+            {
+                id = role.Id,
+                name = role.Name
+            }
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Post, assignRoleEndpoint)
+        {
+            Content = JsonContent.Create(roleMapping, options: JsonOptions),
+            Headers =
+            {
+                { "Authorization", $"Bearer {accessToken}" }
+            }
+        };
+
+        var response = await httpClient.SendAsync(request, cancellationToken);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError(
+                "Failed to assign realm role {RoleName} to user {UserId}. Status: {StatusCode}, Response: {ErrorContent}",
+                role.Name,
+                userId,
+                response.StatusCode,
+                errorContent);
+            throw new HttpRequestException(
+                $"Failed to assign realm role {role.Name} to user {userId}. Status: {response.StatusCode}, Response: {errorContent}");
+        }
+
+        _logger.LogInformation(
+            "Successfully assigned realm role {RoleName} to user {UserId}",
+            role.Name,
+            userId);
+    }
+
     private static string ExtractUserIdFromLocation(string location)
     {
         var parts = location.Split('/');
@@ -256,6 +349,12 @@ public class KeycloakIdentityService : IIdentityService
     private record KeycloakUser
     {
         public string Id { get; init; } = string.Empty;
+    }
+
+    private record KeycloakRole
+    {
+        public string Id { get; init; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
     }
 }
 

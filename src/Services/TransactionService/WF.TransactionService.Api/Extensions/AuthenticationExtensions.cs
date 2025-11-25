@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WF.Shared.Contracts.Configuration;
+using WF.Shared.Contracts.Enums;
 
 namespace WF.TransactionService.Api.Extensions;
 
@@ -40,16 +41,16 @@ public static class AuthenticationExtensions
         services.AddAuthorization(options =>
         {
             options.AddPolicy("Admin", policy =>
-                policy.RequireRole("wf-admin"));
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName()));
 
             options.AddPolicy("Customer", policy =>
-                policy.RequireRole("wf-customer"));
+                policy.RequireRole(KeycloakRoles.Customer.GetRoleName()));
 
             options.AddPolicy("Officer", policy =>
-                policy.RequireRole("wf-admin", "wf-officer"));
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName()));
 
             options.AddPolicy("Support", policy =>
-                policy.RequireRole("wf-admin", "wf-officer", "wf-support"));
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName(), KeycloakRoles.Support.GetRoleName()));
         });
 
         return services;
