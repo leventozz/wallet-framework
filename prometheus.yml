@@ -6,26 +6,32 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
   
+  # ApiGateway metrics
+  - job_name: "apigateway"
+    static_configs:
+      - targets: ["apigateway:8080"]
+    metrics_path: "/metrics"
+  
   # CustomerService metrics
   - job_name: "customer-service"
     static_configs:
-      - targets: ["host.docker.internal:5116"]  
+      - targets: ["customerservice:8080"]
     metrics_path: "/metrics"
   
   # FraudService metrics
   - job_name: "fraud-service"
     static_configs:
-      - targets: ["host.docker.internal:5045"]  
+      - targets: ["fraudservice:8080"]
     metrics_path: "/metrics"
 
   # TransactionService metrics
-  - job_name: "trnsaction-service"
+  - job_name: "transaction-service"
     static_configs:
-      - targets: ["host.docker.internal:5068"]  
+      - targets: ["transactionservice:8080"]
     metrics_path: "/metrics"
 
   # WalletService metrics
   - job_name: "wallet-service"
     static_configs:
-      - targets: ["host.docker.internal:5212"]  
+      - targets: ["walletservice:8080"]
     metrics_path: "/metrics"
