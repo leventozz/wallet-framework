@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace WF.TransactionService.Api.Extensions;
@@ -30,6 +31,21 @@ public static class AuthenticationExtensions
                 ValidateIssuer = true,
                 ValidIssuer = authority
             };
+        });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("wf-admin"));
+
+            options.AddPolicy("CustomerOnly", policy =>
+                policy.RequireRole("wf-customer"));
+
+            options.AddPolicy("OfficerAccess", policy =>
+                policy.RequireRole("wf-admin", "wf-officer"));
+
+            options.AddPolicy("ReadOnly", policy =>
+                policy.RequireRole("wf-admin", "wf-officer", "wf-support"));
         });
 
         return services;

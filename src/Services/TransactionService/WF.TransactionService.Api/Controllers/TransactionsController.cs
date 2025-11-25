@@ -9,7 +9,7 @@ using WF.TransactionService.Application.Features.Transactions.Commands.CreateTra
 namespace WF.TransactionService.Api.Controllers;
 
 [ApiVersion("1.0")]
-[Authorize]
+[Authorize(Policy = "CustomerOnly")]
 public class TransactionsController(IMediator _mediator, ICurrentUserService _currentUserService) : BaseController
 {
     [HttpPost]

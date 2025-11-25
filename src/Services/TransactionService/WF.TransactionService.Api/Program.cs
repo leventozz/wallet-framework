@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
 using WF.Shared.Contracts.Abstractions;
+using WF.TransactionService.Api.Authentication;
 using WF.TransactionService.Api.Extensions;
 using WF.TransactionService.Api.Services;
 using WF.TransactionService.Application;
@@ -52,6 +54,7 @@ builder.Services.AddOpenTelemetry("TransactionService", "1.0.0");
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
