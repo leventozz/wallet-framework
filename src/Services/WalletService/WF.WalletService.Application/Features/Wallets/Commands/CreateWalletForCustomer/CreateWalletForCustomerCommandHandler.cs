@@ -43,6 +43,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreateWalletFor
             var eventToPublish = new WalletCreatedEvent(
                 wallet.Id,
                 request.CustomerId,
+                wallet.WalletNumber,
                 wallet.Balance.Amount,
                 wallet.Balance.Currency
             );

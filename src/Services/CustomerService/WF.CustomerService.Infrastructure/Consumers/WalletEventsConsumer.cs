@@ -21,6 +21,7 @@ namespace WF.CustomerService.Infrastructure.Consumers
             {
                 Id = message.WalletId,
                 CustomerId = message.CustomerId,
+                WalletNumber = message.WalletNumber,
                 Balance = message.InitialBalance,
                 Currency = message.Currency
             };

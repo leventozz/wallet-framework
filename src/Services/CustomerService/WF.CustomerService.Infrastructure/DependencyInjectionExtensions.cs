@@ -69,6 +69,7 @@ namespace WF.CustomerService.Infrastructure
 
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerQueryService, CustomerQueryService>();
+            services.AddScoped<IAdminCustomerQueryService, AdminCustomerQueryService>();
             services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
