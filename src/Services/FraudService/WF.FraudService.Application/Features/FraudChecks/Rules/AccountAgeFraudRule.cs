@@ -10,6 +10,7 @@ namespace WF.FraudService.Application.Features.FraudChecks.Rules;
 public class AccountAgeFraudRule(
     IFraudRuleReadService _readService,
     ICustomerServiceApiClient _customerServiceApiClient,
+    ITimeProvider _timeProvider,
     ILogger<AccountAgeFraudRule> _logger) : IFraudEvaluationRule
 {
     public int Priority => 3;
@@ -31,7 +32,7 @@ public class AccountAgeFraudRule(
             return Result.Failure(Error.Failure("FraudCheck", "Customer not found"));
         }
 
-        var accountAgeDays = (DateTime.UtcNow - verificationData.CreatedAtUtc).Days;
+        var accountAgeDays = (_timeProvider.UtcNow - verificationData.CreatedAtUtc).Days;
 
         foreach (var dto in accountAgeRuleDtos)
         {
