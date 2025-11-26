@@ -1,6 +1,6 @@
 # Architecture
 
-This document provides a comprehensive overview of the Wallet Framework architecture, designed for architects and senior developers. It explains the "why" behind architectural decisions and provides detailed diagrams of system design.
+This document provides a comprehensive overview of the Wallet Framework architecture. It explains the "why" behind architectural decisions and provides detailed diagrams of system design.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ This document provides a comprehensive overview of the Wallet Framework architec
 
 ### System Overview
 
-Wallet Framework follows a **microservices architecture** pattern with clear service boundaries, event-driven communication, and database-per-service isolation. The system is designed for high scalability, resilience, and maintainability.
+Wallet Framework follows a microservices architecture pattern with clear service boundaries, event-driven communication, and database-per-service isolation. The system is designed for high scalability, resilience, and maintainability.
 
 ### Service Communication Diagram
 
@@ -151,10 +151,6 @@ Each bounded context defines one or more aggregate roots that encapsulate busine
   - Customer lifecycle management (create, update, soft delete)
   - KYC status tracking
   - Profile information management
-- **Invariants**:
-  - Customer must have valid identity ID from Keycloak
-  - Customer number must be unique
-  - Deleted customers cannot be modified
 
 #### WalletService
 
@@ -165,11 +161,6 @@ Each bounded context defines one or more aggregate roots that encapsulate busine
   - Balance management (deposit, withdraw)
   - Wallet state management (active, frozen, closed)
   - Transaction history tracking
-- **Invariants**:
-  - Balance cannot be negative
-  - Available balance ≤ Total balance
-  - Closed wallets cannot have non-zero balance
-  - Frozen wallets cannot perform operations
 
 #### TransactionService
 
@@ -180,10 +171,6 @@ Each bounded context defines one or more aggregate roots that encapsulate busine
   - P2P transfer orchestration
   - Transaction state management
   - Failure tracking and compensation
-- **Invariants**:
-  - Transaction must have valid sender and receiver
-  - Amount must be positive
-  - Failed transactions must have a failure reason
 
 #### FraudService
 
@@ -199,32 +186,6 @@ Each bounded context defines one or more aggregate roots that encapsulate busine
   - Fraud rule evaluation
   - Risk scoring
   - Compliance validation
-
-### Value Objects
-
-Value objects are immutable types that represent domain concepts without identity:
-
-#### CustomerService Value Objects
-
-- **`Email`**: [Email.cs](src/Services/CustomerService/WF.CustomerService.Domain/ValueObjects/Email.cs)
-  - Validates email format and length
-  - Ensures immutability
-- **`PersonName`**: Represents a person's full name
-- **`PhoneNumber`**: Validates and formats phone numbers
-
-#### WalletService Value Objects
-
-- **`Money`**: [Money.cs](src/Services/WalletService/WF.WalletService.Domain/ValueObjects/Money.cs)
-  - Encapsulates amount and currency
-  - Provides type-safe arithmetic operations
-  - Prevents currency mixing errors
-- **`Iban`**: Represents International Bank Account Number
-
-#### FraudService Value Objects
-
-- **`IpAddress`**: Validates and represents IP addresses
-- **`Money`**: Shared money value object for fraud rules
-- **`TimeRange`**: Represents time windows for risky hour rules
 
 ### Strategic Design Decisions
 

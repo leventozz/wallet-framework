@@ -164,11 +164,10 @@ public class KeycloakRolesClaimsTransformation : IClaimsTransformation
 #### For End Users (Resource Owner Password Credentials)
 
 ```bash
-curl -X POST "http://localhost:8080/realms/wallet-realm/protocol/openid-connect/token" \
+curl -X POST "http://localhost:5000/api/v1/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=password" \
   -d "client_id=wallet-client" \
-  -d "client_secret=<CLIENT_SECRET>" \
   -d "username=<USERNAME>" \
   -d "password=<PASSWORD>"
 ```

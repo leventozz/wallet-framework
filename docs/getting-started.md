@@ -362,11 +362,10 @@ To authenticate API requests, you need to obtain a JWT token from Keycloak:
 #### Using curl
 
 ```bash
-curl -X POST "http://localhost:8080/realms/wallet-realm/protocol/openid-connect/token" \
+curl -X POST "http://localhost:5000/api/v1/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=password" \
   -d "client_id=wallet-client" \
-  -d "client_secret=<YOUR_CLIENT_SECRET>" \
   -d "username=<YOUR_USERNAME>" \
   -d "password=<YOUR_PASSWORD>"
 ```

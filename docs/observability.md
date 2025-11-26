@@ -421,7 +421,7 @@ datasources:
 2. Login with `admin/admin`
 3. Navigate to **Dashboards > Import**
 4. Enter dashboard ID:
-   - **ASP.NET Core**: `10915`
+   - **ASP.NET Core**: `19924`
    - **.NET Runtime**: `10427`
 5. Select **Prometheus** datasource
 6. Click **Import**
