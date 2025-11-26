@@ -23,9 +23,8 @@ public static class ConfigurationExtensions
             return;
         }
 
-       
         configurationBuilder.AddVaultConfiguration(
-            () => new VaultOptions(address, token),
+            () => new VaultOptions(address, token, reloadOnChange: true, reloadCheckIntervalSeconds: 600),
             "wallet/shared",
             "secret"
         );
@@ -44,7 +43,7 @@ public static class ConfigurationExtensions
         if (!string.IsNullOrEmpty(serviceName))
         {
              configurationBuilder.AddVaultConfiguration(
-                () => new VaultOptions(address, token),
+                () => new VaultOptions(address, token, reloadOnChange: true, reloadCheckIntervalSeconds: 600),
                 $"wallet/{serviceName}",
                 "secret"
             );
