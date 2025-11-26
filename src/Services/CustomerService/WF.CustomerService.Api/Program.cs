@@ -1,10 +1,8 @@
 using WF.CustomerService.Api.Extensions;
 using WF.CustomerService.Api.Logging;
 using WF.CustomerService.Api.Middleware;
-using WF.CustomerService.Api.Authentication;
 using WF.CustomerService.Application;
 using WF.CustomerService.Infrastructure;
-using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
