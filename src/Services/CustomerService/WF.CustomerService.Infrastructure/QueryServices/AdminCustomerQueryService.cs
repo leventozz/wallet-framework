@@ -20,7 +20,7 @@ public class AdminCustomerQueryService(NpgsqlDataSource dataSource) : IAdminCust
         const string countSql = """
             SELECT COUNT(*)
             FROM "Customers"
-            WHERE "IsActive" = true AND "IsDeleted" = false;
+            WHERE "IsDeleted" = false;
             """;
 
         var totalCount = await connection.ExecuteScalarAsync<int>(
@@ -41,7 +41,7 @@ public class AdminCustomerQueryService(NpgsqlDataSource dataSource) : IAdminCust
                 w."State"
             FROM "Customers" c
             LEFT JOIN "WalletReadModels" w ON c."Id" = w."CustomerId"
-            WHERE c."IsActive" = true AND c."IsDeleted" = false
+            WHERE c."IsDeleted" = false
             ORDER BY c."CreatedAtUtc" DESC
             OFFSET @offset LIMIT @pageSize;
             """;

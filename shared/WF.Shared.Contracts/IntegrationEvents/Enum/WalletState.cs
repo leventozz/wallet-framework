@@ -2,7 +2,7 @@
 {
     public enum WalletState
     {
-        Activated,
+        Active,
         Closed,
         Frozen
     }
