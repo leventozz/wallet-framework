@@ -18,6 +18,12 @@ public class BlockedIpRuleRepository(FraudDbContext _context) : IBlockedIpReposi
         await Task.CompletedTask;
     }
 
+    public async Task<BlockedIpRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.BlockedIps
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var blockedIp = await _context.BlockedIps

@@ -1,4 +1,5 @@
 using WF.FraudService.Domain.ValueObjects;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Domain.Entities;
 
@@ -11,6 +12,18 @@ public class RiskyHourRule
     public DateTime CreatedAtUtc { get; private set; }
 
     private RiskyHourRule() { }
+
+    public static Result<RiskyHourRule> Create(TimeRange timeRange, string? description)
+    {
+        return Result<RiskyHourRule>.Success(new RiskyHourRule
+        {
+            Id = Guid.NewGuid(),
+            TimeRange = timeRange,
+            Description = description,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow
+        });
+    }
 
     public void Deactivate()
     {

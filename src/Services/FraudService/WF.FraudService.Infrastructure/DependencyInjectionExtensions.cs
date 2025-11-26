@@ -69,6 +69,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAccountAgeRuleRepository, AccountAgeRuleRepository>();
         services.AddScoped<IKycLevelRuleRepository, KycLevelRuleRepository>();
         services.AddScoped<IFraudRuleReadService, FraudRuleReadService>();
+        services.AddScoped<IAdminFraudRuleQueryService, AdminFraudRuleQueryService>();
         services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

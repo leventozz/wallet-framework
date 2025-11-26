@@ -18,6 +18,12 @@ public class AccountAgeRuleRepository(FraudDbContext _context) : IAccountAgeRule
         await Task.CompletedTask;
     }
 
+    public async Task<AccountAgeRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.AccountAgeRules
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var rule = await _context.AccountAgeRules

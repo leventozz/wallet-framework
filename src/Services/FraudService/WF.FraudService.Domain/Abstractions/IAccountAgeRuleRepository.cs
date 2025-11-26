@@ -6,6 +6,7 @@ public interface IAccountAgeRuleRepository
 {
     Task AddAsync(AccountAgeRule rule, CancellationToken cancellationToken = default);
     Task UpdateAsync(AccountAgeRule rule, CancellationToken cancellationToken = default);
+    Task<AccountAgeRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
 

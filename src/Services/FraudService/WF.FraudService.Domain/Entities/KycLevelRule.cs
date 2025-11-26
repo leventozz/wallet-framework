@@ -1,5 +1,6 @@
 using WF.FraudService.Domain.ValueObjects;
 using WF.Shared.Contracts.Enums;
+using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Domain.Entities;
 
@@ -13,6 +14,19 @@ public class KycLevelRule
     public DateTime CreatedAtUtc { get; private set; }
 
     private KycLevelRule() { }
+
+    public static Result<KycLevelRule> Create(KycStatus requiredKycStatus, Money? maxAllowedAmount, string? description)
+    {
+        return Result<KycLevelRule>.Success(new KycLevelRule
+        {
+            Id = Guid.NewGuid(),
+            RequiredKycStatus = requiredKycStatus,
+            MaxAllowedAmount = maxAllowedAmount,
+            Description = description,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow
+        });
+    }
 
     public void Deactivate()
     {

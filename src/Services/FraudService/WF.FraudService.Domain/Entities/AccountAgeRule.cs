@@ -14,6 +14,22 @@ public class AccountAgeRule
 
     private AccountAgeRule() { }
 
+    public static Result<AccountAgeRule> Create(int minAccountAgeDays, Money? maxAllowedAmount, string? description)
+    {
+        if (minAccountAgeDays < 0)
+            return Result<AccountAgeRule>.Failure(Error.Validation("AccountAgeRule.NegativeMinAccountAgeDays", "Minimum account age days cannot be negative."));
+
+        return Result<AccountAgeRule>.Success(new AccountAgeRule
+        {
+            Id = Guid.NewGuid(),
+            MinAccountAgeDays = minAccountAgeDays,
+            MaxAllowedAmount = maxAllowedAmount,
+            Description = description,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow
+        });
+    }
+
     public void Deactivate()
     {
         IsActive = false;

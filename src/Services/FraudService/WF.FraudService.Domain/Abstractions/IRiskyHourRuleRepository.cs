@@ -6,6 +6,7 @@ public interface IRiskyHourRuleRepository
 {
     Task AddAsync(RiskyHourRule rule, CancellationToken cancellationToken = default);
     Task UpdateAsync(RiskyHourRule rule, CancellationToken cancellationToken = default);
+    Task<RiskyHourRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
 

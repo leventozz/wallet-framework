@@ -18,6 +18,12 @@ public class KycLevelRuleRepository(FraudDbContext _context) : IKycLevelRuleRepo
         await Task.CompletedTask;
     }
 
+    public async Task<KycLevelRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.KycLevelRules
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var rule = await _context.KycLevelRules
