@@ -1,7 +1,5 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System.Text.Json;
 using WF.CustomerService.Domain.Entities;
 using WF.CustomerService.Domain.ValueObjects;
 using WF.CustomerService.Infrastructure.Data.ReadModels;
@@ -27,7 +25,7 @@ namespace WF.CustomerService.Infrastructure.Data
 
             modelBuilder.Entity<Customer>(entity =>
             {
-                entity.HasQueryFilter(c => c.IsActive && !c.IsDeleted);
+                entity.HasQueryFilter(c => !c.IsDeleted);
 
                 entity.HasIndex(c => c.CustomerNumber)
                     .IsUnique()
