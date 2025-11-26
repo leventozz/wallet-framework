@@ -131,6 +131,7 @@ namespace WF.TransactionService.Infrastructure
             services.AddScoped<ITransactionReadService, TransactionQueryService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
+            services.AddScoped<IAdminTransactionQueryService, AdminTransactionQueryService>();
 
             return services;
         }
