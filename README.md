@@ -1,12 +1,12 @@
 # Wallet Framework
 
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-FF6600?logo=rabbitmq)
 ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis)
 ![MassTransit](https://img.shields.io/badge/MassTransit-8.x-00A8E6?logo=masstransit)
-![EF Core](https://img.shields.io/badge/EF%20Core-8-512BD4?logo=dotnet)
+![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4?logo=dotnet)
 ![Dapper](https://img.shields.io/badge/Dapper-2.1-1C82AD?logo=dapper)
 ![Prometheus](https://img.shields.io/badge/Prometheus-Latest-E6522C?logo=prometheus)
 ![Jaeger](https://img.shields.io/badge/Jaeger-Latest-1296B8?logo=jaeger)
@@ -37,8 +37,8 @@
 
 | Category | Technology |
 |----------|------------|
-| **Runtime** | .NET 8 |
-| **ORM** | Entity Framework Core 8 |
+| **Runtime** | .NET 10 |
+| **ORM** | Entity Framework Core 10 |
 | **Messaging** | MassTransit v8.x + RabbitMQ 3.13 |
 | **CQRS** | MediatR v12.x |
 | **Database** | PostgreSQL 16 |
@@ -53,7 +53,7 @@
 ### Prerequisites
 
 - Docker Desktop (or Docker Engine + Docker Compose)
-- .NET 8 SDK (for local development)
+- .NET 10 SDK (for local development)
 
 ### Run the Application
 

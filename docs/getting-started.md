@@ -21,7 +21,7 @@ Before you begin, ensure you have the following tools installed on your system:
 | Tool | Minimum Version | Purpose | Download |
 |------|----------------|---------|----------|
 | **Docker Desktop** | Latest | Container orchestration for all services | [Docker Desktop](https://www.docker.com/products/docker-desktop) |
-| **.NET 8 SDK** | 8.0+ | Required for local development (optional if only running via Docker) | [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) |
+| **.NET 10 SDK** | 10.0+ | Required for local development (optional if only running via Docker) | [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) |
 | **Git** | Latest | Repository cloning | [Git](https://git-scm.com/downloads) |
 | **IDE** | - | Code editing (VS Code, Visual Studio, or Rider) | - |
 
@@ -527,4 +527,4 @@ Now that your environment is set up:
 
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Keycloak Documentation](https://www.keycloak.org/documentation)
-- [.NET 8 Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8)
+- [.NET 10 Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10)
