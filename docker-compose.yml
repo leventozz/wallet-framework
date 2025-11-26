@@ -117,6 +117,12 @@ services:
     command: server -dev
     networks:
       - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "vault status || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   # --- OBSERVABILITY STACK ---
 
@@ -200,13 +206,22 @@ services:
     networks:
       - microservice-network
     depends_on:
-      - redis
-      - customerservice
-      - walletservice
-      - transactionservice
-      - fraudservice
-      - keycloak
-      - jaeger
+      vault:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      customerservice:
+        condition: service_started
+      walletservice:
+        condition: service_started
+      transactionservice:
+        condition: service_started
+      fraudservice:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   # 11. CustomerService
   customerservice:
@@ -235,10 +250,16 @@ services:
     networks:
       - microservice-network
     depends_on:
-      - postgres
-      - rabbitmq
-      - keycloak
-      - jaeger
+      vault:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   # 12. WalletService
   walletservice:
@@ -267,10 +288,16 @@ services:
     networks:
       - microservice-network
     depends_on:
-      - postgres
-      - rabbitmq
-      - keycloak
-      - jaeger
+      vault:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   # 13. TransactionService
   transactionservice:
@@ -303,13 +330,22 @@ services:
     networks:
       - microservice-network
     depends_on:
-      - postgres
-      - rabbitmq
-      - redis
-      - customerservice
-      - walletservice
-      - keycloak
-      - jaeger
+      vault:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+      customerservice:
+        condition: service_started
+      walletservice:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   # 14. FraudService
   fraudservice:
@@ -337,8 +373,15 @@ services:
     networks:
       - microservice-network
     depends_on:
-      - postgres
-      - rabbitmq
-      - customerservice
-      - keycloak
-      - jaeger
+      vault:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      customerservice:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      jaeger:
+        condition: service_started

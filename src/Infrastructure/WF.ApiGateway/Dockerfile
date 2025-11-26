@@ -25,8 +25,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Create non-root user
-RUN addgroup --system --gid 1001 dotnetuser && \
-    adduser --system --uid 1001 --ingroup dotnetuser dotnetuser
+RUN groupadd --system --gid 1001 dotnetuser && \
+    useradd --system --uid 1001 --gid 1001 --no-create-home --shell /bin/false dotnetuser
 
 # Copy published files
 COPY --from=build /app/publish .
