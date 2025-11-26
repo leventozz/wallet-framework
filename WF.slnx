@@ -49,4 +49,10 @@
   <Folder Name="/tests/Services/FraudService/">
     <Project Path="tests/Services/FraudService/WF.FraudService.UnitTests/WF.FraudService.UnitTests.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
   </Folder>
+  <Folder Name="/tests/Services/TransactionService/">
+    <Project Path="tests/Services/TransacitonService/WF.TransactionService.UnitTests/WF.TransactionService.UnitTests.csproj" Id="1d5979c3-dc5b-414c-9718-a5dd813916ea" />
+  </Folder>
+  <Folder Name="/tests/Services/WalletService/">
+    <Project Path="tests/Services/WalletService/WF.WalletService.UnitTests/WF.WalletService.UnitTests.csproj" Id="964e77ec-0b02-4170-ac35-26bd492357ae" />
+  </Folder>
 </Solution>
