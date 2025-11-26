@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using WF.Shared.Contracts.Configuration;
+using WF.Shared.Contracts.Enums;
+using WF.WalletService.Api.Authentication;
 
 namespace WF.WalletService.Api.Extensions;
 
@@ -10,10 +14,15 @@ public static class AuthenticationExtensions
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
-        var keycloakSection = configuration.GetSection("Keycloak");
-        var baseUrl = keycloakSection["BaseUrl"] ?? "http://localhost:8080";
-        var realm = keycloakSection["Realm"] ?? "wallet-realm";
-        var authority = $"{baseUrl}/realms/{realm}";
+        var keycloakOptions = configuration.GetSection("Keycloak").Get<KeycloakOptions>()
+            ?? new KeycloakOptions
+            {
+                BaseUrl = "http://localhost:8080",
+                Realm = "wallet-realm"
+            };
+
+        var authority = $"{keycloakOptions.BaseUrl}/realms/{keycloakOptions.Realm}";
+
 
         services.AddAuthentication(options =>
         {
@@ -31,6 +40,23 @@ public static class AuthenticationExtensions
                 ValidIssuer = authority
             };
         });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Admin", policy =>
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName()));
+
+            options.AddPolicy("Customer", policy =>
+                policy.RequireRole(KeycloakRoles.Customer.GetRoleName()));
+
+            options.AddPolicy("Officer", policy =>
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName()));
+
+            options.AddPolicy("Support", policy =>
+                policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName(), KeycloakRoles.Support.GetRoleName()));
+        });
+
+        services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
 
         return services;
     }
