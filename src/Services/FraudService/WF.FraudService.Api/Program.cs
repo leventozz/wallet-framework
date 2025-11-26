@@ -6,6 +6,8 @@ using WF.FraudService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddVaultConfiguration(builder.Configuration);
+
 builder.Host.UseLogging();
 
 

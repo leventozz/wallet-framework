@@ -12,6 +12,8 @@ using WF.TransactionService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddVaultConfiguration(builder.Configuration);
+
 builder.Host.UseLogging();
 
 builder.Services.AddControllers();

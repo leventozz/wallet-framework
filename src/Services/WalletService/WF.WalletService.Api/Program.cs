@@ -8,6 +8,8 @@ using WF.WalletService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddVaultConfiguration(builder.Configuration);
+
 builder.Host.UseLogging();
 
 builder.Services.AddControllers();

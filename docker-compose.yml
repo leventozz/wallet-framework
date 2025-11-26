@@ -189,6 +189,8 @@ services:
       ASPNETCORE_URLS: http://+:8080
       Redis__Host: redis
       Redis__Port: 6379
+      Vault__Address: http://vault:8200
+      Vault__Token: my-root-token
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
       ReverseProxy__Clusters__customer-cluster__Destinations__destination1__Address: http://customerservice:8080
       ReverseProxy__Clusters__fraud-cluster__Destinations__destination1__Address: http://fraudservice:8080
@@ -227,6 +229,8 @@ services:
       Keycloak__Realm: wallet-realm
       Keycloak__ClientId: wallet-client
       Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
+      Vault__Address: http://vault:8200
+      Vault__Token: my-root-token
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     networks:
       - microservice-network
@@ -257,6 +261,8 @@ services:
       Keycloak__Realm: wallet-realm
       Keycloak__ClientId: wallet-client
       Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
+      Vault__Address: http://vault:8200
+      Vault__Token: my-root-token
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     networks:
       - microservice-network
@@ -291,6 +297,8 @@ services:
       Keycloak__ClientSecret: C9C6iUy5TfBemJVhemnMFf7LcwdlIGVX
       CustomerService__BaseUrl: http://customerservice:8080
       WalletService__BaseUrl: http://walletservice:8080
+      Vault__Address: http://vault:8200
+      Vault__Token: my-root-token
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     networks:
       - microservice-network
@@ -323,6 +331,8 @@ services:
       Keycloak__BaseUrl: http://keycloak:8080
       Keycloak__Realm: wallet-realm
       CustomerService__BaseUrl: http://customerservice:8080
+      Vault__Address: http://vault:8200
+      Vault__Token: my-root-token
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     networks:
       - microservice-network
