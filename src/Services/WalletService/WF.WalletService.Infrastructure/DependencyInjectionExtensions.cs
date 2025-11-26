@@ -72,6 +72,7 @@ namespace WF.WalletService.Infrastructure
 
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IWalletQueryService, WalletQueryService>();
+            services.AddScoped<IAdminWalletQueryService, AdminWalletQueryService>();
             services.AddScoped<IIntegrationEventPublisher, MassTransitEventPublisher>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
