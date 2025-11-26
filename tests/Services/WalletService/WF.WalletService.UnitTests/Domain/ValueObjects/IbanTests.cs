@@ -1,7 +1,5 @@
 using FluentAssertions;
-using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.ValueObjects;
-using Xunit;
 
 namespace WF.WalletService.UnitTests.Domain.ValueObjects;
 
