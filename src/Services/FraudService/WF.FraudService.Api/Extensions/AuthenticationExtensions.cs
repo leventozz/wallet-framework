@@ -14,6 +14,8 @@ public static class AuthenticationExtensions
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
+        services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
+
         var keycloakOptions = configuration.GetSection("Keycloak").Get<KeycloakOptions>()
             ?? new KeycloakOptions
             {
@@ -63,8 +65,6 @@ public static class AuthenticationExtensions
             options.AddPolicy("Support", policy =>
                 policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName(), KeycloakRoles.Support.GetRoleName()));
         });
-
-        services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
 
         return services;
     }

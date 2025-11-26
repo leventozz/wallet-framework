@@ -320,6 +320,8 @@ services:
       RabbitMQ__VirtualHost: /
       RabbitMQ__Username: user
       RabbitMQ__Password: password
+      Keycloak__BaseUrl: http://keycloak:8080
+      Keycloak__Realm: wallet-realm
       CustomerService__BaseUrl: http://customerservice:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     networks:
@@ -328,4 +330,5 @@ services:
       - postgres
       - rabbitmq
       - customerservice
+      - keycloak
       - jaeger
