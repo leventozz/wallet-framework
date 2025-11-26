@@ -1,11 +1,5 @@
 # Services
 
-> **Status:** Documentation in progress
-
-This document provides a comprehensive overview of all microservices in the Wallet Framework ecosystem, their responsibilities, bounded contexts, and technical capabilities.
-
----
-
 ## Microservices Overview
 
 Wallet Framework follows a microservices architecture pattern with clear service boundaries, event-driven communication, and database-per-service isolation. The system is designed for high scalability, resilience, and maintainability.
@@ -23,7 +17,7 @@ Each service represents a distinct bounded context in the Domain-Driven Design (
 | **CustomerService** | Profile Management | WF_CustomerDb (PostgreSQL) | CQRS, Outbox, Read Model Replication |
 | **WalletService** | Balance Management | WF_WalletDb (PostgreSQL) | DDD, Optimistic Concurrency, Inbox Pattern |
 | **TransactionService** | Orchestration | WF_TransactionDb (PostgreSQL) | Saga State Machine, Outbox |
-| **FraudService** | Risk Control | WF_FraudDb (PostgreSQL) | Strategy Pattern, Rules Engine, Dapper |
+| **FraudService** | Risk Control | WF_FraudDb (PostgreSQL) | Strategy Pattern, Dapper |
 
 ---
 
@@ -39,7 +33,7 @@ The single entry point to the system for external access.
 - **SSL Termination**: HTTPS traffic management
 - **Auth Proxy**: JWT token pass-through (forwarding tokens from Keycloak to backend services)
 - **CORS Configuration**: CORS policies in development environment
-- **Request Transformation**: Path pattern transformations (e.g., `/api/v1/auth/register` → `/api/v1/customers`)
+- **Request Transformation**: Path pattern transformations
 
 **Security:**
 - DDoS protection with IP-based rate limiting
