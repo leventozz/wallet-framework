@@ -46,4 +46,7 @@
   <Folder Name="/tests/Services/CustomerService/">
     <Project Path="tests/Services/CustomerService/WF.CustomerService.UnitTests/WF.CustomerService.UnitTests.csproj" Id="edbe86d2-c6df-4e8f-b389-765ef099d74e" />
   </Folder>
+  <Folder Name="/tests/Services/FraudService/">
+    <Project Path="tests/Services/FraudService/WF.FraudService.UnitTests/WF.FraudService.UnitTests.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+  </Folder>
 </Solution>

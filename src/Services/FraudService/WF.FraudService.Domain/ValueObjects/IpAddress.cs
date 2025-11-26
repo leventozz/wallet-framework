@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Domain.ValueObjects;
@@ -22,6 +23,14 @@ public readonly record struct IpAddress
         if (!IPAddress.TryParse(trimmedValue, out var ipAddress))
             return Result<IpAddress>.Failure(Error.Validation("IpAddress.InvalidFormat", "Invalid IP address format."));
 
+
+        // IPAddress.TryParse can auto-complete incomplete IPv4 addresses (e.g., "192.168.1" -> "192.168.0.1")
+        if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            if (ipAddress.ToString() != trimmedValue)
+                return Result<IpAddress>.Failure(Error.Validation("IpAddress.InvalidFormat", "Invalid IP address format."));
+        }
+
         return Result<IpAddress>.Success(new IpAddress(ipAddress));
     }
 
@@ -35,6 +44,14 @@ public readonly record struct IpAddress
 
         if (!IPAddress.TryParse(trimmedValue, out var ipAddress))
             throw new InvalidOperationException("Invalid IP address format when reading from database.");
+
+
+        // IPAddress.TryParse can auto-complete incomplete IPv4 addresses (e.g., "192.168.1" -> "192.168.0.1")
+        if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            if (ipAddress.ToString() != trimmedValue)
+                throw new InvalidOperationException("Invalid IP address format when reading from database.");
+        }
 
         return new IpAddress(ipAddress);
     }

@@ -14,7 +14,7 @@ public class UpdateRiskyHourRuleCommandHandler(
         var rule = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (rule is null)
         {
-            return Result.Failure(Error.NotFound("RiskyHourRule.NotFound", $"Risky hour rule with ID {request.Id} not found."));
+            return Result.Failure(Error.NotFound("RiskyHourRule", request.Id));
         }
 
         if (request.TimeRange.HasValue)

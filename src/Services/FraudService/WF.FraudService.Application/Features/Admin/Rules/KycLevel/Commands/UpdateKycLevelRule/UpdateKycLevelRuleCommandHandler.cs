@@ -14,7 +14,7 @@ public class UpdateKycLevelRuleCommandHandler(
         var rule = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (rule is null)
         {
-            return Result.Failure(Error.NotFound("KycLevelRule.NotFound", $"KYC level rule with ID {request.Id} not found."));
+            return Result.Failure(Error.NotFound("KycLevelRule", request.Id));
         }
 
         if (request.RequiredKycStatus.HasValue)
