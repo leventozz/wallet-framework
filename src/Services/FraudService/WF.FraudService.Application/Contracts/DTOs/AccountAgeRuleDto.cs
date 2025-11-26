@@ -17,7 +17,7 @@ public static class AccountAgeRuleDtoExtensions
         if (!dto.MaxAllowedAmount.HasValue)
             return true;
 
-        if (accountAgeDays < dto.MinAccountAgeDays)
+        if (accountAgeDays <= dto.MinAccountAgeDays)
             return amount <= dto.MaxAllowedAmount.Value;
 
         return true;

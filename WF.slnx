@@ -18,10 +18,10 @@
   </Folder>
   <Folder Name="/src/Services/" />
   <Folder Name="/src/Services/CustomerService/">
+    <Project Path="src/Services/CustomerService/WF.CustomerService.Api/WF.CustomerService.Api.csproj" />
     <Project Path="src/Services/CustomerService/WF.CustomerService.Application/WF.CustomerService.Application.csproj" />
     <Project Path="src/Services/CustomerService/WF.CustomerService.Domain/WF.CustomerService.Domain.csproj" />
     <Project Path="src/Services/CustomerService/WF.CustomerService.Infrastructure/WF.CustomerService.Infrastructure.csproj" />
-    <Project Path="src/Services/CustomerService/WF.CustomerService.Api/WF.CustomerService.Api.csproj" />
   </Folder>
   <Folder Name="/src/Services/FraudService/">
     <Project Path="src/Services/FraudService/WF.FraudService.Api/WF.FraudService.Api.csproj" Id="5a3b8ebc-2925-482b-89d2-08bedd7bb01e" />
@@ -30,15 +30,29 @@
     <Project Path="src/Services/FraudService/WF.FraudService.Infrastructure/WF.FraudService.Infrastructure.csproj" Id="054791c1-41bf-4201-aa78-adf3557138e4" />
   </Folder>
   <Folder Name="/src/Services/TransactionService/">
+    <Project Path="src/Services/TransactionService/WF.TransactionService.Api/WF.TransactionService.Api.csproj" Id="721c286d-87c8-40d0-a29e-d33e0a6425bd" />
     <Project Path="src/Services/TransactionService/WF.TransactionService.Application/WF.TransactionService.Application.csproj" Id="0437a887-58d7-4a1b-ab91-7384e4c9126a" />
     <Project Path="src/Services/TransactionService/WF.TransactionService.Domain/WF.TransactionService.Domain.csproj" Id="68b3e3ce-105c-4cd5-ba71-417cea0728fa" />
     <Project Path="src/Services/TransactionService/WF.TransactionService.Infrastructure/WF.TransactionService.Infrastructure.csproj" Id="0aba5c4a-621c-487c-b665-d85be62deb69" />
-    <Project Path="src/Services/TransactionService/WF.TransactionService.Api/WF.TransactionService.Api.csproj" Id="721c286d-87c8-40d0-a29e-d33e0a6425bd" />
   </Folder>
   <Folder Name="/src/Services/WalletService/">
     <Project Path="src/Services/WalletService/WF.WalletService.Api/WF.WalletService.Api.csproj" Id="9f8271ce-96cb-4d80-9726-55d792797b9d" />
     <Project Path="src/Services/WalletService/WF.WalletService.Application/WF.WalletService.Application.csproj" Id="688d3475-734a-4b83-8bab-384c62f1f782" />
     <Project Path="src/Services/WalletService/WF.WalletService.Domain/WF.WalletService.Domain.csproj" Id="243d2748-85aa-43c9-a9c1-a41673d14116" />
     <Project Path="src/Services/WalletService/WF.WalletService.Infrastructure/WF.WalletService.Infrastructure.csproj" Id="f4291d51-1ba5-47d9-bd9c-4e5469a8c44c" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/Services/" />
+  <Folder Name="/tests/Services/CustomerService/">
+    <Project Path="tests/Services/CustomerService/WF.CustomerService.UnitTests/WF.CustomerService.UnitTests.csproj" Id="edbe86d2-c6df-4e8f-b389-765ef099d74e" />
+  </Folder>
+  <Folder Name="/tests/Services/FraudService/">
+    <Project Path="tests/Services/FraudService/WF.FraudService.UnitTests/WF.FraudService.UnitTests.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+  </Folder>
+  <Folder Name="/tests/Services/TransactionService/">
+    <Project Path="tests/Services/TransacitonService/WF.TransactionService.UnitTests/WF.TransactionService.UnitTests.csproj" Id="1d5979c3-dc5b-414c-9718-a5dd813916ea" />
+  </Folder>
+  <Folder Name="/tests/Services/WalletService/">
+    <Project Path="tests/Services/WalletService/WF.WalletService.UnitTests/WF.WalletService.UnitTests.csproj" Id="964e77ec-0b02-4170-ac35-26bd492357ae" />
   </Folder>
 </Solution>

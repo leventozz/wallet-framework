@@ -5,14 +5,16 @@ using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Application.Features.FraudChecks.Rules;
 
-public class RiskyHourFraudRule(IFraudRuleReadService _readService) : IFraudEvaluationRule
+public class RiskyHourFraudRule(
+    IFraudRuleReadService _readService,
+    ITimeProvider _timeProvider) : IFraudEvaluationRule
 {
     public int Priority => 2;
 
     public async Task<Result> EvaluateAsync(CheckFraudCommandInternal request, CancellationToken cancellationToken)
     {
         var riskyHourRuleDtos = await _readService.GetActiveRiskyHourRulesAsync(cancellationToken);
-        var currentTime = DateTime.UtcNow;
+        var currentTime = _timeProvider.UtcNow;
         
         foreach (var dto in riskyHourRuleDtos)
         {

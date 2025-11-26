@@ -14,7 +14,7 @@ public class UpdateBlockedIpRuleCommandHandler(
         var rule = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (rule is null)
         {
-            return Result.Failure(Error.NotFound("BlockedIpRule.NotFound", $"Blocked IP rule with ID {request.Id} not found."));
+            return Result.Failure(Error.NotFound("BlockedIpRule", request.Id));
         }
 
         if (request.Reason is not null)

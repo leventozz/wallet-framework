@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using WF.FraudService.Application.Common;
 using WF.FraudService.Application.Common.Behaviors;
 using WF.FraudService.Application.Contracts;
 using WF.FraudService.Application.Features.FraudChecks.Rules;
@@ -18,6 +19,8 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddSingleton<ITimeProvider, SystemTimeProvider>();
 
         #region Fraud Rules Registration
         services.AddScoped<IFraudEvaluationRule, BlockedIpFraudRule>();

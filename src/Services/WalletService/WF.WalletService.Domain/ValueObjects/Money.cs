@@ -1,3 +1,4 @@
+using System.Globalization;
 using WF.Shared.Contracts.Result;
 
 namespace WF.WalletService.Domain.ValueObjects;
@@ -70,6 +71,6 @@ public readonly record struct Money
         return left.Amount >= right.Amount;
     }
 
-    public override string ToString() => $"{Amount:F2} {Currency}";
+    public override string ToString() => $"{Amount.ToString("F2", CultureInfo.InvariantCulture)} {Currency}";
 }
 

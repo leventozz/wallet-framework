@@ -12,7 +12,7 @@ public class FreezeWalletCommandHandler(IWalletRepository _walletRepository, IUn
         var wallet = await _walletRepository.GetWalletByIdForUpdateAsync(request.WalletId, cancellationToken);
         if (wallet is null)
         {
-            return Result.Failure(Error.NotFound("Wallet.NotFound", $"Wallet with ID {request.WalletId} was not found."));
+            return Result.Failure(Error.NotFound("Wallet", request.WalletId));
         }
 
         var result = wallet.Freeze();

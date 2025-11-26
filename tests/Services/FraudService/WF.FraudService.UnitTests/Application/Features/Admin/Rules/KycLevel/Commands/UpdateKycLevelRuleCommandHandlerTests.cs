@@ -1,0 +1,128 @@
+using FluentAssertions;
+using NSubstitute;
+using WF.FraudService.Application.Features.Admin.Rules.KycLevel.Commands.UpdateKycLevelRule;
+using WF.FraudService.Domain.Abstractions;
+using WF.FraudService.Domain.Entities;
+using WF.FraudService.Domain.ValueObjects;
+using WF.Shared.Contracts.Abstractions;
+using WF.Shared.Contracts.Enums;
+using WF.Shared.Contracts.Result;
+using Xunit;
+
+namespace WF.FraudService.UnitTests.Application.Features.Admin.Rules.KycLevel.Commands.UpdateKycLevelRule;
+
+public class UpdateKycLevelRuleCommandHandlerTests
+{
+    private readonly IKycLevelRuleRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly UpdateKycLevelRuleCommandHandler _handler;
+    private readonly Bogus.Faker _faker;
+
+    public UpdateKycLevelRuleCommandHandlerTests()
+    {
+        _repository = Substitute.For<IKycLevelRuleRepository>();
+        _unitOfWork = Substitute.For<IUnitOfWork>();
+        _handler = new UpdateKycLevelRuleCommandHandler(_repository, _unitOfWork);
+        _faker = new Bogus.Faker();
+    }
+
+    [Fact]
+    public async Task Handle_WithValidCommand_ShouldUpdateRuleSuccessfully()
+    {
+        // Arrange
+        var ruleId = _faker.Random.Guid();
+        var existingRule = KycLevelRule.Create(KycStatus.Unverified, null, null).Value;
+        var command = new UpdateKycLevelRuleCommand(
+            ruleId,
+            KycStatus.VideoVerified,
+            Money.Create(5000m).Value,
+            "Updated description",
+            true);
+
+        _repository.GetByIdAsync(ruleId, Arg.Any<CancellationToken>())
+            .Returns(existingRule);
+
+        _unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingRule.RequiredKycStatus.Should().Be(KycStatus.VideoVerified);
+        existingRule.MaxAllowedAmount.Should().Be(Money.Create(5000m).Value);
+        existingRule.Description.Should().Be("Updated description");
+        existingRule.IsActive.Should().BeTrue();
+
+        await _repository.Received(1).UpdateAsync(existingRule, Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenRuleNotFound_ShouldReturnNotFoundError()
+    {
+        // Arrange
+        var ruleId = _faker.Random.Guid();
+        var command = new UpdateKycLevelRuleCommand(ruleId, KycStatus.EmailVerified, null, null, true);
+
+        _repository.GetByIdAsync(ruleId, Arg.Any<CancellationToken>())
+            .Returns((KycLevelRule?)null);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("NotFound");
+
+        await _repository.DidNotReceive().UpdateAsync(Arg.Any<KycLevelRule>(), Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WithIsActiveTrue_ShouldActivateRule()
+    {
+        // Arrange
+        var ruleId = _faker.Random.Guid();
+        var existingRule = KycLevelRule.Create(KycStatus.Unverified, null, null).Value;
+        existingRule.Deactivate();
+        var command = new UpdateKycLevelRuleCommand(ruleId, null, null, null, true);
+
+        _repository.GetByIdAsync(ruleId, Arg.Any<CancellationToken>())
+            .Returns(existingRule);
+
+        _unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingRule.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Handle_WithIsActiveFalse_ShouldDeactivateRule()
+    {
+        // Arrange
+        var ruleId = _faker.Random.Guid();
+        var existingRule = KycLevelRule.Create(KycStatus.Unverified, null, null).Value;
+        var command = new UpdateKycLevelRuleCommand(ruleId, null, null, null, false);
+
+        _repository.GetByIdAsync(ruleId, Arg.Any<CancellationToken>())
+            .Returns(existingRule);
+
+        _unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingRule.IsActive.Should().BeFalse();
+    }
+}
+

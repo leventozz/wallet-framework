@@ -1,3 +1,4 @@
+using System.Globalization;
 using WF.Shared.Contracts.Result;
 
 namespace WF.FraudService.Domain.ValueObjects;
@@ -41,6 +42,6 @@ public readonly record struct Money
     
     public static bool operator >=(Money left, Money right) => left.Amount >= right.Amount;
 
-    public override string ToString() => Amount.ToString("F2");
+    public override string ToString() => Amount.ToString("F2", CultureInfo.InvariantCulture);
 }
 
