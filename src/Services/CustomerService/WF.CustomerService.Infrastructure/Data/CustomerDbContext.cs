@@ -25,7 +25,7 @@ namespace WF.CustomerService.Infrastructure.Data
 
             modelBuilder.Entity<Customer>(entity =>
             {
-                entity.HasQueryFilter(c => !c.IsDeleted);
+                entity.HasQueryFilter(c => c.IsActive && !c.IsDeleted);
 
                 entity.HasIndex(c => c.CustomerNumber)
                     .IsUnique()

@@ -31,7 +31,6 @@ public class AdminCustomersController(IMediator _mediator) : BaseController
     }
 
     [HttpPost("{customerId}/close")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Policy = "Officer")]
