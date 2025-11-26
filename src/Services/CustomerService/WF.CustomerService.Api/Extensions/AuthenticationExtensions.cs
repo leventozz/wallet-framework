@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using WF.CustomerService.Api.Authentication;
 using WF.Shared.Contracts.Configuration;
 using WF.Shared.Contracts.Enums;
 
@@ -52,6 +54,8 @@ public static class AuthenticationExtensions
             options.AddPolicy("Support", policy =>
                 policy.RequireRole(KeycloakRoles.Admin.GetRoleName(), KeycloakRoles.Officer.GetRoleName(), KeycloakRoles.Support.GetRoleName()));
         });
+
+        services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
 
         return services;
     }

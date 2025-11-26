@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
 using WF.Shared.Contracts.Enums;
+using WF.TransactionService.Api.Authentication;
+using WF.TransactionService.Api.Services;
 
 namespace WF.TransactionService.Api.Extensions;
 
@@ -12,6 +16,9 @@ public static class AuthenticationExtensions
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
+
         var keycloakOptions = configuration.GetSection("Keycloak").Get<KeycloakOptions>() 
             ?? new KeycloakOptions 
             { 
