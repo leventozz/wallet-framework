@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'website/**'
+      - 'docs/docs-site/**'
       - 'mkdocs.yml'
 
 permissions:
