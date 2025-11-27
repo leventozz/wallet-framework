@@ -6,6 +6,7 @@ WF is a framework designed for peer-to-peer (P2P) transactions commonly used in 
 The goal is to use appropriate architecture and technologies while performing these operations. 
 
 WF's capabilities include:
+
 * P2P transfers
 * Internal Fraud Controls
 * Audit logs
