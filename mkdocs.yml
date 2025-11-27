@@ -5,6 +5,7 @@ repo_name: Wallet Framework
 
 
 docs_dir: docs/docs-site
+site_dir: docs-site
 
 theme:
   name: material
