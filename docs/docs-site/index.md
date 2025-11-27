@@ -1,4 +1,4 @@
-Hello,
+Hello everyone,
 
 On these web pages, I will try to explain the Wallet Framework to you without overwhelming you with code. 
 In the first section, I will briefly explain what the Wallet Framework does.From now on, I will refer to the Wallet Framework as ‘WF’ throughout those pages.
