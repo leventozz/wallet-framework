@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/architecture/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/architecture/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/packages/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/packages/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/packages/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/problems/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/problems/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/problems/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/story/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/story/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/story/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/tr/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/tr/architecture/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/architecture/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/tr/packages/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/packages/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/packages/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/tr/problems/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/problems/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/problems/"/>
+    </url>
+    <url>
+        <loc>https://leventozz.github.io/wallet-framework/tr/story/</loc>
+        <lastmod>2025-11-27</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://leventozz.github.io/wallet-framework/tr/story/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://leventozz.github.io/wallet-framework/story/"/>
+    </url>
+</urlset>
