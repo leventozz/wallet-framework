@@ -16,7 +16,6 @@
 ![HashiCorp Vault](https://img.shields.io/badge/HashiCorp%20Vault-Latest-000000?logo=vault)
 ![YARP](https://img.shields.io/badge/YARP-Reverse%20Proxy-512BD4?logo=dotnet)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Latest-000000?logo=opentelemetry)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Executive Summary
 

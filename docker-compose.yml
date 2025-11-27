@@ -71,6 +71,12 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - microservice-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # 4. Redis (Read/Cache)
   redis:
@@ -82,6 +88,12 @@ services:
       - redis_data:/data
     networks:
       - microservice-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   # 5. Keycloak (Identity Management)
   keycloak:
@@ -101,6 +113,15 @@ services:
       - "8080:8080"
     networks:
       - microservice-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   # 6. HashiCorp Vault (Secrets Management)
   # Starts in development mode with a known root token
@@ -170,6 +191,12 @@ services:
       COLLECTOR_OTLP_ENABLED: "true"
     networks:
       - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:14269/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   mailhog:
     image: mailhog/mailhog
@@ -209,7 +236,11 @@ services:
       vault:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
       customerservice:
         condition: service_started
       walletservice:
@@ -217,10 +248,6 @@ services:
       transactionservice:
         condition: service_started
       fraudservice:
-        condition: service_started
-      keycloak:
-        condition: service_started
-      jaeger:
         condition: service_started
 
   # 11. CustomerService
@@ -255,11 +282,11 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       keycloak:
-        condition: service_started
+        condition: service_healthy
       jaeger:
-        condition: service_started
+        condition: service_healthy
 
   # 12. WalletService
   walletservice:
@@ -293,11 +320,11 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       keycloak:
-        condition: service_started
+        condition: service_healthy
       jaeger:
-        condition: service_started
+        condition: service_healthy
 
   # 13. TransactionService
   transactionservice:
@@ -335,16 +362,16 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
       customerservice:
         condition: service_started
       walletservice:
-        condition: service_started
-      keycloak:
-        condition: service_started
-      jaeger:
         condition: service_started
 
   # 14. FraudService
@@ -378,10 +405,10 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
-      customerservice:
-        condition: service_started
+        condition: service_healthy
       keycloak:
-        condition: service_started
+        condition: service_healthy
       jaeger:
+        condition: service_healthy
+      customerservice:
         condition: service_started

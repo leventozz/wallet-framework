@@ -30,7 +30,7 @@
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
-  "verifyEmail": false,
+  "verifyEmail": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": false,
@@ -56,13 +56,7 @@
           "realm": [
             "offline_access",
             "uma_authorization"
-          ],
-          "client": {
-            "account": [
-              "manage-account",
-              "view-profile"
-            ]
-          }
+          ]
         },
         "clientRole": false,
         "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
@@ -78,10 +72,71 @@
         "attributes": {}
       },
       {
+        "id": "2d2c6de4-9f64-4db7-a75c-f2b82a1cf668",
+        "name": "wf-support",
+        "description": "read only role",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
+        "attributes": {}
+      },
+      {
+        "id": "5e867f2c-7256-4ca2-83ec-fd68ad6ae626",
+        "name": "wf-customer",
+        "description": "default customer role",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
+        "attributes": {}
+      },
+      {
+        "id": "fa7873a2-7ff7-4cce-9bcb-2b1caff5051f",
+        "name": "wf-admin",
+        "description": "can make everything",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "manage-users",
+              "view-users",
+              "manage-realm",
+              "manage-clients"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
+        "attributes": {}
+      },
+      {
         "id": "ada07488-c913-453d-846e-31c7b0dd0065",
         "name": "offline_access",
         "description": "${role_offline-access}",
         "composite": false,
+        "clientRole": false,
+        "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
+        "attributes": {}
+      },
+      {
+        "id": "36e69bf6-425f-48d6-8b78-e225bbc6d670",
+        "name": "wf-officer",
+        "description": "can make; acc frozen, approve transaction but add fraud rules",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "manage-users",
+              "view-users"
+            ]
+          }
+        },
         "clientRole": false,
         "containerId": "3fa8e6eb-a096-4ed8-ad7f-ccf35bea1e12",
         "attributes": {}
@@ -109,19 +164,19 @@
                 "manage-identity-providers",
                 "manage-users",
                 "query-realms",
-                "view-realm",
                 "manage-realm",
+                "view-realm",
                 "view-clients",
                 "create-client",
                 "query-groups",
-                "view-users",
                 "view-events",
                 "view-identity-providers",
-                "query-clients",
+                "view-users",
                 "impersonation",
+                "query-clients",
                 "manage-events",
-                "view-authorization",
                 "query-users",
+                "view-authorization",
                 "manage-authorization",
                 "manage-clients"
               ]
@@ -303,6 +358,7 @@
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
+      "wallet-frontend-client": [],
       "broker": [
         {
           "id": "071e441b-4713-49f8-b810-204b5229b0f0",
@@ -476,6 +532,7 @@
         "realm-management": [
           "manage-users",
           "view-users",
+          "view-realm",
           "query-users"
         ]
       },
@@ -630,7 +687,8 @@
       "protocol": "openid-connect",
       "attributes": {
         "realm_client": "false",
-        "client.use.lightweight.access.token.enabled": "true"
+        "client.use.lightweight.access.token.enabled": "true",
+        "post.logout.redirect.uris": "+"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
@@ -672,7 +730,8 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "realm_client": "true"
+        "realm_client": "true",
+        "post.logout.redirect.uris": "+"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -714,7 +773,8 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "realm_client": "true"
+        "realm_client": "true",
+        "post.logout.redirect.uris": "+"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -836,7 +896,65 @@
       "attributes": {
         "realm_client": "false",
         "oidc.ciba.grant.enabled": "false",
-        "client.secret.creation.time": "1763748492",
+        "client.secret.creation.time": "1763804303",
+        "backchannel.logout.session.required": "true",
+        "standard.token.exchange.enabled": "false",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "dpop.bound.access.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "service_account",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "a47362d1-89d3-4de1-8d82-aeb59aca1562",
+      "clientId": "wallet-frontend-client",
+      "name": "",
+      "description": "",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
         "standard.token.exchange.enabled": "false",
         "oauth2.device.authorization.grant.enabled": "false",
@@ -847,7 +965,6 @@
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
       "defaultClientScopes": [
-        "service_account",
         "web-origins",
         "acr",
         "profile",
@@ -947,8 +1064,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientHost",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
             "jsonType.label": "String"
@@ -962,8 +1080,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientAddress",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
             "jsonType.label": "String"
@@ -977,8 +1096,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "client_id",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
             "jsonType.label": "String"
@@ -1037,7 +1157,8 @@
           "config": {
             "id.token.claim": "true",
             "introspection.token.claim": "true",
-            "access.token.claim": "true"
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
           }
         }
       ]
@@ -1169,12 +1290,13 @@
           "protocolMapper": "oidc-organization-membership-mapper",
           "consentRequired": false,
           "config": {
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "organization",
-            "jsonType.label": "String",
-            "multivalued": "true"
+            "jsonType.label": "String"
           }
         }
       ]
@@ -1222,6 +1344,7 @@
           "config": {
             "introspection.token.claim": "true",
             "multivalued": "true",
+            "userinfo.token.claim": "true",
             "user.attribute": "foo",
             "id.token.claim": "true",
             "access.token.claim": "true",
@@ -1534,8 +1657,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "AUTH_TIME",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "auth_time",
             "jsonType.label": "long"
@@ -1570,7 +1694,20 @@
     "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "allowutf8": "",
+    "debug": "false",
+    "replyToDisplayName": "",
+    "starttls": "false",
+    "auth": "",
+    "port": "1025",
+    "host": "mailhog",
+    "replyTo": "",
+    "from": "noreply@wallet.com",
+    "fromDisplayName": "Wallet Framework",
+    "envelopeFrom": "",
+    "ssl": "false"
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -1617,14 +1754,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-usermodel-attribute-mapper",
-            "oidc-usermodel-property-mapper",
             "saml-user-attribute-mapper",
+            "saml-role-list-mapper",
+            "oidc-full-name-mapper",
+            "oidc-address-mapper",
+            "oidc-usermodel-attribute-mapper",
             "saml-user-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "oidc-address-mapper",
-            "oidc-full-name-mapper",
-            "saml-role-list-mapper"
+            "oidc-usermodel-property-mapper"
           ]
         }
       },
@@ -1648,14 +1785,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-attribute-mapper",
             "saml-user-property-mapper",
+            "saml-role-list-mapper",
             "oidc-full-name-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "saml-role-list-mapper",
-            "oidc-usermodel-attribute-mapper",
             "oidc-usermodel-property-mapper",
-            "oidc-address-mapper"
+            "oidc-address-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "saml-user-attribute-mapper"
           ]
         }
       },
@@ -2568,8 +2705,12 @@
     "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
     "oauth2DeviceCodeLifespan": "600",
+    "clientOfflineSessionMaxLifespan": "0",
     "oauth2DevicePollingInterval": "5",
+    "clientSessionIdleTimeout": "0",
     "parRequestUriLifespan": "60",
+    "clientSessionMaxLifespan": "0",
+    "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5",
     "realmReusableOtpCode": "false"
   },
