@@ -1,0 +1,51 @@
+site_name: Wallet Framework
+site_url: https://leventozz.github.io/WF/
+repo_url: https://github.com/leventozz/wallet-framework
+repo_name: Wallet Framework
+
+
+docs_dir: docs/docs-site
+
+theme:
+  name: material
+  language: en 
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: lime
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs 
+    - navigation.instant 
+    - content.code.copy 
+
+plugins:
+  - search
+  - i18n:
+      default_language: en
+      docs_structure: suffix
+      languages:
+        - locale: tr
+          name: Türkçe
+          build: true
+        - locale: en
+          name: English
+          build: true
+          default: true
+
+nav:
+  - Start: index.md
+  - The Story: story.md
+  - Architecture: architecture.md
+  - Packages & Tech: packages.md
+  - Challenges: problems.md
