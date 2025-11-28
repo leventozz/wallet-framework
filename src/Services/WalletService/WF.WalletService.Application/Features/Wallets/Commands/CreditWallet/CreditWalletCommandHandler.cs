@@ -83,6 +83,9 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                 Amount = request.Amount
             };
 
+            if(request.Amount == 666)
+                throw new Exception("Simulated exception for testing purposes.");
+
             await _eventPublisher.PublishAsync(successEvent, cancellationToken);
 
             var balanceUpdatedEvent = new WalletBalanceUpdatedEvent(
