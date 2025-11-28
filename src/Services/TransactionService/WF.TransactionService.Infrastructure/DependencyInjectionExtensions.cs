@@ -105,6 +105,7 @@ namespace WF.TransactionService.Infrastructure
                 {
                     o.UsePostgres();
                     o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
+                    o.UseBusOutbox();
                 });
 
                 mtConfig.AddDelayedMessageScheduler();

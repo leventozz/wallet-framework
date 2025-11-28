@@ -46,6 +46,7 @@ public static class DependencyInjectionExtensions
             {
                 o.UsePostgres();
                 o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
+                o.UseBusOutbox();
             });
 
             mtConfig.AddConsumer<CheckFraudCommandConsumer>();
