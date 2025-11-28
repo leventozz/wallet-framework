@@ -50,8 +50,12 @@ public static class DependencyInjectionExtensions
 
             mtConfig.AddConsumer<CheckFraudCommandConsumer>();
 
+            mtConfig.AddDelayedMessageScheduler();
+
             mtConfig.UsingRabbitMq((context, cfg) =>
             {
+                cfg.UseDelayedMessageScheduler();
+
                 var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
                 
                 cfg.Host(rabbitMqOptions.Host, (ushort)rabbitMqOptions.Port, rabbitMqOptions.VirtualHost, h =>

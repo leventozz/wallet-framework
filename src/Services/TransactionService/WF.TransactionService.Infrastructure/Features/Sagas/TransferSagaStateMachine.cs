@@ -2,6 +2,7 @@ using MassTransit;
 using WF.Shared.Contracts.Commands.Fraud;
 using WF.Shared.Contracts.Commands.Wallet;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
+using WF.Shared.Contracts;
 using WF.TransactionService.Domain.Entities;
 
 namespace WF.TransactionService.Infrastructure.Features.Sagas;
@@ -24,6 +25,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
     public Event<WalletDebitFailedEvent> WalletDebitFailedEvent { get; private set; } = null!;
     public Event<WalletCreditedEvent> WalletCreditedEvent { get; private set; } = null!;
     public Event<WalletCreditFailedEvent> WalletCreditFailedEvent { get; private set; } = null!;
+    public Schedule<Transaction, TransferTimeoutEvent> TransferTimeout { get; private set; } = null!;
 
     public TransferSagaStateMachine()
     {
@@ -36,6 +38,12 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
         Event(() => WalletDebitFailedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
         Event(() => WalletCreditedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
         Event(() => WalletCreditFailedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+
+        Schedule(() => TransferTimeout, x => x.ExpirationTokenId, x =>
+        {
+            x.Delay = TimeSpan.FromMinutes(1);
+            x.Received = e => e.CorrelateById(context => context.Message.CorrelationId);
+        });
 
         Initially(
             When(TransferRequestStarted)
@@ -54,6 +62,8 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.ClientIpAddress = context.Message.ClientIpAddress;
                     context.Saga.CreatedAtUtc = DateTime.UtcNow;
                 })
+
+                .Schedule(TransferTimeout, context => new TransferTimeoutEvent(context.Saga.CorrelationId))
                 .TransitionTo(Pending)
                 .Publish(context => new CheckFraudCommandContract
                 {
@@ -112,6 +122,8 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.CompletedAtUtc = DateTime.UtcNow;
                 })
+
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Completed)
                 .Finalize(),
 
@@ -126,6 +138,21 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .Then(context =>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
+                })
+                .TransitionTo(Failed)
+                .Finalize(),
+
+            When(TransferTimeout.Received)
+                .Publish(context => new RefundSenderWalletCommandContract
+                {
+                    CorrelationId = context.Saga.CorrelationId,
+                    OwnerCustomerId = context.Saga.SenderCustomerId,
+                    Amount = context.Saga.Amount,
+                    TransactionId = context.Saga.TransactionId
+                })
+                .Then(context =>
+                {
+                    context.Saga.FailureReason = "Transaction timed out.";
                 })
                 .TransitionTo(Failed)
                 .Finalize()

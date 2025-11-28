@@ -53,8 +53,12 @@ namespace WF.CustomerService.Infrastructure
                     o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
                 });
 
+                mtConfig.AddDelayedMessageScheduler();
+
                 mtConfig.UsingRabbitMq((context, cfg) =>
                 {
+                    cfg.UseDelayedMessageScheduler();
+
                     var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
                     
                     cfg.Host(rabbitMqOptions.Host, (ushort)rabbitMqOptions.Port, rabbitMqOptions.VirtualHost, h =>

@@ -76,6 +76,9 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
 
             await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
 
+            if(request.Amount == 666)
+                throw new Exception("Simulated exception for testing purposes.");
+
             var successEvent = new WalletCreditedEvent
             {
                 CorrelationId = request.CorrelationId,
