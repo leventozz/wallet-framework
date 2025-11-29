@@ -63,7 +63,7 @@ public class DebitSenderWalletCommandHandlerTests
         var wallet = CreateValidWallet();
         var initialBalance = wallet.Balance.Amount;
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -98,7 +98,7 @@ public class DebitSenderWalletCommandHandlerTests
         // Arrange
         var command = CreateValidCommand();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns((Wallet?)null);
@@ -128,7 +128,7 @@ public class DebitSenderWalletCommandHandlerTests
         command = command with { Amount = -100m }; // Invalid amount
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -160,7 +160,7 @@ public class DebitSenderWalletCommandHandlerTests
         var closeResult = wallet.Close();
         closeResult.IsSuccess.Should().BeTrue("Wallet should be closed successfully when balance is 0");
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -188,7 +188,7 @@ public class DebitSenderWalletCommandHandlerTests
         command = command with { Amount = 2000m }; // More than balance
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -215,7 +215,7 @@ public class DebitSenderWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -243,7 +243,7 @@ public class DebitSenderWalletCommandHandlerTests
         var wallet = CreateValidWallet();
         var expectedBalance = wallet.Balance.Amount - command.Amount;
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -269,7 +269,7 @@ public class DebitSenderWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -292,7 +292,7 @@ public class DebitSenderWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+        _walletRepository.GetWalletByCustomerIdAsync(
             command.OwnerCustomerId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);

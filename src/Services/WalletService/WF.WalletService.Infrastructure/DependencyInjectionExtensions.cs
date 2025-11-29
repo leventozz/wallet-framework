@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Configuration;
 using WF.WalletService.Application.Abstractions;
@@ -56,6 +57,21 @@ namespace WF.WalletService.Infrastructure
                 mtConfig.AddConsumer<RefundSenderWalletCommandConsumer>();
 
                 mtConfig.AddDelayedMessageScheduler();
+
+                mtConfig.AddConfigureEndpointsCallback((context, name, cfg) =>
+                {
+                    cfg.UseMessageRetry(r =>
+                    {
+                        r.Exponential(
+                            retryLimit: 5,
+                            minInterval: TimeSpan.FromMilliseconds(100),
+                            maxInterval: TimeSpan.FromMilliseconds(1600),
+                            intervalDelta: TimeSpan.FromMilliseconds(200));
+                        
+                        r.Handle<DbUpdateConcurrencyException>();
+                        r.Handle<PostgresException>(x => x.SqlState == "40001");
+                    });
+                });
 
                 mtConfig.UsingRabbitMq((context, cfg) =>
                 {

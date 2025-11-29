@@ -122,7 +122,6 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.CompletedAtUtc = DateTime.UtcNow;
                 })
-
                 .Unschedule(TransferTimeout)
                 .TransitionTo(Completed)
                 .Finalize(),

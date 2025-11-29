@@ -23,7 +23,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                 request.Amount,
                 request.CorrelationId);
 
-            var wallet = await _walletRepository.GetWalletByIdForUpdateAsync(
+            var wallet = await _walletRepository.GetWalletByIdAsync(
                 request.WalletId,
                 cancellationToken);
 

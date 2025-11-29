@@ -24,7 +24,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
                 request.Amount,
                 request.CorrelationId);
 
-            var wallet = await _walletRepository.GetWalletByCustomerIdForUpdateAsync(
+            var wallet = await _walletRepository.GetWalletByCustomerIdAsync(
                 request.OwnerCustomerId,
                 cancellationToken);
 

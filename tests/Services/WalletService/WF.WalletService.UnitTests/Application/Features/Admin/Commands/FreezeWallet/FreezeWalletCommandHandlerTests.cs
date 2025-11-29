@@ -45,7 +45,7 @@ public class FreezeWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -73,7 +73,7 @@ public class FreezeWalletCommandHandlerTests
         // Arrange
         var command = CreateValidCommand();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns((Wallet?)null);
@@ -102,7 +102,7 @@ public class FreezeWalletCommandHandlerTests
         var wallet = CreateValidWallet();
         wallet.Freeze();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -130,7 +130,7 @@ public class FreezeWalletCommandHandlerTests
         var wallet = CreateValidWallet();
         wallet.Close();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -154,7 +154,7 @@ public class FreezeWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);

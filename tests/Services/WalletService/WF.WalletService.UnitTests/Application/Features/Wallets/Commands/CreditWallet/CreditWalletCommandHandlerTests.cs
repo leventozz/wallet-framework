@@ -61,7 +61,7 @@ public class CreditWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -96,7 +96,7 @@ public class CreditWalletCommandHandlerTests
         // Arrange
         var command = CreateValidCommand();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns((Wallet?)null);
@@ -126,7 +126,7 @@ public class CreditWalletCommandHandlerTests
         command = command with { Amount = -100m }; // Invalid amount
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -153,7 +153,7 @@ public class CreditWalletCommandHandlerTests
         var wallet = CreateValidWallet();
         wallet.Close(); // Wallet is closed, deposit will fail
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -180,7 +180,7 @@ public class CreditWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -207,7 +207,7 @@ public class CreditWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -233,7 +233,7 @@ public class CreditWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);
@@ -256,7 +256,7 @@ public class CreditWalletCommandHandlerTests
         var command = CreateValidCommand();
         var wallet = CreateValidWallet();
 
-        _walletRepository.GetWalletByIdForUpdateAsync(
+        _walletRepository.GetWalletByIdAsync(
             command.WalletId,
             Arg.Any<CancellationToken>())
             .Returns(wallet);

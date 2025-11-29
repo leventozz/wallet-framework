@@ -9,7 +9,7 @@ public class CloseWalletCommandHandler(IWalletRepository _walletRepository, IUni
 {
     public async Task<Result> Handle(CloseWalletCommand request, CancellationToken cancellationToken)
     {
-        var wallet = await _walletRepository.GetWalletByIdForUpdateAsync(request.WalletId, cancellationToken);
+        var wallet = await _walletRepository.GetWalletByIdAsync(request.WalletId, cancellationToken);
         if (wallet is null)
         {
             return Result.Failure(Error.NotFound("Wallet", request.WalletId));

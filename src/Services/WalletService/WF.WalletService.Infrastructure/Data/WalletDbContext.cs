@@ -33,6 +33,12 @@ namespace WF.WalletService.Infrastructure.Data
                 entity.HasIndex(w => w.CustomerId)
                     .HasDatabaseName("IX_Wallets_CustomerId");
 
+                entity.Property<uint>("xmin")
+                    .HasColumnName("xmin")
+                    .HasColumnType("xid")
+                    .ValueGeneratedOnAddOrUpdate()
+                    .IsConcurrencyToken();
+
                 entity.ComplexProperty(w => w.Balance, balanceBuilder =>
                 {
                     balanceBuilder.Property(b => b.Amount)

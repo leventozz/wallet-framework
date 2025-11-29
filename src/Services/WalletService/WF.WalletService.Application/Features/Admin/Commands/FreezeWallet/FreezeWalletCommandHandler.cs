@@ -9,7 +9,7 @@ public class FreezeWalletCommandHandler(IWalletRepository _walletRepository, IUn
 {
     public async Task<Result> Handle(FreezeWalletCommand request, CancellationToken cancellationToken)
     {
-        var wallet = await _walletRepository.GetWalletByIdForUpdateAsync(request.WalletId, cancellationToken);
+        var wallet = await _walletRepository.GetWalletByIdAsync(request.WalletId, cancellationToken);
         if (wallet is null)
         {
             return Result.Failure(Error.NotFound("Wallet", request.WalletId));

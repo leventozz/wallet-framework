@@ -2,7 +2,6 @@ using IdGen;
 using MediatR;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
-using WF.TransactionService.Application.Abstractions;
 using WF.Shared.Contracts.Result;
 
 namespace WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
@@ -12,16 +11,13 @@ public class CreateTransactionCommandHandler(
     IUnitOfWork _unitOfWork,
     ICustomerServiceApiClient _customerServiceApiClient,
     IWalletServiceApiClient _walletServiceApiClient,
-    IMachineContextProvider _machineContextProvider)
+    IdGenerator idGenerator)
     : IRequestHandler<CreateTransactionCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var correlationId = Guid.NewGuid();
-
-        var machineId = _machineContextProvider.GetMachineId();
-        var generator = new IdGenerator(machineId);
-        var transactionId = $"TX-{generator.CreateId()}";
+        var transactionId = $"TX-{idGenerator.CreateId()}";
 
         var senderLookupTask = _customerServiceApiClient.GetCustomerByIdentityAsync(request.SenderIdentityId, cancellationToken);
         var receiverLookupTask = _customerServiceApiClient.LookupByCustomerNumbersAsync(

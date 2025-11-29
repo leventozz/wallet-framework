@@ -1,12 +1,10 @@
 using FluentAssertions;
+using IdGen;
 using NSubstitute;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.Dtos;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
-using WF.TransactionService.Application.Abstractions;
 using WF.TransactionService.Application.Features.Transactions.Commands.CreateTransaction;
-using WF.Shared.Contracts.Result;
-using Xunit;
 
 namespace WF.TransactionService.UnitTests.Application.Features.Transactions.Commands.CreateTransaction;
 
@@ -16,7 +14,7 @@ public class CreateTransactionCommandHandlerTests
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICustomerServiceApiClient _customerServiceApiClient;
     private readonly IWalletServiceApiClient _walletServiceApiClient;
-    private readonly IMachineContextProvider _machineContextProvider;
+    private readonly IdGenerator _idGenerator;
     private readonly CreateTransactionCommandHandler _handler;
     private readonly Bogus.Faker _faker;
 
@@ -26,13 +24,14 @@ public class CreateTransactionCommandHandlerTests
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _customerServiceApiClient = Substitute.For<ICustomerServiceApiClient>();
         _walletServiceApiClient = Substitute.For<IWalletServiceApiClient>();
-        _machineContextProvider = Substitute.For<IMachineContextProvider>();
+        var options = new IdGeneratorOptions(idStructure: new IdStructure(45, 2, 16), timeSource: new DefaultTimeSource(new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
+        _idGenerator = new IdGenerator(0, options);
         _handler = new CreateTransactionCommandHandler(
             _integrationEventPublisher,
             _unitOfWork,
             _customerServiceApiClient,
             _walletServiceApiClient,
-            _machineContextProvider);
+            _idGenerator);
         _faker = new Bogus.Faker();
     }
 
@@ -58,7 +57,6 @@ public class CreateTransactionCommandHandlerTests
         var receiverCustomerId = _faker.Random.Guid();
         var senderWalletId = _faker.Random.Guid();
         var receiverWalletId = _faker.Random.Guid();
-        var machineId = _faker.Random.Int(0, 1023);
 
         var senderCustomerLookup = new CustomerLookupDto
         {
@@ -83,8 +81,6 @@ public class CreateTransactionCommandHandlerTests
             CustomerId = receiverCustomerId,
             WalletId = receiverWalletId
         };
-
-        _machineContextProvider.GetMachineId().Returns(machineId);
         _customerServiceApiClient.GetCustomerByIdentityAsync(command.SenderIdentityId, Arg.Any<CancellationToken>())
             .Returns(senderCustomerLookup);
         _customerServiceApiClient.LookupByCustomerNumbersAsync(
@@ -345,7 +341,6 @@ public class CreateTransactionCommandHandlerTests
         var receiverCustomerId = _faker.Random.Guid();
         var senderWalletId = _faker.Random.Guid();
         var receiverWalletId = _faker.Random.Guid();
-        var machineId = _faker.Random.Int(0, 1023);
 
         var senderCustomerLookup = new CustomerLookupDto
         {
@@ -370,8 +365,6 @@ public class CreateTransactionCommandHandlerTests
             CustomerId = receiverCustomerId,
             WalletId = receiverWalletId
         };
-
-        _machineContextProvider.GetMachineId().Returns(machineId);
         _customerServiceApiClient.GetCustomerByIdentityAsync(command.SenderIdentityId, Arg.Any<CancellationToken>())
             .Returns(senderCustomerLookup);
         _customerServiceApiClient.LookupByCustomerNumbersAsync(
@@ -417,7 +410,6 @@ public class CreateTransactionCommandHandlerTests
         var receiverCustomerId = _faker.Random.Guid();
         var senderWalletId = _faker.Random.Guid();
         var receiverWalletId = _faker.Random.Guid();
-        var machineId = _faker.Random.Int(0, 1023);
 
         var senderCustomerLookup = new CustomerLookupDto
         {
@@ -442,8 +434,6 @@ public class CreateTransactionCommandHandlerTests
             CustomerId = receiverCustomerId,
             WalletId = receiverWalletId
         };
-
-        _machineContextProvider.GetMachineId().Returns(machineId);
         _customerServiceApiClient.GetCustomerByIdentityAsync(command.SenderIdentityId, Arg.Any<CancellationToken>())
             .Returns(senderCustomerLookup);
         _customerServiceApiClient.LookupByCustomerNumbersAsync(
@@ -476,7 +466,6 @@ public class CreateTransactionCommandHandlerTests
         var receiverCustomerId = _faker.Random.Guid();
         var senderWalletId = _faker.Random.Guid();
         var receiverWalletId = _faker.Random.Guid();
-        var machineId = _faker.Random.Int(0, 1023);
 
         var senderCustomerLookup = new CustomerLookupDto
         {
@@ -501,8 +490,6 @@ public class CreateTransactionCommandHandlerTests
             CustomerId = receiverCustomerId,
             WalletId = receiverWalletId
         };
-
-        _machineContextProvider.GetMachineId().Returns(machineId);
         _customerServiceApiClient.GetCustomerByIdentityAsync(command.SenderIdentityId, Arg.Any<CancellationToken>())
             .Returns(senderCustomerLookup);
         _customerServiceApiClient.LookupByCustomerNumbersAsync(
