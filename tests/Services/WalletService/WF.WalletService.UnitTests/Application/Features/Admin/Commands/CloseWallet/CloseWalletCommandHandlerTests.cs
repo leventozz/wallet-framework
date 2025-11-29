@@ -63,9 +63,7 @@ public class CloseWalletCommandHandlerTests
         wallet.IsActive.Should().BeFalse();
         wallet.ClosedAtUtc.Should().NotBeNull();
 
-        await _walletRepository.Received(1).UpdateWalletAsync(
-            wallet,
-            Arg.Any<CancellationToken>());
+
 
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -90,9 +88,7 @@ public class CloseWalletCommandHandlerTests
         result.Error.Message.Should().Contain("Wallet");
         result.Error.Message.Should().Contain("not found");
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
 
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -120,9 +116,7 @@ public class CloseWalletCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         wallet.IsClosed.Should().BeTrue();
 
-        await _walletRepository.Received(1).UpdateWalletAsync(
-            wallet,
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]
@@ -146,9 +140,7 @@ public class CloseWalletCommandHandlerTests
         result.Error.Code.Should().Be("Wallet.NonZeroBalance");
         result.Error.Message.Should().Contain("non-zero balance");
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]

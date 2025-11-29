@@ -21,7 +21,6 @@ public class FreezeWalletCommandHandler(IWalletRepository _walletRepository, IUn
             return result;
         }
 
-        await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

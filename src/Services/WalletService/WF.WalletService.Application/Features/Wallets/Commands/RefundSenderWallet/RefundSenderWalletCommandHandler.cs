@@ -84,7 +84,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.RefundSenderWal
                 return;
             }
 
-            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
 
             var refundEvent = new SenderRefundedEvent
             {

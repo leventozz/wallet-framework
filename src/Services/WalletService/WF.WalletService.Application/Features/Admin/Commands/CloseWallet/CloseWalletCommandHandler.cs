@@ -21,7 +21,7 @@ public class CloseWalletCommandHandler(IWalletRepository _walletRepository, IUni
             return result;
         }
 
-        await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

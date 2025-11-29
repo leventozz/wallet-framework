@@ -76,10 +76,6 @@ public class CreditWalletCommandHandlerTests
         wallet.Balance.Amount.Should().Be(command.Amount);
         wallet.AvailableBalance.Amount.Should().Be(command.Amount);
 
-        await _walletRepository.Received(1).UpdateWalletAsync(
-            wallet,
-            Arg.Any<CancellationToken>());
-
         await _eventPublisher.Received(1).PublishAsync(
             Arg.Is<WalletCreditedEvent>(e =>
                 e.CorrelationId == command.CorrelationId &&
@@ -111,9 +107,7 @@ public class CreditWalletCommandHandlerTests
                 e.Reason.Contains("Wallet not found")),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
 
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -140,9 +134,7 @@ public class CreditWalletCommandHandlerTests
                 e.CorrelationId == command.CorrelationId),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]
@@ -168,9 +160,7 @@ public class CreditWalletCommandHandlerTests
                 e.Reason.Contains("closed")),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]

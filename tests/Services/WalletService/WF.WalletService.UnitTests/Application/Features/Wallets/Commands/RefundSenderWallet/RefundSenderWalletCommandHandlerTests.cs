@@ -76,10 +76,6 @@ public class RefundSenderWalletCommandHandlerTests
         wallet.Balance.Amount.Should().Be(initialBalance + command.Amount);
         wallet.AvailableBalance.Amount.Should().Be(initialBalance + command.Amount);
 
-        await _walletRepository.Received(1).UpdateWalletAsync(
-            wallet,
-            Arg.Any<CancellationToken>());
-
         await _eventPublisher.Received(1).PublishAsync(
             Arg.Is<SenderRefundedEvent>(e =>
                 e.CorrelationId == command.CorrelationId &&
@@ -112,9 +108,7 @@ public class RefundSenderWalletCommandHandlerTests
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
 
         await _eventPublisher.DidNotReceive().PublishAsync(
             Arg.Any<SenderRefundedEvent>(),
@@ -145,9 +139,7 @@ public class RefundSenderWalletCommandHandlerTests
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
 
         await _eventPublisher.DidNotReceive().PublishAsync(
             Arg.Any<SenderRefundedEvent>(),
@@ -178,9 +170,7 @@ public class RefundSenderWalletCommandHandlerTests
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]
@@ -207,9 +197,7 @@ public class RefundSenderWalletCommandHandlerTests
             Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]

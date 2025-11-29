@@ -24,11 +24,7 @@ namespace WF.WalletService.Infrastructure.Repositories
                 .FirstOrDefaultAsync(w => w.CustomerId == customerId, cancellationToken);
         }
 
-        public async Task UpdateWalletAsync(Wallet wallet, CancellationToken cancellationToken = default)
-        {
-            _context.Wallets.Update(wallet);
-            await Task.CompletedTask;
-        }
+
 
         public async Task<bool> IsWalletNumberUniqueAsync(string walletNumber, CancellationToken cancellationToken = default)
         {

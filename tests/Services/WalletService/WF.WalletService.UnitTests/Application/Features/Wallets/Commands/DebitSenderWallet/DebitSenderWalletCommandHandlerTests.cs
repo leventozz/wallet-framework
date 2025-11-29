@@ -78,10 +78,6 @@ public class DebitSenderWalletCommandHandlerTests
         wallet.Balance.Amount.Should().Be(initialBalance - command.Amount);
         wallet.AvailableBalance.Amount.Should().Be(initialBalance - command.Amount);
 
-        await _walletRepository.Received(1).UpdateWalletAsync(
-            wallet,
-            Arg.Any<CancellationToken>());
-
         await _eventPublisher.Received(1).PublishAsync(
             Arg.Is<WalletDebitedEvent>(e =>
                 e.CorrelationId == command.CorrelationId &&
@@ -113,9 +109,7 @@ public class DebitSenderWalletCommandHandlerTests
                 e.Reason.Contains("Wallet not found")),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
 
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -142,9 +136,7 @@ public class DebitSenderWalletCommandHandlerTests
                 e.CorrelationId == command.CorrelationId),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]
@@ -175,9 +167,7 @@ public class DebitSenderWalletCommandHandlerTests
                 e.Reason.Contains("closed")),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]
@@ -203,9 +193,7 @@ public class DebitSenderWalletCommandHandlerTests
                 e.Reason.Contains("Insufficient")),
             Arg.Any<CancellationToken>());
 
-        await _walletRepository.DidNotReceive().UpdateWalletAsync(
-            Arg.Any<Wallet>(),
-            Arg.Any<CancellationToken>());
+
     }
 
     [Fact]

@@ -60,13 +60,7 @@ namespace WF.WalletService.Infrastructure
 
                 mtConfig.AddConfigureEndpointsCallback((context, name, cfg) =>
                 {
-                    cfg.UseMessageRetry(r =>
-                    {
-                        cfg.UseMessageRetry(r =>
-                        {
-                            r.Interval(3, TimeSpan.FromSeconds(5));
-                        });
-                    });
+                    cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
                     cfg.UseEntityFrameworkOutbox<WalletDbContext>(context);
                 });
 

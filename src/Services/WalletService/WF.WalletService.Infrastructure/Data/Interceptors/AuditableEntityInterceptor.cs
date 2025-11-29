@@ -50,6 +50,12 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
                 continue;
             }
 
+            var typeName = entry.Entity.GetType().Name;
+            if (typeName is "InboxState" or "OutboxMessage" or "OutboxState")
+            {
+                continue;
+            }
+
             var entityType = entry.Entity.GetType();
             var tableName = context.Model.FindEntityType(entityType)?.GetTableName() ?? entityType.Name;
             var primaryKey = GetPrimaryKeyValue(entry);
@@ -63,24 +69,30 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
                 DateTimeUtc = DateTime.UtcNow
             };
 
+            var oldValues = new Dictionary<string, object?>();
+            var newValues = new Dictionary<string, object?>();
+            var changedColumns = new List<string>();
+
+            ExtractChanges(entry.Properties, entry.ComplexProperties, oldValues, newValues, changedColumns, entry.State);
+
             switch (entry.State)
             {
                 case EntityState.Added:
                     auditLog.Type = "INSERT";
-                    auditLog.NewValues = JsonSerializer.Serialize(GetPropertyValues(entry, entry.CurrentValues), JsonOptions);
+                    auditLog.NewValues = JsonSerializer.Serialize(newValues, JsonOptions);
                     break;
 
                 case EntityState.Modified:
+                    if (changedColumns.Count == 0) continue; // Skip if no actual changes
                     auditLog.Type = "UPDATE";
-                    var changedProperties = GetChangedProperties(entry);
-                    auditLog.OldValues = JsonSerializer.Serialize(changedProperties.OldValues, JsonOptions);
-                    auditLog.NewValues = JsonSerializer.Serialize(changedProperties.NewValues, JsonOptions);
-                    auditLog.AffectedColumns = string.Join(",", changedProperties.ChangedPropertyNames);
+                    auditLog.OldValues = JsonSerializer.Serialize(oldValues, JsonOptions);
+                    auditLog.NewValues = JsonSerializer.Serialize(newValues, JsonOptions);
+                    auditLog.AffectedColumns = string.Join(",", changedColumns);
                     break;
 
                 case EntityState.Deleted:
                     auditLog.Type = "DELETE";
-                    auditLog.OldValues = JsonSerializer.Serialize(GetPropertyValues(entry, entry.OriginalValues), JsonOptions);
+                    auditLog.OldValues = JsonSerializer.Serialize(oldValues, JsonOptions);
                     break;
             }
 
@@ -120,43 +132,62 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
         return string.Empty;
     }
 
-    private static Dictionary<string, object?> GetPropertyValues(EntityEntry entry, PropertyValues propertyValues)
+    private static void ExtractChanges(
+        IEnumerable<PropertyEntry> properties,
+        IEnumerable<ComplexPropertyEntry> complexProperties,
+        Dictionary<string, object?> oldValues,
+        Dictionary<string, object?> newValues,
+        List<string> changedColumns,
+        EntityState state,
+        string prefix = "")
     {
-        var values = new Dictionary<string, object?>();
-
-        foreach (var property in entry.Properties)
+        foreach (var property in properties)
         {
             if (property.Metadata.IsPrimaryKey())
             {
                 continue;
             }
 
-            values[property.Metadata.Name] = propertyValues[property.Metadata.Name];
-        }
+            var propertyName = string.IsNullOrEmpty(prefix) ? property.Metadata.Name : $"{prefix}.{property.Metadata.Name}";
+            var originalValue = property.OriginalValue;
+            var currentValue = property.CurrentValue;
 
-        return values;
-    }
-
-    private static (Dictionary<string, object?> OldValues, Dictionary<string, object?> NewValues, List<string> ChangedPropertyNames) GetChangedProperties(EntityEntry entry)
-    {
-        var oldValues = new Dictionary<string, object?>();
-        var newValues = new Dictionary<string, object?>();
-        var changedPropertyNames = new List<string>();
-
-        foreach (var property in entry.Properties)
-        {
-            if (property.Metadata.IsPrimaryKey() || !property.IsModified)
+            switch (state)
             {
-                continue;
-            }
+                case EntityState.Added:
+                    newValues[propertyName] = currentValue;
+                    break;
 
-            var propertyName = property.Metadata.Name;
-            oldValues[propertyName] = property.OriginalValue;
-            newValues[propertyName] = property.CurrentValue;
-            changedPropertyNames.Add(propertyName);
+                case EntityState.Deleted:
+                    oldValues[propertyName] = originalValue;
+                    break;
+
+                case EntityState.Modified:
+                    if (property.IsModified && !Equals(originalValue, currentValue))
+                    {
+                        oldValues[propertyName] = originalValue;
+                        newValues[propertyName] = currentValue;
+                        changedColumns.Add(propertyName);
+                    }
+                    break;
+            }
         }
 
-        return (oldValues, newValues, changedPropertyNames);
+        foreach (var complexProperty in complexProperties)
+        {
+            var complexPrefix = string.IsNullOrEmpty(prefix)
+                ? complexProperty.Metadata.Name
+                : $"{prefix}.{complexProperty.Metadata.Name}";
+
+            ExtractChanges(
+                complexProperty.Properties,
+                complexProperty.ComplexProperties,
+                oldValues,
+                newValues,
+                changedColumns,
+                state,
+                complexPrefix);
+        }
     }
 }
 

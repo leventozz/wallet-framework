@@ -74,7 +74,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.DebitSenderWall
                 return;
             }
 
-            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
 
             var successEvent = new WalletDebitedEvent
             {

@@ -74,7 +74,7 @@ namespace WF.WalletService.Application.Features.Wallets.Commands.CreditWallet
                 return;
             }
 
-            await _walletRepository.UpdateWalletAsync(wallet, cancellationToken);
+
 
             if(request.Amount == 666)
                 throw new Exception("Simulated exception for testing purposes.");
