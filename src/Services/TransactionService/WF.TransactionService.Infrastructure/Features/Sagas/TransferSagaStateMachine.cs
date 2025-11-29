@@ -41,7 +41,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 
         Schedule(() => TransferTimeout, x => x.ExpirationTokenId, x =>
         {
-            x.Delay = TimeSpan.FromMinutes(2);
+            x.Delay = TimeSpan.FromMinutes(1);
             x.Received = e => e.CorrelateById(context => context.Message.CorrelationId);
         });
 
@@ -90,6 +90,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
                 })
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize(),
 
@@ -105,11 +106,13 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.FailureReason = "Race Condition Detected: Wallet debited while in Pending state. Refunding.";
                 })
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize(),
 
             When(TransferTimeout.Received)
                 .Then(context => context.Saga.FailureReason = "Fraud check timed out.")
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize()
         );
@@ -131,11 +134,13 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
                 })
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize(),
 
             When(TransferTimeout.Received)
                 .Then(context => context.Saga.FailureReason = "Debit operation timed out.")
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize()
         );
@@ -164,6 +169,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.FailureReason = context.Message.Reason;
                 })
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize(),
 
@@ -179,6 +185,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 {
                     context.Saga.FailureReason = "Transaction timed out.";
                 })
+                .Unschedule(TransferTimeout)
                 .TransitionTo(Failed)
                 .Finalize()
         );
