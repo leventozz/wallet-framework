@@ -41,7 +41,7 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
 
         Schedule(() => TransferTimeout, x => x.ExpirationTokenId, x =>
         {
-            x.Delay = TimeSpan.FromMinutes(1);
+            x.Delay = TimeSpan.FromMinutes(2);
             x.Received = e => e.CorrelateById(context => context.Message.CorrelationId);
         });
 
@@ -62,7 +62,6 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.ClientIpAddress = context.Message.ClientIpAddress;
                     context.Saga.CreatedAtUtc = DateTime.UtcNow;
                 })
-
                 .Schedule(TransferTimeout, context => new TransferTimeoutEvent(context.Saga.CorrelationId))
                 .TransitionTo(Pending)
                 .Publish(context => new CheckFraudCommandContract
@@ -92,6 +91,26 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.FailureReason = context.Message.Reason;
                 })
                 .TransitionTo(Failed)
+                .Finalize(),
+
+            When(WalletDebitedEvent)
+                .Publish(context => new RefundSenderWalletCommandContract
+                {
+                    CorrelationId = context.Message.CorrelationId,
+                    OwnerCustomerId = context.Saga.SenderCustomerId,
+                    Amount = context.Message.Amount,
+                    TransactionId = context.Saga.TransactionId
+                })
+                .Then(context =>
+                {
+                    context.Saga.FailureReason = "Race Condition Detected: Wallet debited while in Pending state. Refunding.";
+                })
+                .TransitionTo(Failed)
+                .Finalize(),
+
+            When(TransferTimeout.Received)
+                .Then(context => context.Saga.FailureReason = "Fraud check timed out.")
+                .TransitionTo(Failed)
                 .Finalize()
         );
 
@@ -113,10 +132,17 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                     context.Saga.FailureReason = context.Message.Reason;
                 })
                 .TransitionTo(Failed)
+                .Finalize(),
+
+            When(TransferTimeout.Received)
+                .Then(context => context.Saga.FailureReason = "Debit operation timed out.")
+                .TransitionTo(Failed)
                 .Finalize()
         );
 
         During(ReceiverCreditPending,
+            Ignore(WalletDebitedEvent),
+
             When(WalletCreditedEvent)
                 .Then(context =>
                 {
@@ -156,6 +182,27 @@ public class TransferSagaStateMachine : MassTransitStateMachine<Transaction>
                 .TransitionTo(Failed)
                 .Finalize()
         );
+
+        During(Failed,
+            When(WalletDebitedEvent)
+                .Publish(context => new RefundSenderWalletCommandContract
+                {
+                    CorrelationId = context.Message.CorrelationId,
+                    OwnerCustomerId = context.Saga.SenderCustomerId,
+                    Amount = context.Message.Amount,
+                    TransactionId = context.Saga.TransactionId
+                })
+                .Then(context =>
+                {
+                    //log maybe
+                })
+        );
+
+        During(Completed, Failed,
+            Ignore(WalletDebitedEvent),
+            Ignore(WalletCreditedEvent),
+            Ignore(TransferTimeout.Received),
+            Ignore(FraudCheckApprovedEvent));
     }
 }
 

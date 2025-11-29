@@ -21,6 +21,7 @@ using WF.TransactionService.Infrastructure.Authentication;
 using WF.TransactionService.Infrastructure.Data.Interceptors;
 using WF.TransactionService.Infrastructure.MassTransit.Filters;
 using WF.TransactionService.Infrastructure.PropagationContext;
+using System.Data;
 
 namespace WF.TransactionService.Infrastructure
 {
@@ -99,6 +100,7 @@ namespace WF.TransactionService.Infrastructure
                     o.UsePostgres();
                     o.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
                     o.UseBusOutbox();
+                    o.IsolationLevel = IsolationLevel.ReadCommitted;
                 });
 
                 mtConfig.AddDelayedMessageScheduler();
@@ -107,15 +109,9 @@ namespace WF.TransactionService.Infrastructure
                 {
                     cfg.UseMessageRetry(r =>
                     {
-                        r.Exponential(
-                            retryLimit: 5,
-                            minInterval: TimeSpan.FromMilliseconds(100),
-                            maxInterval: TimeSpan.FromMilliseconds(1600),
-                            intervalDelta: TimeSpan.FromMilliseconds(200));
-                        
-                        r.Handle<DbUpdateConcurrencyException>();
-                        r.Handle<PostgresException>(x => x.SqlState == "40001");
+                        r.Interval(3, TimeSpan.FromSeconds(5));
                     });
+                    cfg.UseEntityFrameworkOutbox<TransactionDbContext>(context);
                 });
 
                 mtConfig.UsingRabbitMq((context, cfg) =>

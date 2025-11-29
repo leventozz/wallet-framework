@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using WF.Shared.Contracts.Abstractions;
 using WF.Shared.Contracts.IntegrationEvents.Transaction;
 using WF.Shared.Contracts.IntegrationEvents.Wallet;
-using WF.Shared.Contracts.Result;
 using WF.WalletService.Domain.Abstractions;
 using WF.WalletService.Domain.ValueObjects;
 

@@ -62,15 +62,12 @@ namespace WF.WalletService.Infrastructure
                 {
                     cfg.UseMessageRetry(r =>
                     {
-                        r.Exponential(
-                            retryLimit: 5,
-                            minInterval: TimeSpan.FromMilliseconds(100),
-                            maxInterval: TimeSpan.FromMilliseconds(1600),
-                            intervalDelta: TimeSpan.FromMilliseconds(200));
-                        
-                        r.Handle<DbUpdateConcurrencyException>();
-                        r.Handle<PostgresException>(x => x.SqlState == "40001");
+                        cfg.UseMessageRetry(r =>
+                        {
+                            r.Interval(3, TimeSpan.FromSeconds(5));
+                        });
                     });
+                    cfg.UseEntityFrameworkOutbox<WalletDbContext>(context);
                 });
 
                 mtConfig.UsingRabbitMq((context, cfg) =>
